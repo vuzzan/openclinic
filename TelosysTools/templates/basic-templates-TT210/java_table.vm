@@ -1,0 +1,425 @@
+﻿/**
+
+*/
+package com.model.dao;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.eclipse.swt.widgets.Dialog;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Monitor;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
+
+import swing2swt.layout.BorderLayout;
+
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.layout.GridData;
+import org.sql2o.Connection;
+
+import com.DbHelper;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.wb.swt.SWTResourceManager;
+public class ${entity.name}ListDlg extends Dialog {
+	static Logger logger = LogManager.getLogger(${entity.name}ListDlg.class.getName());
+	protected Object result;
+	protected Shell shell;
+
+	private class TableLabelProvider${entity.name} extends LabelProvider implements ITableLabelProvider {
+		public Image getColumnImage(Object element, int columnIndex) {
+			return null;
+		}
+		public String getColumnText(Object element, int columnIndex) {
+			if(element instanceof ${entity.name}){
+				return ((${entity.name}) element).getIndex(columnIndex);
+			}
+			return "";
+		}
+	}
+	private static class ContentProvider${entity.name} implements IStructuredContentProvider {
+		public Object[] getElements(Object inputElement) {
+			if(inputElement instanceof ArrayList){
+				return ((ArrayList) inputElement).toArray();
+			}
+			return new Object[0];
+		}
+		public void dispose() {
+		}
+		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+		}
+	}
+	private Table table${entity.name};
+	private TableViewer tableViewer${entity.name};
+	private List<${entity.name}> listData${entity.name};
+	private Text textSearch${entity.name};
+	private String textSearch${entity.name}String;
+	public ${entity.name} obj${entity.name} = null;
+	public int type${entity.name}Dlg = TYPE_DLG_CHOOSEN; 
+	public static final int TYPE_DLG_MANAGER = 0;
+	public static final int TYPE_DLG_CHOOSEN = 1;
+
+    public int intTypeDlg${entity.name};
+	public static final int TYPE_DLG_VIEW = 1;
+	public static final int TYPE_DLG_EDIT = 2;
+	/**
+	 * Create the dialog.
+	 * @param parent
+	 * @param style
+	 */
+	public ${entity.name}ListDlg(Shell parent, int style) {
+		super(parent, style);
+		setText("SWT Dialog");
+	}
+
+	/**
+	 * Open the dialog.
+	 * @return the result
+	 */
+	public Object open() {
+		createContents();
+		shell.open();
+		shell.layout();
+		Display display = getParent().getDisplay();
+        //
+        Monitor primary = display.getPrimaryMonitor();
+		Rectangle bounds = primary.getBounds();
+		Rectangle rect = shell.getBounds();
+		int x = bounds.x + (bounds.width - rect.width) / 2;
+		int y = bounds.y + (bounds.height - rect.height) / 2;
+		shell.setLocation(x, y);
+        
+		while (!shell.isDisposed()) {
+			if (!display.readAndDispatch()) {
+				display.sleep();
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Create contents of the dialog.
+	 */
+	private void createContents() {
+		shell = new Shell(getParent(), SWT.SHELL_TRIM | SWT.BORDER | SWT.PRIMARY_MODAL);
+		shell.setImage(SWTResourceManager.getImage(${entity.name}Dlg.class, "/png/list-2x.png"));
+		shell.setSize(610, 340);
+		shell.setText("${entity.name} List View");
+		shell.setLayout(new BorderLayout(0, 0));
+		shell.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if(e.keyCode==SWT.ESC){
+					obj${entity.name} = null;
+				}
+			}
+		});
+        
+        Composite compositeInShell${entity.name} = new Composite(shell, SWT.NONE);
+		compositeInShell${entity.name}.setLayout(new BorderLayout(0, 0));
+		compositeInShell${entity.name}.setLayoutData(BorderLayout.CENTER);
+        
+		Composite compositeHeader${entity.name} = new Composite(compositeInShell${entity.name}, SWT.NONE);
+		compositeHeader${entity.name}.setLayoutData(BorderLayout.NORTH);
+		compositeHeader${entity.name}.setLayout(new GridLayout(2, false));
+
+		textSearch${entity.name} = new Text(compositeHeader${entity.name}, SWT.BORDER);
+		textSearch${entity.name}.setFont(SWTResourceManager.getFont("Tahoma", 11, SWT.NORMAL));
+		textSearch${entity.name}.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if(e.keyCode==13){
+					reloadTable${entity.name}();
+				}
+			}
+		});
+		
+		Button btnNewButtonSearch${entity.name} = new Button(compositeHeader${entity.name}, SWT.NONE);
+		btnNewButtonSearch${entity.name}.setImage(SWTResourceManager.getImage(${entity.name}Dlg.class, "/png/media-play-2x.png"));
+		btnNewButtonSearch${entity.name}.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
+
+		btnNewButtonSearch${entity.name}.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				reloadTable${entity.name}();
+			}
+		});
+		GridData gd_btnNewButton${entity.name} = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+		gd_btnNewButton${entity.name}.widthHint = 87;
+		btnNewButtonSearch${entity.name}.setLayoutData(gd_btnNewButton${entity.name});
+		btnNewButtonSearch${entity.name}.setText("Search");
+        
+		tableViewer${entity.name} = new TableViewer(compositeInShell${entity.name}, SWT.BORDER | SWT.FULL_SELECTION);
+		table${entity.name} = tableViewer${entity.name}.getTable();
+		table${entity.name}.setFont(SWTResourceManager.getFont("Tahoma", 11, SWT.NORMAL));
+		table${entity.name}.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if(e.keyCode==SWT.F5){
+					reloadTable${entity.name}();
+                }
+                if(e.keyCode==SWT.F4){
+					editTable${entity.name}();
+                }
+				else if(e.keyCode==13){
+					selectTable${entity.name}();
+				}
+                else if(e.keyCode==SWT.DEL){
+					deleteTable${entity.name}();
+				}
+                else if(e.keyCode==SWT.F7){
+					newItem${entity.name}();
+				}
+			}
+		});
+        table${entity.name}.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseDoubleClick(MouseEvent e) {
+				selectTable${entity.name}();
+			}
+		});
+        
+		table${entity.name}.setLinesVisible(true);
+		table${entity.name}.setHeaderVisible(true);
+		table${entity.name}.setLayoutData(BorderLayout.CENTER);
+
+#foreach( $field in $entity.nonKeyAttributes )
+   #set( $num = $velocityCount - 1 )
+#if ($field.formattedType(10).contains("Integer")==true )
+		TableColumn tbTableColumn${entity.name}${field.databaseName} = new TableColumn(table${entity.name}, SWT.RIGHT);
+#elseif ($field.formattedType(10).contains("String")==true )
+		TableColumn tbTableColumn${entity.name}${field.databaseName} = new TableColumn(table${entity.name}, SWT.LEFT);
+#else
+
+		TableColumn tbTableColumn${entity.name}${field.databaseName} = new TableColumn(table${entity.name}, SWT.NONE);
+#end
+		tbTableColumn${entity.name}${field.databaseName}.setWidth(100);
+		tbTableColumn${entity.name}${field.databaseName}.setText("${field.databaseName}");
+
+#end 
+        Menu menu${entity.name} = new Menu(table${entity.name});
+		table${entity.name}.setMenu(menu${entity.name});
+		
+		MenuItem mntmNewItem${entity.name} = new MenuItem(menu${entity.name}, SWT.NONE);
+		mntmNewItem${entity.name}.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				newItem${entity.name}();
+			}
+		});
+		mntmNewItem${entity.name}.setImage(SWTResourceManager.getImage(${entity.name}Dlg.class, "/png/arrow-circle-top-2x.png"));
+		mntmNewItem${entity.name}.setText("New");
+		
+		MenuItem mntmEditItem${entity.name} = new MenuItem(menu${entity.name}, SWT.NONE);
+		mntmEditItem${entity.name}.setImage(SWTResourceManager.getImage(${entity.name}Dlg.class, "/png/wrench-2x.png"));
+		mntmEditItem${entity.name}.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				editTable${entity.name}();
+			}
+		});
+		mntmEditItem${entity.name}.setText("Edit");
+		
+		MenuItem mntmDelete${entity.name} = new MenuItem(menu${entity.name}, SWT.NONE);
+		mntmDelete${entity.name}.setImage(SWTResourceManager.getImage(${entity.name}Dlg.class, "/png/circle-x-2x.png"));
+		mntmDelete${entity.name}.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				deleteTable${entity.name}();
+			}
+		});
+		mntmDelete${entity.name}.setText("Delete");
+
+		tableViewer${entity.name}.setLabelProvider(new TableLabelProvider${entity.name}());
+		tableViewer${entity.name}.setContentProvider(new ContentProvider${entity.name}());
+		tableViewer${entity.name}.setInput(listData${entity.name});
+        //
+        //
+		loadData${entity.name}();
+		//
+        reloadTable${entity.name}();
+	}
+    public void setData${entity.name}(String textSearchString){
+		this.textSearch${entity.name}String = textSearchString;
+	}
+	private void loadData${entity.name}() {
+		if(textSearch${entity.name}String!=null){
+			textSearch${entity.name}.setText(textSearch${entity.name}String);
+		}
+	}
+	protected void reloadTable${entity.name}() {
+        if(DbHelper.checkPhanQuyen(DbHelper.READ, "${entity.databaseTable}")==false){
+			logger.info("DON'T HAVE READ RIGHT");
+			return;
+		}
+    
+        if(listData${entity.name}!=null){
+            // 
+            tableViewer${entity.name}.setInput(listData${entity.name});
+            tableViewer${entity.name}.refresh();
+            //
+            if(listData${entity.name}.size()==0){
+                textSearch${entity.name}.forceFocus();
+            }
+            else{
+                table${entity.name}.forceFocus();
+                table${entity.name}.setSelection(0);
+            }
+            return;
+        }
+		// Do search in the first time
+		String searchString = textSearch${entity.name}.getText().toLowerCase().trim();
+		String sql = "select * from ${entity.databaseTable} WHERE STS<> "+DbHelper.DELETE_STATUS+" ";
+		if(searchString.length()>0){
+            sql += " and ( 0 ";
+#foreach( $field in $entity.nonKeyAttributes )
+#if ($field.formattedType(10).contains("String") == true )
+        sql += " or LOWER(${field.databaseName}) like '%"+searchString+"%'";
+#end
+#end	
+            sql += " )";
+        }
+		try  {
+            logger.info(sql);
+			Connection con = DbHelper.getSql2o();
+			listData${entity.name} = con.createQuery(sql).executeAndFetch(${entity.name}.class);
+	    }   
+	    catch(Exception e){
+	    	logger.error(e);
+	    	MessageDialog.openError(shell, "Error", e.getMessage());
+	    }
+		// 
+		tableViewer${entity.name}.setInput(listData${entity.name});
+		tableViewer${entity.name}.refresh();
+        //
+        if(listData${entity.name}.size()==0){
+            textSearch${entity.name}.forceFocus();
+        }
+        else{
+            table${entity.name}.forceFocus();
+            table${entity.name}.setSelection(0);
+        }
+	}
+    
+    protected void selectTable${entity.name}() {
+		if(table${entity.name}.getSelectionCount()==0){
+			return;
+		}
+		TableItem item = table${entity.name}.getSelection()[0];
+		${entity.name} obj = (${entity.name})item.getData();
+        logger.info(obj.toString());
+        //
+        //
+    	if(type${entity.name}Dlg==TYPE_DLG_CHOOSEN){
+    		// Choosen and close dlg
+    		obj${entity.name} = obj;
+    		shell.close();
+    	}
+    	else{
+            if(DbHelper.checkPhanQuyen(DbHelper.UPDATE, "${entity.databaseTable}")==false){
+                logger.info("DON'T HAVE UPDATE RIGHT");
+                return;
+            }
+            if(intTypeDlg${entity.name}==TYPE_DLG_VIEW){
+                return;
+            }
+			${entity.name}Dlg dlg = new ${entity.name}Dlg(shell, 0);
+            dlg.set${entity.name}DlgData(obj);
+            dlg.open();
+            //
+            reloadTable${entity.name}();
+    	}
+	}
+    protected void editTable${entity.name}() {
+        if(intTypeDlg${entity.name}==TYPE_DLG_VIEW){
+            return;
+        }
+        if(DbHelper.checkPhanQuyen(DbHelper.UPDATE, "${entity.databaseTable}")==false){
+            logger.info("DON'T HAVE UPDATE RIGHT");
+            return;
+        }
+    	if(table${entity.name}.getSelectionCount()==0){
+			return;
+		}
+		TableItem item = table${entity.name}.getSelection()[0];
+		${entity.name} obj = (${entity.name})item.getData();
+        logger.info(obj.toString());
+        //
+        //
+		${entity.name}Dlg dlg = new ${entity.name}Dlg(shell, 0);
+        dlg.set${entity.name}DlgData(obj);
+        dlg.open();
+        //
+        reloadTable${entity.name}();
+	}
+    protected void deleteTable${entity.name}() {
+        if(intTypeDlg${entity.name}==TYPE_DLG_VIEW){
+            return;
+        }
+        //
+        if(DbHelper.checkPhanQuyen(DbHelper.DELETE, "${entity.databaseTable}")==false){
+            logger.info("DON'T HAVE DELETE RIGHT");
+            return;
+        }
+		if(table${entity.name}.getSelectionCount()==0){
+			return;
+		}
+        if(MessageDialog.openConfirm(shell, "Confirm?", "Delete ?")==false){
+			return;
+		}
+		
+		TableItem item = table${entity.name}.getSelection()[0];
+		${entity.name} obj = (${entity.name})item.getData();
+        logger.info(obj.toString());
+        //
+		obj.delete();
+        listData${entity.name}.remove(obj);
+        //
+		reloadTable${entity.name}();
+	}
+
+	protected void newItem${entity.name}() {
+        if(intTypeDlg${entity.name}==TYPE_DLG_VIEW){
+            return;
+        }
+        //
+        if(DbHelper.checkPhanQuyen(DbHelper.INSERT, "${entity.databaseTable}")==false){
+            logger.info("DON'T HAVE INSERT RIGHT");
+            return;
+        }
+		//
+		${entity.name}Dlg dlg = new ${entity.name}Dlg(shell, 0);
+        ${entity.name} obj = new ${entity.name}();
+		dlg.set${entity.name}DlgData(obj);
+		dlg.open();
+        listData${entity.name}.add(obj);
+        //
+		reloadTable${entity.name}();
+		//
+	}
+}

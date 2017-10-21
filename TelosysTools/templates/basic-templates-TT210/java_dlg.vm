@@ -1,0 +1,193 @@
+﻿package com.model.dao;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.eclipse.swt.widgets.Dialog;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Monitor;
+
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.wb.swt.SWTResourceManager;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
+
+import com.openclinic.utils.Utils;
+import com.DbHelper;
+
+public class ${entity.name}Dlg extends Dialog {
+	static Logger logger = LogManager.getLogger(${entity.name}Dlg.class.getName());
+
+	protected Object result;
+	protected Shell shell;
+#foreach( $field in $entity.nonKeyAttributes )
+    private Text txt$field.databaseName;
+#end
+
+    public ${entity.name} obj${entity.name};
+    Button btnNewButtonSave${entity.name};
+
+    public int intTypeDlg${entity.name};
+	public static final int TYPE_DLG_VIEW = 1;
+	public static final int TYPE_DLG_EDIT = 2;
+
+	/**
+	 * Create the dialog.
+	 * @param parent
+	 * @param style
+	 */
+	public ${entity.name}Dlg(Shell parent, int style) {
+		super(parent, style);
+		setText("SWT Dialog");
+	}
+
+	/**
+	 * Open the dialog.
+	 * @return the result
+	 */
+	public Object open() {
+		createContents();
+		shell.open();
+		shell.layout();
+		Display display = getParent().getDisplay();
+        //
+        Monitor primary = display.getPrimaryMonitor();
+		Rectangle bounds = primary.getBounds();
+		Rectangle rect = shell.getBounds();
+		int x = bounds.x + (bounds.width - rect.width) / 2;
+		int y = bounds.y + (bounds.height - rect.height) / 2;
+		shell.setLocation(x, y);
+        //
+		while (!shell.isDisposed()) {
+			if (!display.readAndDispatch()) {
+				display.sleep();
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Create contents of the dialog.
+	 */
+	private void createContents() {
+		shell = new Shell(getParent(), SWT.SHELL_TRIM | SWT.BORDER | SWT.PRIMARY_MODAL);
+		shell.setSize(450, 300);
+		shell.setText("${entity.name}Dlg EDIT/NEW");
+		shell.setLayout(new GridLayout(2, false));
+        shell.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if(e.keyCode==SWT.ESC){
+					obj${entity.name} = null;
+				}
+			}
+		});
+        
+#foreach( $field in $entity.nonKeyAttributes )
+		Label lbltxt${field.databaseName} = new Label(shell, SWT.NONE);
+        lbltxt${field.databaseName}.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxt${field.databaseName}.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxt${field.databaseName}.setText("${field.databaseName} :");
+		
+		txt${field.databaseName} = new Text(shell, SWT.BORDER);
+        txt${field.databaseName}.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txt${field.databaseName}.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txt${field.databaseName}.setText("${field.databaseName}");
+        txt${field.databaseName}.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPress${entity.name}Dlg(e);
+			}
+		});
+#end		
+		new Label(shell, SWT.NONE);
+		btnNewButtonSave${entity.name} = new Button(shell, SWT.NONE);
+		btnNewButtonSave${entity.name}.setImage(SWTResourceManager.getImage(${entity.name}Dlg.class, "/png/file-2x.png"));
+        btnNewButtonSave${entity.name}.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.BOLD));
+		btnNewButtonSave${entity.name}.setText("Save");
+        
+        btnNewButtonSave${entity.name}.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+                save${entity.name}Dlg();
+			}
+		});
+        
+        load${entity.name}DlgData();
+	}
+
+    private void save${entity.name}Dlg(){
+        if(intTypeDlg${entity.name}==TYPE_DLG_VIEW){
+            return;
+        }
+        
+        if(obj${entity.name} == null){
+            obj${entity.name} = new ${entity.name}();
+        }
+        if(obj${entity.name}!=null){
+#foreach( $field in $entity.nonKeyAttributes )
+        // $field.formattedType(10) = $field.formattedType(10).contains("Integer")
+    #if ($field.formattedType(10).contains("String") == true )
+        obj${entity.name}.${field.databaseName} = txt${field.databaseName}.getText();
+    #elseif ($field.formattedType(10).contains("Integer")==true )
+        obj${entity.name}.${field.databaseName} = Utils.getInt( txt${field.databaseName}.getText() );
+    #else
+        // obj${entity.name}.${field.databaseName} = txt${field.databaseName}.getText();
+    #end
+#end		
+        }
+        if(DbHelper.checkPhanQuyen(DbHelper.UPDATE, "${entity.databaseTable}")==false){
+            logger.info("DON'T HAVE UPDATE RIGHT");
+        }
+        else if(DbHelper.checkPhanQuyen(DbHelper.INSERT, "${entity.databaseTable}")==false){
+            logger.info("DON'T HAVE INSERT RIGHT");
+        }        
+        else{
+            obj${entity.name}.insert();
+        }
+        shell.close();
+    }
+    
+    public void set${entity.name}DlgData(${entity.name} obj) {
+		this.obj${entity.name} = obj;
+	}
+    
+    public void load${entity.name}DlgData(){
+        if(intTypeDlg${entity.name}==TYPE_DLG_VIEW){
+            btnNewButtonSave${entity.name}.setEnabled(false);
+        }
+        else{
+            btnNewButtonSave${entity.name}.setEnabled(true);
+        }
+
+        if(DbHelper.checkPhanQuyen(DbHelper.READ, "${entity.databaseTable}")==false){
+            logger.info("DON'T HAVE READ RIGHT");
+            return;
+        }
+        if(obj${entity.name} != null){
+#foreach( $field in $entity.nonKeyAttributes )
+            if(obj${entity.name}.${field.databaseName}==null)
+                txt${field.databaseName}.setText("");
+            else
+                txt${field.databaseName}.setText(""+obj${entity.name}.${field.databaseName}.toString());
+#end		
+        }
+    }
+    
+    protected void keyPress${entity.name}Dlg(KeyEvent e) {
+		if(e.keyCode==13){
+			save${entity.name}Dlg();
+		}
+		
+	}
+}
