@@ -41,6 +41,7 @@ public class DbHelper {
 	public static Hashtable<String, Users> hashDataUsers = new Hashtable<>();
 	public static Hashtable<String, Users> hashDataUsersMaCCHN = new Hashtable<>();
 
+	
 	public DbHelper(){
 		
 	}
@@ -129,6 +130,7 @@ public class DbHelper {
 			return "";
 		}
 	}
+	
 	public static String getMAKHOA(String comboBoxText){
 		//logger.info("getMAKHOA "+comboBoxText);
 		String madvktarr[] = comboBoxText.split("-");
