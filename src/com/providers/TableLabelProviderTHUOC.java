@@ -26,16 +26,16 @@ public class TableLabelProviderTHUOC extends LabelProvider implements ITableLabe
 				return obj.TEN_THUOC;
 			}
 			else if(columnIndex==2){
-				return obj.HOATCHAT;
+				return obj.MA_THUOC;
 			}
 			else if(columnIndex==3){
-				return obj.DONGGOI;
+				return obj.HAM_LUONG;
 			}
 			else if(columnIndex==4){
-				return obj.HAMLUONG;
+				return obj.DUONG_DUNG;
 			}
 			else if(columnIndex==5){
-				return ""+(obj.SOLUONG==null?"1":obj.SOLUONG.intValue());
+				return ""+(obj.SO_LUONG==null?"1":obj.SO_LUONG.intValue());
 			}
 			else if(columnIndex==6){
 				return ""+(obj.STS==null?"1":Utils.getTinhTrangThuoc(obj.STS));
@@ -45,6 +45,9 @@ public class TableLabelProviderTHUOC extends LabelProvider implements ITableLabe
 			}
 			else if(columnIndex==8){
 				return ""+(obj.TT_BH==null?"0":obj.TT_BH.intValue());
+			}
+			else if(columnIndex==9){
+				return ""+(obj.LIEU_DUNG);
 			}
 			else{
 				return "";

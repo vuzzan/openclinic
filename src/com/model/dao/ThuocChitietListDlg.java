@@ -220,13 +220,13 @@ public class ThuocChitietListDlg extends Dialog {
 		tbTableColumnThuocChitietTHUOC_ID.setWidth(100);
 		tbTableColumnThuocChitietTHUOC_ID.setText("THUOC_ID");
 
-		TableColumn tbTableColumnThuocChitietSOLUONG = new TableColumn(tableThuocChitiet, SWT.RIGHT);
-		tbTableColumnThuocChitietSOLUONG.setWidth(100);
-		tbTableColumnThuocChitietSOLUONG.setText("SOLUONG");
+		TableColumn tbTableColumnThuocChitietMA_THUOC = new TableColumn(tableThuocChitiet, SWT.LEFT);
+		tbTableColumnThuocChitietMA_THUOC.setWidth(100);
+		tbTableColumnThuocChitietMA_THUOC.setText("MA_THUOC");
 
-		TableColumn tbTableColumnThuocChitietDON_GIA = new TableColumn(tableThuocChitiet, SWT.RIGHT);
-		tbTableColumnThuocChitietDON_GIA.setWidth(100);
-		tbTableColumnThuocChitietDON_GIA.setText("DON_GIA");
+		TableColumn tbTableColumnThuocChitietMA_NHOM = new TableColumn(tableThuocChitiet, SWT.LEFT);
+		tbTableColumnThuocChitietMA_NHOM.setWidth(100);
+		tbTableColumnThuocChitietMA_NHOM.setText("MA_NHOM");
 
 		TableColumn tbTableColumnThuocChitietTEN_THUOC = new TableColumn(tableThuocChitiet, SWT.LEFT);
 		tbTableColumnThuocChitietTEN_THUOC.setWidth(100);
@@ -236,30 +236,54 @@ public class ThuocChitietListDlg extends Dialog {
 		tbTableColumnThuocChitietDON_VI_TINH.setWidth(100);
 		tbTableColumnThuocChitietDON_VI_TINH.setText("DON_VI_TINH");
 
-		TableColumn tbTableColumnThuocChitietHOATCHAT = new TableColumn(tableThuocChitiet, SWT.LEFT);
-		tbTableColumnThuocChitietHOATCHAT.setWidth(100);
-		tbTableColumnThuocChitietHOATCHAT.setText("HOATCHAT");
+		TableColumn tbTableColumnThuocChitietHAM_LUONG = new TableColumn(tableThuocChitiet, SWT.LEFT);
+		tbTableColumnThuocChitietHAM_LUONG.setWidth(100);
+		tbTableColumnThuocChitietHAM_LUONG.setText("HAM_LUONG");
 
-		TableColumn tbTableColumnThuocChitietHAMLUONG = new TableColumn(tableThuocChitiet, SWT.LEFT);
-		tbTableColumnThuocChitietHAMLUONG.setWidth(100);
-		tbTableColumnThuocChitietHAMLUONG.setText("HAMLUONG");
+		TableColumn tbTableColumnThuocChitietDUONG_DUNG = new TableColumn(tableThuocChitiet, SWT.LEFT);
+		tbTableColumnThuocChitietDUONG_DUNG.setWidth(100);
+		tbTableColumnThuocChitietDUONG_DUNG.setText("DUONG_DUNG");
 
-		TableColumn tbTableColumnThuocChitietDONGGOI = new TableColumn(tableThuocChitiet, SWT.LEFT);
-		tbTableColumnThuocChitietDONGGOI.setWidth(100);
-		tbTableColumnThuocChitietDONGGOI.setText("DONGGOI");
+		TableColumn tbTableColumnThuocChitietLIEU_DUNG = new TableColumn(tableThuocChitiet, SWT.LEFT);
+		tbTableColumnThuocChitietLIEU_DUNG.setWidth(100);
+		tbTableColumnThuocChitietLIEU_DUNG.setText("LIEU_DUNG");
+
+		TableColumn tbTableColumnThuocChitietSO_DANG_KY = new TableColumn(tableThuocChitiet, SWT.LEFT);
+		tbTableColumnThuocChitietSO_DANG_KY.setWidth(100);
+		tbTableColumnThuocChitietSO_DANG_KY.setText("SO_DANG_KY");
+
+		TableColumn tbTableColumnThuocChitietSO_LUONG = new TableColumn(tableThuocChitiet, SWT.RIGHT);
+		tbTableColumnThuocChitietSO_LUONG.setWidth(100);
+		tbTableColumnThuocChitietSO_LUONG.setText("SO_LUONG");
+
+		TableColumn tbTableColumnThuocChitietDON_GIA = new TableColumn(tableThuocChitiet, SWT.RIGHT);
+		tbTableColumnThuocChitietDON_GIA.setWidth(100);
+		tbTableColumnThuocChitietDON_GIA.setText("DON_GIA");
+
+		TableColumn tbTableColumnThuocChitietTHANH_TIEN = new TableColumn(tableThuocChitiet, SWT.RIGHT);
+		tbTableColumnThuocChitietTHANH_TIEN.setWidth(100);
+		tbTableColumnThuocChitietTHANH_TIEN.setText("THANH_TIEN");
+
+		TableColumn tbTableColumnThuocChitietMA_KHOA = new TableColumn(tableThuocChitiet, SWT.LEFT);
+		tbTableColumnThuocChitietMA_KHOA.setWidth(100);
+		tbTableColumnThuocChitietMA_KHOA.setText("MA_KHOA");
+
+		TableColumn tbTableColumnThuocChitietMA_BAC_SI = new TableColumn(tableThuocChitiet, SWT.LEFT);
+		tbTableColumnThuocChitietMA_BAC_SI.setWidth(100);
+		tbTableColumnThuocChitietMA_BAC_SI.setText("MA_BAC_SI");
+
+		TableColumn tbTableColumnThuocChitietMA_BENH = new TableColumn(tableThuocChitiet, SWT.LEFT);
+		tbTableColumnThuocChitietMA_BENH.setWidth(100);
+		tbTableColumnThuocChitietMA_BENH.setText("MA_BENH");
+
+		TableColumn tbTableColumnThuocChitietMA_PTTT = new TableColumn(tableThuocChitiet, SWT.RIGHT);
+		tbTableColumnThuocChitietMA_PTTT.setWidth(100);
+		tbTableColumnThuocChitietMA_PTTT.setText("MA_PTTT");
 
 
 		TableColumn tbTableColumnThuocChitietTYLE_TT = new TableColumn(tableThuocChitiet, SWT.NONE);
 		tbTableColumnThuocChitietTYLE_TT.setWidth(100);
 		tbTableColumnThuocChitietTYLE_TT.setText("TYLE_TT");
-
-		TableColumn tbTableColumnThuocChitietKHO_NAME = new TableColumn(tableThuocChitiet, SWT.LEFT);
-		tbTableColumnThuocChitietKHO_NAME.setWidth(100);
-		tbTableColumnThuocChitietKHO_NAME.setText("KHO_NAME");
-
-		TableColumn tbTableColumnThuocChitietTHANH_TIEN = new TableColumn(tableThuocChitiet, SWT.RIGHT);
-		tbTableColumnThuocChitietTHANH_TIEN.setWidth(100);
-		tbTableColumnThuocChitietTHANH_TIEN.setText("THANH_TIEN");
 
 		TableColumn tbTableColumnThuocChitietCT_ID = new TableColumn(tableThuocChitiet, SWT.RIGHT);
 		tbTableColumnThuocChitietCT_ID.setWidth(100);
@@ -277,9 +301,9 @@ public class ThuocChitietListDlg extends Dialog {
 		tbTableColumnThuocChitietTT_NB.setWidth(100);
 		tbTableColumnThuocChitietTT_NB.setText("TT_NB");
 
-		TableColumn tbTableColumnThuocChitietMA_BENH = new TableColumn(tableThuocChitiet, SWT.LEFT);
-		tbTableColumnThuocChitietMA_BENH.setWidth(100);
-		tbTableColumnThuocChitietMA_BENH.setText("MA_BENH");
+		TableColumn tbTableColumnThuocChitietKHO_NAME = new TableColumn(tableThuocChitiet, SWT.LEFT);
+		tbTableColumnThuocChitietKHO_NAME.setWidth(100);
+		tbTableColumnThuocChitietKHO_NAME.setText("KHO_NAME");
 
 		TableColumn tbTableColumnThuocChitietSTS = new TableColumn(tableThuocChitiet, SWT.RIGHT);
 		tbTableColumnThuocChitietSTS.setWidth(100);
@@ -360,13 +384,18 @@ public class ThuocChitietListDlg extends Dialog {
 		String sql = "select * from thuoc_chitiet WHERE STS<> "+DbHelper.DELETE_STATUS+" ";
 		if(searchString.length()>0){
             sql += " and ( 0 ";
+        sql += " or LOWER(MA_THUOC) like '%"+searchString+"%'";
+        sql += " or LOWER(MA_NHOM) like '%"+searchString+"%'";
         sql += " or LOWER(TEN_THUOC) like '%"+searchString+"%'";
         sql += " or LOWER(DON_VI_TINH) like '%"+searchString+"%'";
-        sql += " or LOWER(HOATCHAT) like '%"+searchString+"%'";
-        sql += " or LOWER(HAMLUONG) like '%"+searchString+"%'";
-        sql += " or LOWER(DONGGOI) like '%"+searchString+"%'";
-        sql += " or LOWER(KHO_NAME) like '%"+searchString+"%'";
+        sql += " or LOWER(HAM_LUONG) like '%"+searchString+"%'";
+        sql += " or LOWER(DUONG_DUNG) like '%"+searchString+"%'";
+        sql += " or LOWER(LIEU_DUNG) like '%"+searchString+"%'";
+        sql += " or LOWER(SO_DANG_KY) like '%"+searchString+"%'";
+        sql += " or LOWER(MA_KHOA) like '%"+searchString+"%'";
+        sql += " or LOWER(MA_BAC_SI) like '%"+searchString+"%'";
         sql += " or LOWER(MA_BENH) like '%"+searchString+"%'";
+        sql += " or LOWER(KHO_NAME) like '%"+searchString+"%'";
             sql += " )";
         }
 		try  {

@@ -78,7 +78,7 @@ public class FormThuocChitietListDlg extends Dialog {
 				} else if (columnIndex == 4) {
 					return "" + obj.DON_VI_TINH;
 				} else if (columnIndex == 5) {
-					return "" + obj.SOLUONG;
+					return "" + obj.SO_LUONG;
 				} else if (columnIndex == 6) {
 					return "" + obj.DON_GIA;
 				} else if (columnIndex == 7) {
@@ -86,11 +86,11 @@ public class FormThuocChitietListDlg extends Dialog {
 				} else if (columnIndex == 8) {
 					return "" + obj.STS;
 				} else if (columnIndex == 9) {
-					return "" + obj.HOATCHAT;
+					return "" + obj.MA_THUOC;
 				} else if (columnIndex == 10) {
-					return "" + obj.HAMLUONG;
+					return "" + obj.HAM_LUONG;
 				} else if (columnIndex == 11) {
-					return "" + obj.DONGGOI;
+					return "" + obj.DUONG_DUNG;
 				}
 			}
 			return "";
@@ -180,8 +180,8 @@ public class FormThuocChitietListDlg extends Dialog {
 				// UPDATE KHO THUOC
 				CtNhapthuoc objCtNhapthuoc = CtNhapthuoc.load(obj.CT_ID);
 				logger.info("======== BEGIN UPDATE KHO THUOC: " + objCtNhapthuoc.toString());
-				objCtNhapthuoc.SL_OUTSTANDING = objCtNhapthuoc.SL_OUTSTANDING - obj.SOLUONG;
-				objCtNhapthuoc.SL_DADUNG  = objCtNhapthuoc.SL_DADUNG + obj.SOLUONG;
+				objCtNhapthuoc.SL_OUTSTANDING = objCtNhapthuoc.SL_OUTSTANDING - obj.SO_LUONG;
+				objCtNhapthuoc.SL_DADUNG  = objCtNhapthuoc.SL_DADUNG + obj.SO_LUONG;
 				objCtNhapthuoc.update();
 				logger.info("======== END   UPDATE KHO THUOC: " + objCtNhapthuoc.toString());
 			}

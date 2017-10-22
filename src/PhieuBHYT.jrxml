@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.3.1.final using JasperReports Library version 6.3.1  -->
-<!-- 2017-10-19T10:46:20 -->
+<!-- 2017-10-21T17:01:35 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="PhieuBenhNhan" pageWidth="421" pageHeight="595" whenNoDataType="NoPages" columnWidth="381" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isIgnorePagination="true" uuid="3807cd06-b690-491a-afdb-4d5ce8b0f998">
 	<property name="com.jaspersoft.studio.unit." value="pixel"/>
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
@@ -91,13 +91,10 @@
 		<field name="STT" class="java.lang.Integer"/>
 		<field name="MA_LK" class="java.lang.Integer"/>
 		<field name="THUOC_ID" class="java.lang.Integer"/>
-		<field name="SOLUONG" class="java.lang.Integer"/>
+		<field name="SO_LUONG" class="java.lang.Integer"/>
 		<field name="DON_GIA" class="java.lang.Integer"/>
 		<field name="TEN_THUOC" class="java.lang.String"/>
 		<field name="DON_VI_TINH" class="java.lang.String"/>
-		<field name="HOATCHAT" class="java.lang.String"/>
-		<field name="HAMLUONG" class="java.lang.String"/>
-		<field name="DONGGOI" class="java.lang.String"/>
 		<field name="TYLE_TT" class="java.lang.Float"/>
 		<field name="THANH_TIEN" class="java.lang.Integer"/>
 		<field name="TT_BH" class="java.lang.Integer"/>
@@ -1558,7 +1555,7 @@
 								<textElement textAlignment="Center">
 									<font fontName="Times New Roman" size="10"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{SOLUONG}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{SO_LUONG}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
