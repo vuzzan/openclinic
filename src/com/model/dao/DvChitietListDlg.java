@@ -252,6 +252,10 @@ public class DvChitietListDlg extends Dialog {
 		tbTableColumnDvChitietTHANH_TIEN.setWidth(100);
 		tbTableColumnDvChitietTHANH_TIEN.setText("THANH_TIEN");
 
+		TableColumn tbTableColumnDvChitietTHANH_TIEN2 = new TableColumn(tableDvChitiet, SWT.RIGHT);
+		tbTableColumnDvChitietTHANH_TIEN2.setWidth(100);
+		tbTableColumnDvChitietTHANH_TIEN2.setText("THANH_TIEN2");
+
 		TableColumn tbTableColumnDvChitietTT_BH = new TableColumn(tableDvChitiet, SWT.RIGHT);
 		tbTableColumnDvChitietTT_BH.setWidth(100);
 		tbTableColumnDvChitietTT_BH.setText("TT_BH");

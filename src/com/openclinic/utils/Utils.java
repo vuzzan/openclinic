@@ -15,6 +15,8 @@ import org.joda.time.LocalDateTime;
 import org.joda.time.Period;
 import org.joda.time.format.DateTimeFormatter;
 
+import com.DbHelper;
+import com.model.dao.Mabenh;
 import com.openclinic.Main;
 
 public class Utils {
@@ -151,13 +153,14 @@ public class Utils {
 		if(s==null || s.length()==0){
 			return "";
 		}
+		s=s.replaceAll("\\s{2,}", " ").trim();
+
 		final StringBuilder result = new StringBuilder(s.length());
 		String[] words = s.split("\\s");
 		for(int i=0,l=words.length;i<l;++i) {
 		  if(i>0) result.append(" ");      
 		  result.append(Character.toUpperCase(words[i].charAt(0)))
 		        .append(words[i].substring(1));
-
 		}
 		return result.toString();
 	}
@@ -280,6 +283,5 @@ public class Utils {
 		//
 		return beginStatus;
 	}
-
 
 }

@@ -260,10 +260,6 @@ public class BenhNhanListDlg extends Dialog {
 		tbTableColumnBenhNhanTHOIDIEM_NAMNAM.setWidth(100);
 		tbTableColumnBenhNhanTHOIDIEM_NAMNAM.setText("THOIDIEM_NAMNAM");
 
-		TableColumn tbTableColumnBenhNhanNGHIA_TEST = new TableColumn(tableBenhNhan, SWT.LEFT);
-		tbTableColumnBenhNhanNGHIA_TEST.setWidth(100);
-		tbTableColumnBenhNhanNGHIA_TEST.setText("NGHIA_TEST");
-
 		TableColumn tbTableColumnBenhNhanCHUOI_KIEM_TRA = new TableColumn(tableBenhNhan, SWT.LEFT);
 		tbTableColumnBenhNhanCHUOI_KIEM_TRA.setWidth(100);
 		tbTableColumnBenhNhanCHUOI_KIEM_TRA.setText("CHUOI_KIEM_TRA");
@@ -368,7 +364,6 @@ public class BenhNhanListDlg extends Dialog {
         sql += " or LOWER(MA_QUAN_LY) like '%"+searchString+"%'";
         sql += " or LOWER(TEN_CHA_ME) like '%"+searchString+"%'";
         sql += " or LOWER(THOIDIEM_NAMNAM) like '%"+searchString+"%'";
-        sql += " or LOWER(NGHIA_TEST) like '%"+searchString+"%'";
         sql += " or LOWER(CHUOI_KIEM_TRA) like '%"+searchString+"%'";
             sql += " )";
         }

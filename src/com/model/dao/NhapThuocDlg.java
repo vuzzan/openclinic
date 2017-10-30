@@ -33,10 +33,15 @@ public class NhapThuocDlg extends Dialog {
     private Text txtV_ID;
     private Text txtKHO_ID;
     private Text txtVENDOR_NAME;
+    private Text txtVENDOR_ADDR;
     private Text txtNGAY_NHAP;
+    private Text txtNGAY_HD;
     private Text txtTENKHO;
-    private Text txtHOADON;
+    private Text txtSO_HOA_DON;
+    private Text txtKH_HOA_DON;
     private Text txtTONGCONG;
+    private Text txtTONGCONG_VAT;
+    private Text txtVAT;
     private Text txtSTS;
 
     public NhapThuoc objNhapThuoc;
@@ -86,7 +91,7 @@ public class NhapThuocDlg extends Dialog {
 	 */
 	private void createContents() {
 		shell = new Shell(getParent(), SWT.SHELL_TRIM | SWT.BORDER | SWT.PRIMARY_MODAL);
-		shell.setSize(450, 300);
+		shell.setSize(450, 421);
 		shell.setText("NhapThuocDlg EDIT/NEW");
 		shell.setLayout(new GridLayout(2, false));
         shell.addKeyListener(new KeyAdapter() {
@@ -143,6 +148,21 @@ public class NhapThuocDlg extends Dialog {
 				keyPressNhapThuocDlg(e);
 			}
 		});
+		Label lbltxtVENDOR_ADDR = new Label(shell, SWT.NONE);
+        lbltxtVENDOR_ADDR.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtVENDOR_ADDR.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtVENDOR_ADDR.setText("VENDOR_ADDR :");
+		
+		txtVENDOR_ADDR = new Text(shell, SWT.BORDER);
+        txtVENDOR_ADDR.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtVENDOR_ADDR.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtVENDOR_ADDR.setText("VENDOR_ADDR");
+        txtVENDOR_ADDR.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressNhapThuocDlg(e);
+			}
+		});
 		Label lbltxtNGAY_NHAP = new Label(shell, SWT.NONE);
         lbltxtNGAY_NHAP.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		lbltxtNGAY_NHAP.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
@@ -153,6 +173,21 @@ public class NhapThuocDlg extends Dialog {
 		txtNGAY_NHAP.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtNGAY_NHAP.setText("NGAY_NHAP");
         txtNGAY_NHAP.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressNhapThuocDlg(e);
+			}
+		});
+		Label lbltxtNGAY_HD = new Label(shell, SWT.NONE);
+        lbltxtNGAY_HD.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtNGAY_HD.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtNGAY_HD.setText("NGAY_HD :");
+		
+		txtNGAY_HD = new Text(shell, SWT.BORDER);
+        txtNGAY_HD.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtNGAY_HD.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtNGAY_HD.setText("NGAY_HD");
+        txtNGAY_HD.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				keyPressNhapThuocDlg(e);
@@ -173,16 +208,31 @@ public class NhapThuocDlg extends Dialog {
 				keyPressNhapThuocDlg(e);
 			}
 		});
-		Label lbltxtHOADON = new Label(shell, SWT.NONE);
-        lbltxtHOADON.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
-		lbltxtHOADON.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lbltxtHOADON.setText("HOADON :");
+		Label lbltxtSO_HOA_DON = new Label(shell, SWT.NONE);
+        lbltxtSO_HOA_DON.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtSO_HOA_DON.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtSO_HOA_DON.setText("SO_HOA_DON :");
 		
-		txtHOADON = new Text(shell, SWT.BORDER);
-        txtHOADON.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
-		txtHOADON.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        txtHOADON.setText("HOADON");
-        txtHOADON.addKeyListener(new KeyAdapter() {
+		txtSO_HOA_DON = new Text(shell, SWT.BORDER);
+        txtSO_HOA_DON.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtSO_HOA_DON.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtSO_HOA_DON.setText("SO_HOA_DON");
+        txtSO_HOA_DON.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressNhapThuocDlg(e);
+			}
+		});
+		Label lbltxtKH_HOA_DON = new Label(shell, SWT.NONE);
+        lbltxtKH_HOA_DON.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtKH_HOA_DON.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtKH_HOA_DON.setText("KH_HOA_DON :");
+		
+		txtKH_HOA_DON = new Text(shell, SWT.BORDER);
+        txtKH_HOA_DON.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtKH_HOA_DON.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtKH_HOA_DON.setText("KH_HOA_DON");
+        txtKH_HOA_DON.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				keyPressNhapThuocDlg(e);
@@ -198,6 +248,36 @@ public class NhapThuocDlg extends Dialog {
 		txtTONGCONG.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtTONGCONG.setText("TONGCONG");
         txtTONGCONG.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressNhapThuocDlg(e);
+			}
+		});
+		Label lbltxtTONGCONG_VAT = new Label(shell, SWT.NONE);
+        lbltxtTONGCONG_VAT.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtTONGCONG_VAT.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtTONGCONG_VAT.setText("TONGCONG_VAT :");
+		
+		txtTONGCONG_VAT = new Text(shell, SWT.BORDER);
+        txtTONGCONG_VAT.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtTONGCONG_VAT.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtTONGCONG_VAT.setText("TONGCONG_VAT");
+        txtTONGCONG_VAT.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressNhapThuocDlg(e);
+			}
+		});
+		Label lbltxtVAT = new Label(shell, SWT.NONE);
+        lbltxtVAT.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtVAT.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtVAT.setText("VAT :");
+		
+		txtVAT = new Text(shell, SWT.BORDER);
+        txtVAT.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtVAT.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtVAT.setText("VAT");
+        txtVAT.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				keyPressNhapThuocDlg(e);
@@ -249,14 +329,24 @@ public class NhapThuocDlg extends Dialog {
             objNhapThuoc.KHO_ID = Utils.getInt( txtKHO_ID.getText() );
             // String     = false
             objNhapThuoc.VENDOR_NAME = txtVENDOR_NAME.getText();
+            // String     = false
+            objNhapThuoc.VENDOR_ADDR = txtVENDOR_ADDR.getText();
             // Date       = false
             // objNhapThuoc.NGAY_NHAP = txtNGAY_NHAP.getText();
+            // Date       = false
+            // objNhapThuoc.NGAY_HD = txtNGAY_HD.getText();
             // String     = false
             objNhapThuoc.TENKHO = txtTENKHO.getText();
             // String     = false
-            objNhapThuoc.HOADON = txtHOADON.getText();
+            objNhapThuoc.SO_HOA_DON = txtSO_HOA_DON.getText();
+            // String     = false
+            objNhapThuoc.KH_HOA_DON = txtKH_HOA_DON.getText();
             // Integer    = true
             objNhapThuoc.TONGCONG = Utils.getInt( txtTONGCONG.getText() );
+            // Integer    = true
+            objNhapThuoc.TONGCONG_VAT = Utils.getInt( txtTONGCONG_VAT.getText() );
+            // Integer    = true
+            objNhapThuoc.VAT = Utils.getInt( txtVAT.getText() );
             // Integer    = true
             objNhapThuoc.STS = Utils.getInt( txtSTS.getText() );
             }
@@ -301,22 +391,42 @@ public class NhapThuocDlg extends Dialog {
                 txtVENDOR_NAME.setText("");
             else
                 txtVENDOR_NAME.setText(""+objNhapThuoc.VENDOR_NAME.toString());
+            if(objNhapThuoc.VENDOR_ADDR==null)
+                txtVENDOR_ADDR.setText("");
+            else
+                txtVENDOR_ADDR.setText(""+objNhapThuoc.VENDOR_ADDR.toString());
             if(objNhapThuoc.NGAY_NHAP==null)
                 txtNGAY_NHAP.setText("");
             else
                 txtNGAY_NHAP.setText(""+objNhapThuoc.NGAY_NHAP.toString());
+            if(objNhapThuoc.NGAY_HD==null)
+                txtNGAY_HD.setText("");
+            else
+                txtNGAY_HD.setText(""+objNhapThuoc.NGAY_HD.toString());
             if(objNhapThuoc.TENKHO==null)
                 txtTENKHO.setText("");
             else
                 txtTENKHO.setText(""+objNhapThuoc.TENKHO.toString());
-            if(objNhapThuoc.HOADON==null)
-                txtHOADON.setText("");
+            if(objNhapThuoc.SO_HOA_DON==null)
+                txtSO_HOA_DON.setText("");
             else
-                txtHOADON.setText(""+objNhapThuoc.HOADON.toString());
+                txtSO_HOA_DON.setText(""+objNhapThuoc.SO_HOA_DON.toString());
+            if(objNhapThuoc.KH_HOA_DON==null)
+                txtKH_HOA_DON.setText("");
+            else
+                txtKH_HOA_DON.setText(""+objNhapThuoc.KH_HOA_DON.toString());
             if(objNhapThuoc.TONGCONG==null)
                 txtTONGCONG.setText("");
             else
                 txtTONGCONG.setText(""+objNhapThuoc.TONGCONG.toString());
+            if(objNhapThuoc.TONGCONG_VAT==null)
+                txtTONGCONG_VAT.setText("");
+            else
+                txtTONGCONG_VAT.setText(""+objNhapThuoc.TONGCONG_VAT.toString());
+            if(objNhapThuoc.VAT==null)
+                txtVAT.setText("");
+            else
+                txtVAT.setText(""+objNhapThuoc.VAT.toString());
             if(objNhapThuoc.STS==null)
                 txtSTS.setText("");
             else

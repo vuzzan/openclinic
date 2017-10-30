@@ -52,6 +52,13 @@ public class DatePicker extends org.eclipse.swt.widgets.Composite {
 
 	public DatePicker(Composite parent, int style) {
 		super(parent, style);
+		addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusGained(FocusEvent e) {
+				dayText.selectAll();
+				dayText.forceFocus();
+			}
+		});
 		setToolTipText("Bấm qua lại để chỉnh ngày tháng năm, gõ vào Năm số tuổi");
 		initialize();
 	}
@@ -63,6 +70,7 @@ public class DatePicker extends org.eclipse.swt.widgets.Composite {
 		gridData100.widthHint = 40;
 		
 		GridData gridData = new org.eclipse.swt.layout.GridData();
+		gridData.widthHint = 20;
 		gridData.horizontalAlignment = org.eclipse.swt.layout.GridData.END;
 		gridData.verticalAlignment = org.eclipse.swt.layout.GridData.FILL;
 		
@@ -74,7 +82,7 @@ public class DatePicker extends org.eclipse.swt.widgets.Composite {
 		gridLayout.marginHeight = 0;
 		gridLayout.makeColumnsEqualWidth = false;
 		this.setLayout(gridLayout);
-		setSize(new org.eclipse.swt.graphics.Point(95, 28));
+		setSize(new Point(121, 28));
 		//
 		dayText = new Text(this, SWT.BORDER);
 		dayText.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_YELLOW));
@@ -88,6 +96,14 @@ public class DatePicker extends org.eclipse.swt.widgets.Composite {
 				if(Character.isDigit(e.character)==false){
 					if(e.keyCode==SWT.ARROW_RIGHT){
 						monthText.forceFocus();
+					}
+					else if(e.keyCode==SWT.ARROW_UP){
+						int val = Utils.getInt( dayText.getText() );
+						dayText.setText(""+(val<=1?1:(val-1)));
+					}
+					else if(e.keyCode==SWT.ARROW_DOWN){
+						int val = Utils.getInt( dayText.getText() );
+						dayText.setText(""+(val>=31?31:(val+1)));
 					}
 					else if(e.keyCode=='m' || e.keyCode=='M' ){
 						monthText.forceFocus();
@@ -132,7 +148,7 @@ public class DatePicker extends org.eclipse.swt.widgets.Composite {
 		//
 		monthText = new Text(this, SWT.BORDER);
 		monthText.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_YELLOW));
-		monthText.setLayoutData(gridData1);
+		monthText.setLayoutData(gridData);
 		monthText.setText(""+month);
 		monthText.setTextLimit(2);
 		monthText.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
@@ -145,6 +161,14 @@ public class DatePicker extends org.eclipse.swt.widgets.Composite {
 					}
 					else if(e.keyCode==SWT.ARROW_RIGHT){
 						yearText.forceFocus();
+					}
+					else if(e.keyCode==SWT.ARROW_UP){
+						int val = Utils.getInt( monthText.getText() );
+						monthText.setText(""+(val<=1?1:(val-1)));
+					}
+					else if(e.keyCode==SWT.ARROW_DOWN){
+						int val = Utils.getInt( monthText.getText() );
+						monthText.setText(""+(val>=12?12:(val+1)));
 					}
 					else if(e.keyCode=='d' || e.keyCode=='D' ){
 						dayText.forceFocus();
@@ -200,6 +224,14 @@ public class DatePicker extends org.eclipse.swt.widgets.Composite {
 					}
 					else if(e.keyCode==SWT.ARROW_RIGHT){
 						dayText.forceFocus();
+					}
+					else if(e.keyCode==SWT.ARROW_UP){
+						int val = Utils.getInt( yearText.getText() );
+						yearText.setText(""+(val-1));
+					}
+					else if(e.keyCode==SWT.ARROW_DOWN){
+						int val = Utils.getInt( yearText.getText() );
+						yearText.setText(""+(val+1));
 					}
 					else if(e.keyCode=='m' || e.keyCode=='M' ){
 						monthText.forceFocus();
@@ -290,7 +322,7 @@ public class DatePicker extends org.eclipse.swt.widgets.Composite {
 				catch(Exception ex){
 				}
 				updateDateText();
-				System.out.println("LOST YEAR");
+				//System.out.println("LOST YEAR");
 				getParent().notifyListeners(SWT.KeyDown, new Event());
 			}
 		});
@@ -344,6 +376,9 @@ public class DatePicker extends org.eclipse.swt.widgets.Composite {
 	public void setText(String strDate) {
 		setDate(strDate);
 	}
+	public void setText(Date objDate) {
+		setDate(Utils.getDatetime(objDate, "dd/MM/yyyy"));
+	}
 	public int getTuoi(){
 		return toMonth()/12;
 	}
@@ -353,7 +388,7 @@ public class DatePicker extends org.eclipse.swt.widgets.Composite {
 		}
 		//
 		//
-		if(strDate.trim().length() == 8 ){
+		if(strDate.trim().length() == 8 && strDate.indexOf("/")==-1){
 			// 20161001 format
 			int dt[] = Utils.getDateTime(strDate, "yyyyMMdd");
 			day 	= dt[0];

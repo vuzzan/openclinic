@@ -237,6 +237,10 @@ public class CtNhapthuocListDlg extends Dialog {
 		tbTableColumnCtNhapthuocHANDUNG.setWidth(100);
 		tbTableColumnCtNhapthuocHANDUNG.setText("HANDUNG");
 
+		TableColumn tbTableColumnCtNhapthuocLOT_ID = new TableColumn(tableCtNhapthuoc, SWT.LEFT);
+		tbTableColumnCtNhapthuocLOT_ID.setWidth(100);
+		tbTableColumnCtNhapthuocLOT_ID.setText("LOT_ID");
+
 		TableColumn tbTableColumnCtNhapthuocSOLUONG = new TableColumn(tableCtNhapthuoc, SWT.RIGHT);
 		tbTableColumnCtNhapthuocSOLUONG.setWidth(100);
 		tbTableColumnCtNhapthuocSOLUONG.setText("SOLUONG");
@@ -260,6 +264,10 @@ public class CtNhapthuocListDlg extends Dialog {
 		TableColumn tbTableColumnCtNhapthuocTHANHTIEN = new TableColumn(tableCtNhapthuoc, SWT.RIGHT);
 		tbTableColumnCtNhapthuocTHANHTIEN.setWidth(100);
 		tbTableColumnCtNhapthuocTHANHTIEN.setText("THANHTIEN");
+
+		TableColumn tbTableColumnCtNhapthuocVAT = new TableColumn(tableCtNhapthuoc, SWT.RIGHT);
+		tbTableColumnCtNhapthuocVAT.setWidth(100);
+		tbTableColumnCtNhapthuocVAT.setText("VAT");
 
 		TableColumn tbTableColumnCtNhapthuocSTS = new TableColumn(tableCtNhapthuoc, SWT.RIGHT);
 		tbTableColumnCtNhapthuocSTS.setWidth(100);
@@ -343,6 +351,7 @@ public class CtNhapthuocListDlg extends Dialog {
         sql += " or LOWER(TENKHO) like '%"+searchString+"%'";
         sql += " or LOWER(TENTHUOC) like '%"+searchString+"%'";
         sql += " or LOWER(DONVI) like '%"+searchString+"%'";
+        sql += " or LOWER(LOT_ID) like '%"+searchString+"%'";
             sql += " )";
         }
 		try  {

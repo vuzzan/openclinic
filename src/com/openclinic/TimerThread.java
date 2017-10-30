@@ -11,15 +11,19 @@ public class TimerThread extends Thread {
 		
 		while(isStop == false){
 			//System.out.println("TIMER START............");
-			FormKhamBenhDlg.doSearchBenhNhan(1);
+			if(isStop == false){
+				FormKhamBenhDlg.doSearchBenhNhan(1);
+			}
 			try{
-				//System.out.println("TIMER WAIT............");
+				//System.out.println("TIMER WAIT............"+timer);
 				Thread.sleep(timer);
+				//System.out.println("TIMER WAIT............END");
 			}
 			catch(Exception ee){
-				
+				//
 			}
 		}
+		//System.out.println("TIMER START. EXIST");
 	}
 
 }

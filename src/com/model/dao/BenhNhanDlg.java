@@ -43,7 +43,6 @@ public class BenhNhanDlg extends Dialog {
     private Text txtTEN_CHA_ME;
     private Text txtMA_DT_SONG;
     private Text txtTHOIDIEM_NAMNAM;
-    private Text txtNGHIA_TEST;
     private Text txtCHUOI_KIEM_TRA;
     private Text txtDATE_ADD;
     private Text txtLAST_EDIT;
@@ -96,7 +95,7 @@ public class BenhNhanDlg extends Dialog {
 	 */
 	private void createContents() {
 		shell = new Shell(getParent(), SWT.SHELL_TRIM | SWT.BORDER | SWT.PRIMARY_MODAL);
-		shell.setSize(450, 509);
+		shell.setSize(450, 300);
 		shell.setText("BenhNhanDlg EDIT/NEW");
 		shell.setLayout(new GridLayout(2, false));
         shell.addKeyListener(new KeyAdapter() {
@@ -298,21 +297,6 @@ public class BenhNhanDlg extends Dialog {
 		txtTHOIDIEM_NAMNAM.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtTHOIDIEM_NAMNAM.setText("THOIDIEM_NAMNAM");
         txtTHOIDIEM_NAMNAM.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				keyPressBenhNhanDlg(e);
-			}
-		});
-		Label lbltxtNGHIA_TEST = new Label(shell, SWT.NONE);
-        lbltxtNGHIA_TEST.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
-		lbltxtNGHIA_TEST.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lbltxtNGHIA_TEST.setText("NGHIA_TEST :");
-		
-		txtNGHIA_TEST = new Text(shell, SWT.BORDER);
-        txtNGHIA_TEST.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
-		txtNGHIA_TEST.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        txtNGHIA_TEST.setText("NGHIA_TEST");
-        txtNGHIA_TEST.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				keyPressBenhNhanDlg(e);

@@ -53,14 +53,19 @@ import com.model.dao.Khohang;
 import com.model.dao.KhohangListDlg;
 import com.model.dao.NhapThuoc;
 import com.model.dao.NhapThuocDlg;
+import com.model.dao.Thuoc;
+import com.model.dao.ThuocDlg;
 import com.model.dao.Vendor;
 import com.model.dao.VendorListDlg;
+import com.openclinic.DatePicker;
 import com.openclinic.khambenh.FormCtNhapThuocDlg;
 import com.openclinic.utils.Utils;
 
 import org.eclipse.swt.layout.GridLayout;
 import org.sql2o.Connection;
 import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.ModifyEvent;
 
 public class FormNhapThuocDlg extends Dialog {
 	static Logger logger = LogManager.getLogger(FormNhapThuocDlg.class
@@ -87,6 +92,8 @@ public class FormNhapThuocDlg extends Dialog {
 					return Utils.getMoneyDefault(obj.THANHTIEN);
 				} else if (columnIndex == 5) {
 					return Utils.getDatetimeDefault(obj.HANDUNG);
+				} else if (columnIndex == 6) {
+					return (obj.LOT_ID);
 				}
 				return "";
 			}
@@ -116,22 +123,28 @@ public class FormNhapThuocDlg extends Dialog {
 
 	protected Object result;
 	protected Shell shellNhapThuoc;
-	private Text txtNGAY_NHAP;
-	private Text txtTENKHO;
-	private Text txtHOADON;
 
 	public NhapThuoc objNhapThuoc;
 	protected Khohang objKhohang;
 	private Button btnPrint;
 	private Button btnCancel;
 	private Button btnSave;
-	private static Text txt_VID;
 	protected static Vendor objVendor;
-
-	
+    private DatePicker txtNGAY_HD;
+    private Combo txtTENKHO;
+    private Text txtSO_HOA_DON;
+    private Text txtKH_HOA_DON;
+    private Text txtTONGCONG;
+    private Text txtTONGCONG_VAT;
+    private Text txtVAT;
     public int intTypeDlgNhapThuoc = 2;
 	public static final int TYPE_DLG_VIEW = 1;
 	public static final int TYPE_DLG_EDIT = 2;
+
+    public Thuoc objThuoc;
+	private Combo txtVENDOR_NAME;
+
+	// END ADD THUOC
 	/**
 	 * Create the dialog.
 	 * 
@@ -176,127 +189,169 @@ public class FormNhapThuocDlg extends Dialog {
 	private void createContents() {
 		shellNhapThuoc = new Shell(getParent(), SWT.DIALOG_TRIM | SWT.MIN
 				| SWT.MAX);
-		shellNhapThuoc.setSize(877, 485);
+		shellNhapThuoc.setSize(942, 604);
 		shellNhapThuoc.setText("Nhập Thuốc");
 		shellNhapThuoc.setLayout(new FormLayout());
 
 		Composite compositeTableHeader = new Composite(shellNhapThuoc, SWT.NONE);
-		compositeTableHeader.setLayout(new GridLayout(2, false));
+		compositeTableHeader.setLayout(new GridLayout(6, false));
 		FormData fd_compositeTableHeader = new FormData();
 		fd_compositeTableHeader.top = new FormAttachment(0);
 		fd_compositeTableHeader.left = new FormAttachment(0, 10);
-		fd_compositeTableHeader.right = new FormAttachment(100, -547);
+		fd_compositeTableHeader.right = new FormAttachment(100, -10);
 		compositeTableHeader.setLayoutData(fd_compositeTableHeader);
-		Label lbltxtV_ID = new Label(compositeTableHeader, SWT.NONE);
-		lbltxtV_ID
-				.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
-		lbltxtV_ID.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false,
-				false, 1, 1));
-		lbltxtV_ID.setText("Nhà cung cấp");
-
-		txt_VID = new Text(compositeTableHeader, SWT.BORDER);
-		txt_VID.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.keyCode == 13) {
-					// Search NCC
-					VendorListDlg dlg = new VendorListDlg(shellNhapThuoc, 0);
-					dlg.typeVendorDlg = VendorListDlg.TYPE_DLG_CHOOSEN;
-					dlg.setDataVendor(txt_VID.getText());
-					dlg.open();
-					if (dlg.objVendor != null) {
-						objVendor = dlg.objVendor;
-						txt_VID.setText(objVendor.V_NAME);
-					}
-					//
-				}
+		Label lbltxtVENDOR_NAME = new Label(compositeTableHeader, SWT.NONE);
+		lbltxtVENDOR_NAME.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtVENDOR_NAME.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtVENDOR_NAME.setText("CÔNG TY :");
+		
+		txtVENDOR_NAME = new Combo(compositeTableHeader, SWT.NONE);
+		txtVENDOR_NAME.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				objVendor = DbHelper.hashDataVendor.get(txtVENDOR_NAME.getText());
 			}
 		});
-		txt_VID.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
-		txt_VID.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false,
-				1, 1));
-
-		Label lbltxtNGAY_NHAP = new Label(compositeTableHeader, SWT.NONE);
-		lbltxtNGAY_NHAP.setFont(SWTResourceManager.getFont("Tahoma", 12,
-				SWT.NORMAL));
-		lbltxtNGAY_NHAP.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER,
-				false, false, 1, 1));
-		lbltxtNGAY_NHAP.setText("Ngày nhập");
-
-		txtNGAY_NHAP = new Text(compositeTableHeader, SWT.BORDER);
-		txtNGAY_NHAP.setEditable(false);
-		txtNGAY_NHAP.setFont(SWTResourceManager.getFont("Tahoma", 12,
-				SWT.NORMAL));
-		txtNGAY_NHAP.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
-				false, 1, 1));
-		txtNGAY_NHAP.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				keyPress(e);
-			}
-		});
+		txtVENDOR_NAME.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		Label lbltxtTENKHO = new Label(compositeTableHeader, SWT.NONE);
-		lbltxtTENKHO.setFont(SWTResourceManager.getFont("Tahoma", 12,
-				SWT.NORMAL));
-		lbltxtTENKHO.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false,
-				false, 1, 1));
-		lbltxtTENKHO.setText("Tên kho");
-
-		txtTENKHO = new Text(compositeTableHeader, SWT.BORDER);
-		txtTENKHO.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
-		txtTENKHO.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false,
-				1, 1));
+		lbltxtTENKHO.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtTENKHO.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtTENKHO.setText("TÊN KHO :");
+		
+		txtTENKHO = new Combo(compositeTableHeader, SWT.BORDER);
+		txtTENKHO.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtTENKHO.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		txtTENKHO.setText("TENKHO");
+		txtTENKHO.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				objKhohang = DbHelper.hashDataKhoHang.get(txtTENKHO.getText());
+			}
+		});
 		txtTENKHO.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
-				if (e.keyCode == 13) {
-					// Search NCC
-					KhohangListDlg dlg = new KhohangListDlg(shellNhapThuoc, 0);
-					dlg.typeKhohangDlg = KhohangListDlg.TYPE_DLG_CHOOSEN;
-					dlg.setDataKhohang(txtTENKHO.getText());
-					dlg.open();
-					if (dlg.objKhohang != null) {
-						objKhohang = dlg.objKhohang;
-						txtTENKHO.setText(objKhohang.KHO_NAME);
+				keyPressNhapThuocDlg(e);
+			}
+		});
+		Label lbltxtNGAY_HD = new Label(compositeTableHeader, SWT.NONE);
+		lbltxtNGAY_HD.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtNGAY_HD.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtNGAY_HD.setText("NGÀY HĐ :");
+		
+		txtNGAY_HD = new DatePicker(compositeTableHeader, SWT.BORDER);
+		txtNGAY_HD.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtNGAY_HD.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		txtNGAY_HD.setText("");
+		txtNGAY_HD.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressNhapThuocDlg(e);
+			}
+		});
+		
+		Label lbltxtSO_HOA_DON = new Label(compositeTableHeader, SWT.NONE);
+		lbltxtSO_HOA_DON.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtSO_HOA_DON.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtSO_HOA_DON.setText("SO_HOA_DON :");
+		
+		txtSO_HOA_DON = new Text(compositeTableHeader, SWT.BORDER | SWT.RIGHT);
+		txtSO_HOA_DON.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtSO_HOA_DON.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		txtSO_HOA_DON.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressNhapThuocDlg(e);
+			}
+		});
+		Label lbltxtKH_HOA_DON = new Label(compositeTableHeader, SWT.NONE);
+		lbltxtKH_HOA_DON.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtKH_HOA_DON.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtKH_HOA_DON.setText("KÝ HIỆU HĐ :");
+		
+		txtKH_HOA_DON = new Text(compositeTableHeader, SWT.BORDER | SWT.RIGHT);
+		txtKH_HOA_DON.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtKH_HOA_DON.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		txtKH_HOA_DON.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressNhapThuocDlg(e);
+			}
+		});
+		new Label(compositeTableHeader, SWT.NONE);
+		new Label(compositeTableHeader, SWT.NONE);
+		Label lbltxtTONGCONG = new Label(compositeTableHeader, SWT.NONE);
+		lbltxtTONGCONG.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtTONGCONG.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtTONGCONG.setText("TONGCONG :");
+		
+		txtTONGCONG = new Text(compositeTableHeader, SWT.BORDER | SWT.RIGHT);
+		txtTONGCONG.setEditable(false);
+		txtTONGCONG.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtTONGCONG.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		txtTONGCONG.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressNhapThuocDlg(e);
+			}
+		});
+		Label lbltxtVAT = new Label(compositeTableHeader, SWT.NONE);
+		lbltxtVAT.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtVAT.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtVAT.setText("VAT %:");
+		
+		txtVAT = new Text(compositeTableHeader, SWT.BORDER | SWT.RIGHT);
+		txtVAT.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				int vat = Utils.getInt(txtVAT.getText());
+				if(vat<=0){
+					txtVAT.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
+				}
+				else{
+					txtVAT.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+					//
+					if(objNhapThuoc!=null){
+						doTinhTien();
 					}
 					//
 				}
+						
 			}
 		});
-		Label lbltxtHOADON = new Label(compositeTableHeader, SWT.NONE);
-		lbltxtHOADON.setFont(SWTResourceManager.getFont("Tahoma", 12,
-				SWT.NORMAL));
-		lbltxtHOADON.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false,
-				false, 1, 1));
-		lbltxtHOADON.setText("Số Hóa Đơn");
-
-		txtHOADON = new Text(compositeTableHeader, SWT.BORDER);
-		txtHOADON.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
-		txtHOADON.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false,
-				1, 1));
-		txtHOADON.addKeyListener(new KeyAdapter() {
+		txtVAT.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtVAT.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		txtVAT.setText("10");
+		txtVAT.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
-				keyPress(e);
+				keyPressNhapThuocDlg(e);
+			}
+		});
+		Label lbltxtTONGCONG_VAT = new Label(compositeTableHeader, SWT.NONE);
+		lbltxtTONGCONG_VAT.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtTONGCONG_VAT.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtTONGCONG_VAT.setText("TONGCONG_VAT :");
+		
+		txtTONGCONG_VAT = new Text(compositeTableHeader, SWT.BORDER | SWT.RIGHT);
+		txtTONGCONG_VAT.setEditable(false);
+		txtTONGCONG_VAT.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtTONGCONG_VAT.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		txtTONGCONG_VAT.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressNhapThuocDlg(e);
 			}
 		});
 
 		Composite compositeInShellCtNhapthuoc = new Composite(shellNhapThuoc,
 				SWT.NONE);
-		fd_compositeTableHeader.bottom = new FormAttachment(
-				compositeInShellCtNhapthuoc, -6);
+		fd_compositeTableHeader.bottom = new FormAttachment(100, -482);
 		compositeInShellCtNhapthuoc.setLayout(new BorderLayout(0, 0));
 		FormData fd_compositeInShellCtNhapthuoc = new FormData();
+		fd_compositeInShellCtNhapthuoc.top = new FormAttachment(compositeTableHeader, 6);
 		fd_compositeInShellCtNhapthuoc.left = new FormAttachment(0, 10);
 		fd_compositeInShellCtNhapthuoc.right = new FormAttachment(100, -10);
-		fd_compositeInShellCtNhapthuoc.top = new FormAttachment(0, 153);
 		compositeInShellCtNhapthuoc
 				.setLayoutData(fd_compositeInShellCtNhapthuoc);
-
-		Composite compositeHeaderCtNhapthuoc = new Composite(
-				compositeInShellCtNhapthuoc, SWT.NONE);
-		compositeHeaderCtNhapthuoc.setLayoutData(BorderLayout.NORTH);
-		compositeHeaderCtNhapthuoc.setLayout(new GridLayout(1, false));
+		
 
 		tableViewerCtNhapthuoc = new TableViewer(compositeInShellCtNhapthuoc,
 				SWT.BORDER | SWT.FULL_SELECTION);
@@ -395,6 +450,10 @@ public class FormNhapThuocDlg extends Dialog {
 			}
 		});
 		mntmDeleteCtNhapthuoc.setText("Delete");
+		
+		TableColumn tblclmnLotid = new TableColumn(tableCtNhapthuoc, SWT.NONE);
+		tblclmnLotid.setWidth(107);
+		tblclmnLotid.setText("Số Lô");
 
 		tableViewerCtNhapthuoc
 				.setLabelProvider(new TableLabelProviderCtNhapthuoc());
@@ -402,14 +461,13 @@ public class FormNhapThuocDlg extends Dialog {
 				.setContentProvider(new ContentProviderCtNhapthuoc());
 
 		Composite compositeFooter = new Composite(shellNhapThuoc, SWT.NONE);
-		fd_compositeInShellCtNhapthuoc.bottom = new FormAttachment(100, -76);
+		fd_compositeInShellCtNhapthuoc.bottom = new FormAttachment(compositeFooter, -6);
 		compositeFooter.setLayout(new FormLayout());
 		FormData fd_compositeFooter = new FormData();
+		fd_compositeFooter.bottom = new FormAttachment(100, -10);
+		fd_compositeFooter.top = new FormAttachment(0, 509);
 		fd_compositeFooter.left = new FormAttachment(0, 10);
 		fd_compositeFooter.right = new FormAttachment(100, -10);
-		fd_compositeFooter.top = new FormAttachment(
-				compositeInShellCtNhapthuoc, 6);
-		fd_compositeFooter.bottom = new FormAttachment(100, -10);
 		compositeFooter.setLayoutData(fd_compositeFooter);
 
 		btnSave = new Button(compositeFooter, SWT.NONE);
@@ -460,17 +518,35 @@ public class FormNhapThuocDlg extends Dialog {
 		loadNhapThuocDlgData();
 	}
 
+	protected void keyPressNhapThuocDlg(KeyEvent e) {
+		if(e.keyCode==SWT.F2){
+			saveDlg();
+		}
+		else if(e.keyCode==SWT.F9){
+			printPhieuNhapThuoc();
+		}
+		else if(e.keyCode==SWT.ESC){
+			shellNhapThuoc.close();
+		}
+		
+	}
+
+	private void printPhieuNhapThuoc() {
+		// TODO Auto-generated method stub
+		
+	}
+
 	private void saveDlg() {
 		if(TYPE_DLG_VIEW==intTypeDlgNhapThuoc){
 			return;
 		}
 		if(objVendor==null){
-			txt_VID.forceFocus();
-			txt_VID.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
+			txtVENDOR_NAME.forceFocus();
+			txtVENDOR_NAME.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
 			return;
 		}
 		else{
-			txt_VID.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+			txtVENDOR_NAME.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		}
 		if(objKhohang==null){
 			txtTENKHO.forceFocus();
@@ -480,6 +556,43 @@ public class FormNhapThuocDlg extends Dialog {
 		else{
 			txtTENKHO.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		}
+		if(txtSO_HOA_DON.getText().trim().length()==0){
+			txtSO_HOA_DON.forceFocus();
+			txtSO_HOA_DON.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
+			return;
+		}
+		else{
+			txtSO_HOA_DON.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+		}
+		if(txtKH_HOA_DON.getText().trim().length()==0){
+			txtKH_HOA_DON.forceFocus();
+			txtKH_HOA_DON.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
+			return;
+		}
+		else{
+			txtKH_HOA_DON.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+		}
+		
+		if(Utils.getInt( txtTONGCONG.getText() )<=0){
+			txtTONGCONG.forceFocus();
+			txtTONGCONG.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
+			return;
+		}
+		else{
+			txtTONGCONG.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+		}
+		if(Utils.getInt( txtVAT.getText() )<=0){
+			txtVAT.selectAll();
+			txtVAT.forceFocus();
+			txtVAT.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
+			return;
+		}
+		else{
+			txtVAT.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+		}
+		if(listDataCtNhapthuoc.size()==0){
+			return;
+		}
 		//
 		if (objNhapThuoc == null) {
 			objNhapThuoc = new NhapThuoc();
@@ -487,19 +600,17 @@ public class FormNhapThuocDlg extends Dialog {
 		if (objNhapThuoc != null) {
 			// Integer = true
 			objNhapThuoc.V_ID = objVendor.V_ID;
-			//
 			objNhapThuoc.VENDOR_NAME = objVendor.V_NAME;
+			objNhapThuoc.VENDOR_ADDR = objVendor.V_ADDR;
 			// Date = false
 			objNhapThuoc.NGAY_NHAP = new Date();
+			objNhapThuoc.NGAY_HD = txtNGAY_HD.getDate2().getTime();
 			// String = false
 			objNhapThuoc.TENKHO = txtTENKHO.getText();
+			objNhapThuoc.KHO_ID = objKhohang.KHO_ID;
 			// String = false
-			objNhapThuoc.HOADON = txtHOADON.getText();
-			// Integer = true
-			objNhapThuoc.TONGCONG = 0;
-			for (CtNhapthuoc obj2 : listDataCtNhapthuoc) {
-				objNhapThuoc.TONGCONG += obj2.THANHTIEN;
-			}
+			objNhapThuoc.SO_HOA_DON = txtSO_HOA_DON.getText();
+			objNhapThuoc.KH_HOA_DON = txtKH_HOA_DON.getText();
 			// Integer = true
 			objNhapThuoc.STS = 0;
 		}
@@ -507,8 +618,10 @@ public class FormNhapThuocDlg extends Dialog {
 		//
 		for (CtNhapthuoc obj2 : listDataCtNhapthuoc) {
 			obj2.NT_ID = objNhapThuoc.NT_ID;
+			obj2.V_ID = objNhapThuoc.V_ID;
 			obj2.TENKHO = objNhapThuoc.TENKHO;
-			obj2.V_ID = obj2.V_ID;
+			obj2.VAT = objNhapThuoc.VAT;
+			//
 			obj2.insert();
 		}
 		shellNhapThuoc.close();
@@ -519,16 +632,29 @@ public class FormNhapThuocDlg extends Dialog {
 	}
 
 	public void loadNhapThuocDlgData() {
-		
+		txtVENDOR_NAME.removeAll();
+		for(Vendor obj: DbHelper.listDataVendor){
+			txtVENDOR_NAME.add(obj.V_NAME);
+		}
+		//
+		txtTENKHO.removeAll();
+		for(Khohang obj: DbHelper.listDataKhohang){
+			txtTENKHO.add(obj.KHO_NAME);
+		}
+		//
 		if (objNhapThuoc != null) {
 			//
 			objVendor = Vendor.load(objNhapThuoc.V_ID);
+			//
 			objKhohang = Khohang.load(objNhapThuoc.KHO_ID);
 			//
-			txtNGAY_NHAP.setText("" + objNhapThuoc.NGAY_NHAP.toString());
 			txtTENKHO.setText("" + objNhapThuoc.TENKHO.toString());
-			txtHOADON.setText("" + objNhapThuoc.HOADON.toString());
-			txt_VID.setText("" + objNhapThuoc.VENDOR_NAME.toString());
+			txtSO_HOA_DON.setText("" + objNhapThuoc.SO_HOA_DON.toString());
+			txtVENDOR_NAME.setText("" + objNhapThuoc.VENDOR_NAME.toString());
+			txtTONGCONG.setText("" + objNhapThuoc.TONGCONG.toString());
+			txtTONGCONG_VAT.setText("" + objNhapThuoc.TONGCONG_VAT.toString());
+			txtVAT.setText("" + objNhapThuoc.VAT);
+			txtNGAY_HD.setText(objNhapThuoc.NGAY_HD);
 			//
 			reloadTableCtNhapthuoc();
 			//
@@ -537,13 +663,9 @@ public class FormNhapThuocDlg extends Dialog {
 		if(intTypeDlgNhapThuoc==TYPE_DLG_VIEW){
 			btnSave.setEnabled(false);
 		}
-	}
-
-	protected void keyPress(KeyEvent e) {
-		if (e.keyCode == 13) {
-			saveDlg();
-		}
-
+		//
+		
+		//
 	}
 
 	protected void reloadTableCtNhapthuoc() {
@@ -622,8 +744,28 @@ public class FormNhapThuocDlg extends Dialog {
 		dlg.open();
 		listDataCtNhapthuoc.add(obj);
 		//
-		//reloadTableCtNhapthuoc();
+		doTinhTien();
 		//
 		tableViewerCtNhapthuoc.refresh();
+	}
+
+	private void doTinhTien() {
+		if(objNhapThuoc==null){
+			objNhapThuoc = new NhapThuoc();
+		}
+		objNhapThuoc.TONGCONG = 0;
+		int taxVAT = Utils.getInt(txtVAT.getText());
+		objNhapThuoc.VAT = taxVAT;
+		//
+		for (CtNhapthuoc obj2 : listDataCtNhapthuoc) {
+			objNhapThuoc.TONGCONG += obj2.THANHTIEN;
+		}
+		objNhapThuoc.TONGCONG_VAT =(int)(((float)taxVAT/(float)100)*objNhapThuoc.TONGCONG.intValue());
+		//
+		if(txtTONGCONG!=null)
+			txtTONGCONG.setText(objNhapThuoc.TONGCONG.toString());
+		if(txtTONGCONG_VAT!=null)
+			txtTONGCONG_VAT.setText(""+ objNhapThuoc.TONGCONG_VAT);
+		//
 	}
 }

@@ -148,7 +148,7 @@ public class MainQLThuoc extends Dialog{
 					return Utils.getDatetimeDefault(obj.NGAY_NHAP);
 				}
 				else if(columnIndex==1){
-					return obj.HOADON;
+					return obj.SO_HOA_DON;
 				}
 				else if(columnIndex==2){
 					return obj.TENKHO;
@@ -485,7 +485,7 @@ public class MainQLThuoc extends Dialog{
 		//toggleAlwaysOnTop(shell, true);
         //
         reloadTableNhapThuoc();
-        
+        //
 	}
 	
 	protected void reloadTableNhapThuoc() {
@@ -530,6 +530,7 @@ public class MainQLThuoc extends Dialog{
         logger.info(obj.toString());
         //
 		FormNhapThuocDlg dlg = new FormNhapThuocDlg(shell, 0);
+		dlg.intTypeDlgNhapThuoc = FormNhapThuocDlg.TYPE_DLG_VIEW;
 		dlg.setNhapThuocDlgData(obj);
 		dlg.open();
         //

@@ -29,7 +29,7 @@ public class ThuocDlg extends Dialog {
 	static Logger logger = LogManager.getLogger(ThuocDlg.class.getName());
 
 	protected Object result;
-	protected Shell shell;
+	protected Shell groupChiTietThuoc;
     private Text txtMA_HOAT_CHAT;
     private Text txtMA_AX;
     private Text txtHOAT_CHAT;
@@ -87,18 +87,18 @@ public class ThuocDlg extends Dialog {
 	 */
 	public Object open() {
 		createContents();
-		shell.open();
-		shell.layout();
+		groupChiTietThuoc.open();
+		groupChiTietThuoc.layout();
 		Display display = getParent().getDisplay();
         //
         Monitor primary = display.getPrimaryMonitor();
 		Rectangle bounds = primary.getBounds();
-		Rectangle rect = shell.getBounds();
+		Rectangle rect = groupChiTietThuoc.getBounds();
 		int x = bounds.x + (bounds.width - rect.width) / 2;
 		int y = bounds.y + (bounds.height - rect.height) / 2;
-		shell.setLocation(x, y);
+		groupChiTietThuoc.setLocation(x, y);
         //
-		while (!shell.isDisposed()) {
+		while (!groupChiTietThuoc.isDisposed()) {
 			if (!display.readAndDispatch()) {
 				display.sleep();
 			}
@@ -110,11 +110,11 @@ public class ThuocDlg extends Dialog {
 	 * Create contents of the dialog.
 	 */
 	private void createContents() {
-		shell = new Shell(getParent(), SWT.SHELL_TRIM | SWT.BORDER | SWT.PRIMARY_MODAL);
-		shell.setSize(450, 300);
-		shell.setText("ThuocDlg EDIT/NEW");
-		shell.setLayout(new GridLayout(2, false));
-        shell.addKeyListener(new KeyAdapter() {
+		groupChiTietThuoc = new Shell(getParent(), SWT.SHELL_TRIM | SWT.BORDER | SWT.PRIMARY_MODAL);
+		groupChiTietThuoc.setSize(777, 508);
+		groupChiTietThuoc.setText("ThuocDlg EDIT/NEW");
+		groupChiTietThuoc.setLayout(new GridLayout(2, false));
+        groupChiTietThuoc.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if(e.keyCode==SWT.ESC){
@@ -123,12 +123,12 @@ public class ThuocDlg extends Dialog {
 			}
 		});
         
-		Label lbltxtMA_HOAT_CHAT = new Label(shell, SWT.NONE);
+		Label lbltxtMA_HOAT_CHAT = new Label(groupChiTietThuoc, SWT.NONE);
         lbltxtMA_HOAT_CHAT.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		lbltxtMA_HOAT_CHAT.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lbltxtMA_HOAT_CHAT.setText("MA_HOAT_CHAT :");
 		
-		txtMA_HOAT_CHAT = new Text(shell, SWT.BORDER);
+		txtMA_HOAT_CHAT = new Text(groupChiTietThuoc, SWT.BORDER);
         txtMA_HOAT_CHAT.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		txtMA_HOAT_CHAT.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtMA_HOAT_CHAT.setText("MA_HOAT_CHAT");
@@ -138,12 +138,12 @@ public class ThuocDlg extends Dialog {
 				keyPressThuocDlg(e);
 			}
 		});
-		Label lbltxtMA_AX = new Label(shell, SWT.NONE);
+		Label lbltxtMA_AX = new Label(groupChiTietThuoc, SWT.NONE);
         lbltxtMA_AX.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		lbltxtMA_AX.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lbltxtMA_AX.setText("MA_AX :");
 		
-		txtMA_AX = new Text(shell, SWT.BORDER);
+		txtMA_AX = new Text(groupChiTietThuoc, SWT.BORDER);
         txtMA_AX.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		txtMA_AX.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtMA_AX.setText("MA_AX");
@@ -153,12 +153,12 @@ public class ThuocDlg extends Dialog {
 				keyPressThuocDlg(e);
 			}
 		});
-		Label lbltxtHOAT_CHAT = new Label(shell, SWT.NONE);
+		Label lbltxtHOAT_CHAT = new Label(groupChiTietThuoc, SWT.NONE);
         lbltxtHOAT_CHAT.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		lbltxtHOAT_CHAT.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lbltxtHOAT_CHAT.setText("HOAT_CHAT :");
 		
-		txtHOAT_CHAT = new Text(shell, SWT.BORDER);
+		txtHOAT_CHAT = new Text(groupChiTietThuoc, SWT.BORDER);
         txtHOAT_CHAT.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		txtHOAT_CHAT.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtHOAT_CHAT.setText("HOAT_CHAT");
@@ -168,12 +168,12 @@ public class ThuocDlg extends Dialog {
 				keyPressThuocDlg(e);
 			}
 		});
-		Label lbltxtHOATCHAT_AX = new Label(shell, SWT.NONE);
+		Label lbltxtHOATCHAT_AX = new Label(groupChiTietThuoc, SWT.NONE);
         lbltxtHOATCHAT_AX.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		lbltxtHOATCHAT_AX.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lbltxtHOATCHAT_AX.setText("HOATCHAT_AX :");
 		
-		txtHOATCHAT_AX = new Text(shell, SWT.BORDER);
+		txtHOATCHAT_AX = new Text(groupChiTietThuoc, SWT.BORDER);
         txtHOATCHAT_AX.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		txtHOATCHAT_AX.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtHOATCHAT_AX.setText("HOATCHAT_AX");
@@ -183,12 +183,12 @@ public class ThuocDlg extends Dialog {
 				keyPressThuocDlg(e);
 			}
 		});
-		Label lbltxtMA_DUONG_DUNG = new Label(shell, SWT.NONE);
+		Label lbltxtMA_DUONG_DUNG = new Label(groupChiTietThuoc, SWT.NONE);
         lbltxtMA_DUONG_DUNG.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		lbltxtMA_DUONG_DUNG.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lbltxtMA_DUONG_DUNG.setText("MA_DUONG_DUNG :");
 		
-		txtMA_DUONG_DUNG = new Text(shell, SWT.BORDER);
+		txtMA_DUONG_DUNG = new Text(groupChiTietThuoc, SWT.BORDER);
         txtMA_DUONG_DUNG.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		txtMA_DUONG_DUNG.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtMA_DUONG_DUNG.setText("MA_DUONG_DUNG");
@@ -198,12 +198,12 @@ public class ThuocDlg extends Dialog {
 				keyPressThuocDlg(e);
 			}
 		});
-		Label lbltxtMA_DUONGDUNG_AX = new Label(shell, SWT.NONE);
+		Label lbltxtMA_DUONGDUNG_AX = new Label(groupChiTietThuoc, SWT.NONE);
         lbltxtMA_DUONGDUNG_AX.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		lbltxtMA_DUONGDUNG_AX.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lbltxtMA_DUONGDUNG_AX.setText("MA_DUONGDUNG_AX :");
 		
-		txtMA_DUONGDUNG_AX = new Text(shell, SWT.BORDER);
+		txtMA_DUONGDUNG_AX = new Text(groupChiTietThuoc, SWT.BORDER);
         txtMA_DUONGDUNG_AX.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		txtMA_DUONGDUNG_AX.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtMA_DUONGDUNG_AX.setText("MA_DUONGDUNG_AX");
@@ -213,12 +213,12 @@ public class ThuocDlg extends Dialog {
 				keyPressThuocDlg(e);
 			}
 		});
-		Label lbltxtDUONG_DUNG = new Label(shell, SWT.NONE);
+		Label lbltxtDUONG_DUNG = new Label(groupChiTietThuoc, SWT.NONE);
         lbltxtDUONG_DUNG.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		lbltxtDUONG_DUNG.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lbltxtDUONG_DUNG.setText("DUONG_DUNG :");
 		
-		txtDUONG_DUNG = new Text(shell, SWT.BORDER);
+		txtDUONG_DUNG = new Text(groupChiTietThuoc, SWT.BORDER);
         txtDUONG_DUNG.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		txtDUONG_DUNG.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtDUONG_DUNG.setText("DUONG_DUNG");
@@ -228,12 +228,12 @@ public class ThuocDlg extends Dialog {
 				keyPressThuocDlg(e);
 			}
 		});
-		Label lbltxtDUONGDUNG_AX = new Label(shell, SWT.NONE);
+		Label lbltxtDUONGDUNG_AX = new Label(groupChiTietThuoc, SWT.NONE);
         lbltxtDUONGDUNG_AX.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		lbltxtDUONGDUNG_AX.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lbltxtDUONGDUNG_AX.setText("DUONGDUNG_AX :");
 		
-		txtDUONGDUNG_AX = new Text(shell, SWT.BORDER);
+		txtDUONGDUNG_AX = new Text(groupChiTietThuoc, SWT.BORDER);
         txtDUONGDUNG_AX.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		txtDUONGDUNG_AX.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtDUONGDUNG_AX.setText("DUONGDUNG_AX");
@@ -243,12 +243,12 @@ public class ThuocDlg extends Dialog {
 				keyPressThuocDlg(e);
 			}
 		});
-		Label lbltxtHAM_LUONG = new Label(shell, SWT.NONE);
+		Label lbltxtHAM_LUONG = new Label(groupChiTietThuoc, SWT.NONE);
         lbltxtHAM_LUONG.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		lbltxtHAM_LUONG.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lbltxtHAM_LUONG.setText("HAM_LUONG :");
 		
-		txtHAM_LUONG = new Text(shell, SWT.BORDER);
+		txtHAM_LUONG = new Text(groupChiTietThuoc, SWT.BORDER);
         txtHAM_LUONG.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		txtHAM_LUONG.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtHAM_LUONG.setText("HAM_LUONG");
@@ -258,12 +258,12 @@ public class ThuocDlg extends Dialog {
 				keyPressThuocDlg(e);
 			}
 		});
-		Label lbltxtHAMLUONG_AX = new Label(shell, SWT.NONE);
+		Label lbltxtHAMLUONG_AX = new Label(groupChiTietThuoc, SWT.NONE);
         lbltxtHAMLUONG_AX.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		lbltxtHAMLUONG_AX.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lbltxtHAMLUONG_AX.setText("HAMLUONG_AX :");
 		
-		txtHAMLUONG_AX = new Text(shell, SWT.BORDER);
+		txtHAMLUONG_AX = new Text(groupChiTietThuoc, SWT.BORDER);
         txtHAMLUONG_AX.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		txtHAMLUONG_AX.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtHAMLUONG_AX.setText("HAMLUONG_AX");
@@ -273,12 +273,12 @@ public class ThuocDlg extends Dialog {
 				keyPressThuocDlg(e);
 			}
 		});
-		Label lbltxtTEN_THUOC = new Label(shell, SWT.NONE);
+		Label lbltxtTEN_THUOC = new Label(groupChiTietThuoc, SWT.NONE);
         lbltxtTEN_THUOC.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		lbltxtTEN_THUOC.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lbltxtTEN_THUOC.setText("TEN_THUOC :");
 		
-		txtTEN_THUOC = new Text(shell, SWT.BORDER);
+		txtTEN_THUOC = new Text(groupChiTietThuoc, SWT.BORDER);
         txtTEN_THUOC.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		txtTEN_THUOC.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtTEN_THUOC.setText("TEN_THUOC");
@@ -288,12 +288,12 @@ public class ThuocDlg extends Dialog {
 				keyPressThuocDlg(e);
 			}
 		});
-		Label lbltxtTENTHUOC_AX = new Label(shell, SWT.NONE);
+		Label lbltxtTENTHUOC_AX = new Label(groupChiTietThuoc, SWT.NONE);
         lbltxtTENTHUOC_AX.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		lbltxtTENTHUOC_AX.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lbltxtTENTHUOC_AX.setText("TENTHUOC_AX :");
 		
-		txtTENTHUOC_AX = new Text(shell, SWT.BORDER);
+		txtTENTHUOC_AX = new Text(groupChiTietThuoc, SWT.BORDER);
         txtTENTHUOC_AX.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		txtTENTHUOC_AX.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtTENTHUOC_AX.setText("TENTHUOC_AX");
@@ -303,12 +303,12 @@ public class ThuocDlg extends Dialog {
 				keyPressThuocDlg(e);
 			}
 		});
-		Label lbltxtSO_DANG_KY = new Label(shell, SWT.NONE);
+		Label lbltxtSO_DANG_KY = new Label(groupChiTietThuoc, SWT.NONE);
         lbltxtSO_DANG_KY.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		lbltxtSO_DANG_KY.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lbltxtSO_DANG_KY.setText("SO_DANG_KY :");
 		
-		txtSO_DANG_KY = new Text(shell, SWT.BORDER);
+		txtSO_DANG_KY = new Text(groupChiTietThuoc, SWT.BORDER);
         txtSO_DANG_KY.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		txtSO_DANG_KY.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtSO_DANG_KY.setText("SO_DANG_KY");
@@ -318,12 +318,12 @@ public class ThuocDlg extends Dialog {
 				keyPressThuocDlg(e);
 			}
 		});
-		Label lbltxtSODANGKY_AX = new Label(shell, SWT.NONE);
+		Label lbltxtSODANGKY_AX = new Label(groupChiTietThuoc, SWT.NONE);
         lbltxtSODANGKY_AX.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		lbltxtSODANGKY_AX.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lbltxtSODANGKY_AX.setText("SODANGKY_AX :");
 		
-		txtSODANGKY_AX = new Text(shell, SWT.BORDER);
+		txtSODANGKY_AX = new Text(groupChiTietThuoc, SWT.BORDER);
         txtSODANGKY_AX.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		txtSODANGKY_AX.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtSODANGKY_AX.setText("SODANGKY_AX");
@@ -333,12 +333,12 @@ public class ThuocDlg extends Dialog {
 				keyPressThuocDlg(e);
 			}
 		});
-		Label lbltxtDONG_GOI = new Label(shell, SWT.NONE);
+		Label lbltxtDONG_GOI = new Label(groupChiTietThuoc, SWT.NONE);
         lbltxtDONG_GOI.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		lbltxtDONG_GOI.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lbltxtDONG_GOI.setText("DONG_GOI :");
 		
-		txtDONG_GOI = new Text(shell, SWT.BORDER);
+		txtDONG_GOI = new Text(groupChiTietThuoc, SWT.BORDER);
         txtDONG_GOI.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		txtDONG_GOI.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtDONG_GOI.setText("DONG_GOI");
@@ -348,12 +348,12 @@ public class ThuocDlg extends Dialog {
 				keyPressThuocDlg(e);
 			}
 		});
-		Label lbltxtDON_VI_TINH = new Label(shell, SWT.NONE);
+		Label lbltxtDON_VI_TINH = new Label(groupChiTietThuoc, SWT.NONE);
         lbltxtDON_VI_TINH.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		lbltxtDON_VI_TINH.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lbltxtDON_VI_TINH.setText("DON_VI_TINH :");
 		
-		txtDON_VI_TINH = new Text(shell, SWT.BORDER);
+		txtDON_VI_TINH = new Text(groupChiTietThuoc, SWT.BORDER);
         txtDON_VI_TINH.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		txtDON_VI_TINH.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtDON_VI_TINH.setText("DON_VI_TINH");
@@ -363,12 +363,12 @@ public class ThuocDlg extends Dialog {
 				keyPressThuocDlg(e);
 			}
 		});
-		Label lbltxtDON_GIA = new Label(shell, SWT.NONE);
+		Label lbltxtDON_GIA = new Label(groupChiTietThuoc, SWT.NONE);
         lbltxtDON_GIA.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		lbltxtDON_GIA.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lbltxtDON_GIA.setText("DON_GIA :");
 		
-		txtDON_GIA = new Text(shell, SWT.BORDER);
+		txtDON_GIA = new Text(groupChiTietThuoc, SWT.BORDER);
         txtDON_GIA.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		txtDON_GIA.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtDON_GIA.setText("DON_GIA");
@@ -378,12 +378,12 @@ public class ThuocDlg extends Dialog {
 				keyPressThuocDlg(e);
 			}
 		});
-		Label lbltxtDON_GIA_TT = new Label(shell, SWT.NONE);
+		Label lbltxtDON_GIA_TT = new Label(groupChiTietThuoc, SWT.NONE);
         lbltxtDON_GIA_TT.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		lbltxtDON_GIA_TT.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lbltxtDON_GIA_TT.setText("DON_GIA_TT :");
 		
-		txtDON_GIA_TT = new Text(shell, SWT.BORDER);
+		txtDON_GIA_TT = new Text(groupChiTietThuoc, SWT.BORDER);
         txtDON_GIA_TT.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		txtDON_GIA_TT.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtDON_GIA_TT.setText("DON_GIA_TT");
@@ -393,12 +393,12 @@ public class ThuocDlg extends Dialog {
 				keyPressThuocDlg(e);
 			}
 		});
-		Label lbltxtSO_LUONG = new Label(shell, SWT.NONE);
+		Label lbltxtSO_LUONG = new Label(groupChiTietThuoc, SWT.NONE);
         lbltxtSO_LUONG.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		lbltxtSO_LUONG.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lbltxtSO_LUONG.setText("SO_LUONG :");
 		
-		txtSO_LUONG = new Text(shell, SWT.BORDER);
+		txtSO_LUONG = new Text(groupChiTietThuoc, SWT.BORDER);
         txtSO_LUONG.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		txtSO_LUONG.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtSO_LUONG.setText("SO_LUONG");
@@ -408,12 +408,12 @@ public class ThuocDlg extends Dialog {
 				keyPressThuocDlg(e);
 			}
 		});
-		Label lbltxtMA_CSKCB = new Label(shell, SWT.NONE);
+		Label lbltxtMA_CSKCB = new Label(groupChiTietThuoc, SWT.NONE);
         lbltxtMA_CSKCB.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		lbltxtMA_CSKCB.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lbltxtMA_CSKCB.setText("MA_CSKCB :");
 		
-		txtMA_CSKCB = new Text(shell, SWT.BORDER);
+		txtMA_CSKCB = new Text(groupChiTietThuoc, SWT.BORDER);
         txtMA_CSKCB.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		txtMA_CSKCB.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtMA_CSKCB.setText("MA_CSKCB");
@@ -423,12 +423,12 @@ public class ThuocDlg extends Dialog {
 				keyPressThuocDlg(e);
 			}
 		});
-		Label lbltxtHANG_SX = new Label(shell, SWT.NONE);
+		Label lbltxtHANG_SX = new Label(groupChiTietThuoc, SWT.NONE);
         lbltxtHANG_SX.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		lbltxtHANG_SX.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lbltxtHANG_SX.setText("HANG_SX :");
 		
-		txtHANG_SX = new Text(shell, SWT.BORDER);
+		txtHANG_SX = new Text(groupChiTietThuoc, SWT.BORDER);
         txtHANG_SX.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		txtHANG_SX.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtHANG_SX.setText("HANG_SX");
@@ -438,12 +438,12 @@ public class ThuocDlg extends Dialog {
 				keyPressThuocDlg(e);
 			}
 		});
-		Label lbltxtNUOC_SX = new Label(shell, SWT.NONE);
+		Label lbltxtNUOC_SX = new Label(groupChiTietThuoc, SWT.NONE);
         lbltxtNUOC_SX.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		lbltxtNUOC_SX.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lbltxtNUOC_SX.setText("NUOC_SX :");
 		
-		txtNUOC_SX = new Text(shell, SWT.BORDER);
+		txtNUOC_SX = new Text(groupChiTietThuoc, SWT.BORDER);
         txtNUOC_SX.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		txtNUOC_SX.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtNUOC_SX.setText("NUOC_SX");
@@ -453,12 +453,12 @@ public class ThuocDlg extends Dialog {
 				keyPressThuocDlg(e);
 			}
 		});
-		Label lbltxtNHA_THAU = new Label(shell, SWT.NONE);
+		Label lbltxtNHA_THAU = new Label(groupChiTietThuoc, SWT.NONE);
         lbltxtNHA_THAU.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		lbltxtNHA_THAU.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lbltxtNHA_THAU.setText("NHA_THAU :");
 		
-		txtNHA_THAU = new Text(shell, SWT.BORDER);
+		txtNHA_THAU = new Text(groupChiTietThuoc, SWT.BORDER);
         txtNHA_THAU.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		txtNHA_THAU.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtNHA_THAU.setText("NHA_THAU");
@@ -468,12 +468,12 @@ public class ThuocDlg extends Dialog {
 				keyPressThuocDlg(e);
 			}
 		});
-		Label lbltxtQUYET_DINH = new Label(shell, SWT.NONE);
+		Label lbltxtQUYET_DINH = new Label(groupChiTietThuoc, SWT.NONE);
         lbltxtQUYET_DINH.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		lbltxtQUYET_DINH.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lbltxtQUYET_DINH.setText("QUYET_DINH :");
 		
-		txtQUYET_DINH = new Text(shell, SWT.BORDER);
+		txtQUYET_DINH = new Text(groupChiTietThuoc, SWT.BORDER);
         txtQUYET_DINH.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		txtQUYET_DINH.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtQUYET_DINH.setText("QUYET_DINH");
@@ -483,12 +483,12 @@ public class ThuocDlg extends Dialog {
 				keyPressThuocDlg(e);
 			}
 		});
-		Label lbltxtCONG_BO = new Label(shell, SWT.NONE);
+		Label lbltxtCONG_BO = new Label(groupChiTietThuoc, SWT.NONE);
         lbltxtCONG_BO.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		lbltxtCONG_BO.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lbltxtCONG_BO.setText("CONG_BO :");
 		
-		txtCONG_BO = new Text(shell, SWT.BORDER);
+		txtCONG_BO = new Text(groupChiTietThuoc, SWT.BORDER);
         txtCONG_BO.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		txtCONG_BO.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtCONG_BO.setText("CONG_BO");
@@ -498,12 +498,12 @@ public class ThuocDlg extends Dialog {
 				keyPressThuocDlg(e);
 			}
 		});
-		Label lbltxtMA_THUOC_BV = new Label(shell, SWT.NONE);
+		Label lbltxtMA_THUOC_BV = new Label(groupChiTietThuoc, SWT.NONE);
         lbltxtMA_THUOC_BV.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		lbltxtMA_THUOC_BV.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lbltxtMA_THUOC_BV.setText("MA_THUOC_BV :");
 		
-		txtMA_THUOC_BV = new Text(shell, SWT.BORDER);
+		txtMA_THUOC_BV = new Text(groupChiTietThuoc, SWT.BORDER);
         txtMA_THUOC_BV.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		txtMA_THUOC_BV.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtMA_THUOC_BV.setText("MA_THUOC_BV");
@@ -513,12 +513,12 @@ public class ThuocDlg extends Dialog {
 				keyPressThuocDlg(e);
 			}
 		});
-		Label lbltxtLOAI_THUOC = new Label(shell, SWT.NONE);
+		Label lbltxtLOAI_THUOC = new Label(groupChiTietThuoc, SWT.NONE);
         lbltxtLOAI_THUOC.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		lbltxtLOAI_THUOC.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lbltxtLOAI_THUOC.setText("LOAI_THUOC :");
 		
-		txtLOAI_THUOC = new Text(shell, SWT.BORDER);
+		txtLOAI_THUOC = new Text(groupChiTietThuoc, SWT.BORDER);
         txtLOAI_THUOC.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		txtLOAI_THUOC.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtLOAI_THUOC.setText("LOAI_THUOC");
@@ -528,12 +528,12 @@ public class ThuocDlg extends Dialog {
 				keyPressThuocDlg(e);
 			}
 		});
-		Label lbltxtLOAI_THAU = new Label(shell, SWT.NONE);
+		Label lbltxtLOAI_THAU = new Label(groupChiTietThuoc, SWT.NONE);
         lbltxtLOAI_THAU.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		lbltxtLOAI_THAU.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lbltxtLOAI_THAU.setText("LOAI_THAU :");
 		
-		txtLOAI_THAU = new Text(shell, SWT.BORDER);
+		txtLOAI_THAU = new Text(groupChiTietThuoc, SWT.BORDER);
         txtLOAI_THAU.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		txtLOAI_THAU.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtLOAI_THAU.setText("LOAI_THAU");
@@ -543,12 +543,12 @@ public class ThuocDlg extends Dialog {
 				keyPressThuocDlg(e);
 			}
 		});
-		Label lbltxtNHOM_THAU = new Label(shell, SWT.NONE);
+		Label lbltxtNHOM_THAU = new Label(groupChiTietThuoc, SWT.NONE);
         lbltxtNHOM_THAU.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		lbltxtNHOM_THAU.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lbltxtNHOM_THAU.setText("NHOM_THAU :");
 		
-		txtNHOM_THAU = new Text(shell, SWT.BORDER);
+		txtNHOM_THAU = new Text(groupChiTietThuoc, SWT.BORDER);
         txtNHOM_THAU.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		txtNHOM_THAU.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtNHOM_THAU.setText("NHOM_THAU");
@@ -558,12 +558,12 @@ public class ThuocDlg extends Dialog {
 				keyPressThuocDlg(e);
 			}
 		});
-		Label lbltxtMANHOM_9324 = new Label(shell, SWT.NONE);
+		Label lbltxtMANHOM_9324 = new Label(groupChiTietThuoc, SWT.NONE);
         lbltxtMANHOM_9324.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		lbltxtMANHOM_9324.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lbltxtMANHOM_9324.setText("MANHOM_9324 :");
 		
-		txtMANHOM_9324 = new Text(shell, SWT.BORDER);
+		txtMANHOM_9324 = new Text(groupChiTietThuoc, SWT.BORDER);
         txtMANHOM_9324.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		txtMANHOM_9324.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtMANHOM_9324.setText("MANHOM_9324");
@@ -573,12 +573,12 @@ public class ThuocDlg extends Dialog {
 				keyPressThuocDlg(e);
 			}
 		});
-		Label lbltxtHIEULUC = new Label(shell, SWT.NONE);
+		Label lbltxtHIEULUC = new Label(groupChiTietThuoc, SWT.NONE);
         lbltxtHIEULUC.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		lbltxtHIEULUC.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lbltxtHIEULUC.setText("HIEULUC :");
 		
-		txtHIEULUC = new Text(shell, SWT.BORDER);
+		txtHIEULUC = new Text(groupChiTietThuoc, SWT.BORDER);
         txtHIEULUC.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		txtHIEULUC.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtHIEULUC.setText("HIEULUC");
@@ -588,12 +588,12 @@ public class ThuocDlg extends Dialog {
 				keyPressThuocDlg(e);
 			}
 		});
-		Label lbltxtKETQUA = new Label(shell, SWT.NONE);
+		Label lbltxtKETQUA = new Label(groupChiTietThuoc, SWT.NONE);
         lbltxtKETQUA.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		lbltxtKETQUA.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lbltxtKETQUA.setText("KETQUA :");
 		
-		txtKETQUA = new Text(shell, SWT.BORDER);
+		txtKETQUA = new Text(groupChiTietThuoc, SWT.BORDER);
         txtKETQUA.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		txtKETQUA.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtKETQUA.setText("KETQUA");
@@ -603,12 +603,12 @@ public class ThuocDlg extends Dialog {
 				keyPressThuocDlg(e);
 			}
 		});
-		Label lbltxtTHUOC_RANK = new Label(shell, SWT.NONE);
+		Label lbltxtTHUOC_RANK = new Label(groupChiTietThuoc, SWT.NONE);
         lbltxtTHUOC_RANK.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		lbltxtTHUOC_RANK.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		lbltxtTHUOC_RANK.setText("THUOC_RANK :");
 		
-		txtTHUOC_RANK = new Text(shell, SWT.BORDER);
+		txtTHUOC_RANK = new Text(groupChiTietThuoc, SWT.BORDER);
         txtTHUOC_RANK.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		txtTHUOC_RANK.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtTHUOC_RANK.setText("THUOC_RANK");
@@ -618,8 +618,8 @@ public class ThuocDlg extends Dialog {
 				keyPressThuocDlg(e);
 			}
 		});
-		new Label(shell, SWT.NONE);
-		btnNewButtonSaveThuoc = new Button(shell, SWT.NONE);
+		new Label(groupChiTietThuoc, SWT.NONE);
+		btnNewButtonSaveThuoc = new Button(groupChiTietThuoc, SWT.NONE);
 		btnNewButtonSaveThuoc.setImage(SWTResourceManager.getImage(ThuocDlg.class, "/png/file-2x.png"));
         btnNewButtonSaveThuoc.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.BOLD));
 		btnNewButtonSaveThuoc.setText("Save");
@@ -719,7 +719,7 @@ public class ThuocDlg extends Dialog {
         else{
             objThuoc.insert();
         }
-        shell.close();
+        groupChiTietThuoc.close();
     }
     
     public void setThuocDlgData(Thuoc obj) {

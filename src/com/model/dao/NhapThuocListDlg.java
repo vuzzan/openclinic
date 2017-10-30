@@ -220,22 +220,43 @@ public class NhapThuocListDlg extends Dialog {
 		tbTableColumnNhapThuocVENDOR_NAME.setWidth(100);
 		tbTableColumnNhapThuocVENDOR_NAME.setText("VENDOR_NAME");
 
+		TableColumn tbTableColumnNhapThuocVENDOR_ADDR = new TableColumn(tableNhapThuoc, SWT.LEFT);
+		tbTableColumnNhapThuocVENDOR_ADDR.setWidth(100);
+		tbTableColumnNhapThuocVENDOR_ADDR.setText("VENDOR_ADDR");
+
 
 		TableColumn tbTableColumnNhapThuocNGAY_NHAP = new TableColumn(tableNhapThuoc, SWT.NONE);
 		tbTableColumnNhapThuocNGAY_NHAP.setWidth(100);
 		tbTableColumnNhapThuocNGAY_NHAP.setText("NGAY_NHAP");
 
+
+		TableColumn tbTableColumnNhapThuocNGAY_HD = new TableColumn(tableNhapThuoc, SWT.NONE);
+		tbTableColumnNhapThuocNGAY_HD.setWidth(100);
+		tbTableColumnNhapThuocNGAY_HD.setText("NGAY_HD");
+
 		TableColumn tbTableColumnNhapThuocTENKHO = new TableColumn(tableNhapThuoc, SWT.LEFT);
 		tbTableColumnNhapThuocTENKHO.setWidth(100);
 		tbTableColumnNhapThuocTENKHO.setText("TENKHO");
 
-		TableColumn tbTableColumnNhapThuocHOADON = new TableColumn(tableNhapThuoc, SWT.LEFT);
-		tbTableColumnNhapThuocHOADON.setWidth(100);
-		tbTableColumnNhapThuocHOADON.setText("HOADON");
+		TableColumn tbTableColumnNhapThuocSO_HOA_DON = new TableColumn(tableNhapThuoc, SWT.LEFT);
+		tbTableColumnNhapThuocSO_HOA_DON.setWidth(100);
+		tbTableColumnNhapThuocSO_HOA_DON.setText("SO_HOA_DON");
+
+		TableColumn tbTableColumnNhapThuocKH_HOA_DON = new TableColumn(tableNhapThuoc, SWT.LEFT);
+		tbTableColumnNhapThuocKH_HOA_DON.setWidth(100);
+		tbTableColumnNhapThuocKH_HOA_DON.setText("KH_HOA_DON");
 
 		TableColumn tbTableColumnNhapThuocTONGCONG = new TableColumn(tableNhapThuoc, SWT.RIGHT);
 		tbTableColumnNhapThuocTONGCONG.setWidth(100);
 		tbTableColumnNhapThuocTONGCONG.setText("TONGCONG");
+
+		TableColumn tbTableColumnNhapThuocTONGCONG_VAT = new TableColumn(tableNhapThuoc, SWT.RIGHT);
+		tbTableColumnNhapThuocTONGCONG_VAT.setWidth(100);
+		tbTableColumnNhapThuocTONGCONG_VAT.setText("TONGCONG_VAT");
+
+		TableColumn tbTableColumnNhapThuocVAT = new TableColumn(tableNhapThuoc, SWT.RIGHT);
+		tbTableColumnNhapThuocVAT.setWidth(100);
+		tbTableColumnNhapThuocVAT.setText("VAT");
 
 		TableColumn tbTableColumnNhapThuocSTS = new TableColumn(tableNhapThuoc, SWT.RIGHT);
 		tbTableColumnNhapThuocSTS.setWidth(100);
@@ -317,8 +338,10 @@ public class NhapThuocListDlg extends Dialog {
 		if(searchString.length()>0){
             sql += " and ( 0 ";
         sql += " or LOWER(VENDOR_NAME) like '%"+searchString+"%'";
+        sql += " or LOWER(VENDOR_ADDR) like '%"+searchString+"%'";
         sql += " or LOWER(TENKHO) like '%"+searchString+"%'";
-        sql += " or LOWER(HOADON) like '%"+searchString+"%'";
+        sql += " or LOWER(SO_HOA_DON) like '%"+searchString+"%'";
+        sql += " or LOWER(KH_HOA_DON) like '%"+searchString+"%'";
             sql += " )";
         }
 		try  {

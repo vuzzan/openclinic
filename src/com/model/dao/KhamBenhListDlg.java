@@ -342,6 +342,10 @@ public class KhamBenhListDlg extends Dialog {
 		tbTableColumnKhamBenhKIEU_TT.setWidth(100);
 		tbTableColumnKhamBenhKIEU_TT.setText("KIEU_TT");
 
+		TableColumn tbTableColumnKhamBenhCHANDOAN_BD = new TableColumn(tableKhamBenh, SWT.LEFT);
+		tbTableColumnKhamBenhCHANDOAN_BD.setWidth(100);
+		tbTableColumnKhamBenhCHANDOAN_BD.setText("CHANDOAN_BD");
+
 		TableColumn tbTableColumnKhamBenhSTS = new TableColumn(tableKhamBenh, SWT.RIGHT);
 		tbTableColumnKhamBenhSTS.setWidth(100);
 		tbTableColumnKhamBenhSTS.setText("STS");
@@ -433,6 +437,7 @@ public class KhamBenhListDlg extends Dialog {
         sql += " or LOWER(MA_CSKCB) like '%"+searchString+"%'";
         sql += " or LOWER(MA_KHUVUC) like '%"+searchString+"%'";
         sql += " or LOWER(MA_PTTT_QT) like '%"+searchString+"%'";
+        sql += " or LOWER(CHANDOAN_BD) like '%"+searchString+"%'";
             sql += " )";
         }
 		try  {

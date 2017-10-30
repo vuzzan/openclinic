@@ -41,6 +41,7 @@ public class DvChitietDlg extends Dialog {
     private Text txtDON_GIA;
     private Text txtDON_GIA2;
     private Text txtTHANH_TIEN;
+    private Text txtTHANH_TIEN2;
     private Text txtTT_BH;
     private Text txtTT_NB;
     private Text txtMA_KHOA;
@@ -276,6 +277,21 @@ public class DvChitietDlg extends Dialog {
 				keyPressDvChitietDlg(e);
 			}
 		});
+		Label lbltxtTHANH_TIEN2 = new Label(shell, SWT.NONE);
+        lbltxtTHANH_TIEN2.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtTHANH_TIEN2.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtTHANH_TIEN2.setText("THANH_TIEN2 :");
+		
+		txtTHANH_TIEN2 = new Text(shell, SWT.BORDER);
+        txtTHANH_TIEN2.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtTHANH_TIEN2.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtTHANH_TIEN2.setText("THANH_TIEN2");
+        txtTHANH_TIEN2.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressDvChitietDlg(e);
+			}
+		});
 		Label lbltxtTT_BH = new Label(shell, SWT.NONE);
         lbltxtTT_BH.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		lbltxtTT_BH.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
@@ -474,6 +490,8 @@ public class DvChitietDlg extends Dialog {
             // Integer    = true
             objDvChitiet.THANH_TIEN = Utils.getInt( txtTHANH_TIEN.getText() );
             // Integer    = true
+            objDvChitiet.THANH_TIEN2 = Utils.getInt( txtTHANH_TIEN2.getText() );
+            // Integer    = true
             objDvChitiet.TT_BH = Utils.getInt( txtTT_BH.getText() );
             // Integer    = true
             objDvChitiet.TT_NB = Utils.getInt( txtTT_NB.getText() );
@@ -567,6 +585,10 @@ public class DvChitietDlg extends Dialog {
                 txtTHANH_TIEN.setText("");
             else
                 txtTHANH_TIEN.setText(""+objDvChitiet.THANH_TIEN.toString());
+            if(objDvChitiet.THANH_TIEN2==null)
+                txtTHANH_TIEN2.setText("");
+            else
+                txtTHANH_TIEN2.setText(""+objDvChitiet.THANH_TIEN2.toString());
             if(objDvChitiet.TT_BH==null)
                 txtTT_BH.setText("");
             else

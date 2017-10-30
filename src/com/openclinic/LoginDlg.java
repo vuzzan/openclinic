@@ -31,9 +31,12 @@ import com.DbHelper;
 import com.model.cache.MaCskcbCache;
 import com.model.dao.Dichvu;
 import com.model.dao.KhoaPhong;
+import com.model.dao.Khohang;
 import com.model.dao.MaCskcb;
+import com.model.dao.Mabenh;
 import com.model.dao.Phanquyen;
 import com.model.dao.Users;
+import com.model.dao.Vendor;
 import com.openclinic.khambenh.FormKhamBenhDlg;
 import com.openclinic.utils.Utils;
 
@@ -590,11 +593,14 @@ public class LoginDlg {
 				break;
 			case "nv":
 			case "bs":
-			case "admin":
 			case "acct":
 				//Main dlgMain = new Main(shell, 0);
 				FormKhamBenhDlg dlgMain = new FormKhamBenhDlg(shell, 0);
 				dlgMain.open();
+				break;
+			case "admin":
+				MainAdmin dlg = new MainAdmin();
+				dlg.open();
 				break;
 			default:
 				MessageDialog.openError(shell, "Có lỗi", "Mở không được");
@@ -637,12 +643,13 @@ public class LoginDlg {
 		// LOAD ALL MABENH
 		String sql = "SELECT * FROM mabenh ORDER BY MABENH_RANK DESC";
 //		logger.info("Get cache" + sql);
-//		java.util.List<Mabenh> list = con.createQuery(sql).executeAndFetch(
-//				Mabenh.class);
-//		for (Mabenh obj : list) {
-//			MabenhCache.cacheArrayListKey.add(obj.MABENH_ID);
-//			MabenhCache.putMabenh(obj);
-//		}
+		java.util.List<Mabenh> list = con.createQuery(sql).executeAndFetch(Mabenh.class);
+		for (Mabenh obj : list) {
+			DbHelper.hashDataMabenh.put(obj.MABENH_ID, obj);
+		}
+		
+		//System.out.println(" TEST IDC: "+DbHelper.getIDC10TenBenh("K00.1"));
+		//System.out.println(" TEST IDC2: "+DbHelper.getIDC10TenBenh("K01.1;K02"));
 		// LOAD ALL MABENH
 		sql = "SELECT * FROM ma_cskcb ORDER BY MA_CODE";
 		logger.info("Get cache" + sql);
@@ -651,6 +658,20 @@ public class LoginDlg {
 			MaCskcbCache.cacheArrayListKey.add(obj.MA_CODE);
 			MaCskcbCache.putMaCskcb(obj);
 		}
+		
+		sql = "SELECT * FROM vendor ORDER BY V_NAME and STS=0";
+		logger.info("Get cache" + sql);
+		DbHelper.listDataVendor = con.createQuery(sql).executeAndFetch(Vendor.class);
+		for (Vendor obj : DbHelper.listDataVendor) {
+			DbHelper.hashDataVendor.put(obj.V_NAME, obj);
+		}
+		sql = "SELECT * FROM khohang ORDER BY KHO_NAME";
+		logger.info("Get cache" + sql);
+		DbHelper.listDataKhohang = con.createQuery(sql).executeAndFetch(Khohang.class);
+		for (Khohang obj : DbHelper.listDataKhohang) {
+			DbHelper.hashDataKhoHang.put(obj.KHO_NAME, obj);
+		}
+
 		sql = "SELECT * from dichvu where MANHOM_9324='13' order by MA_DVKT ASC";
 		List<Dichvu> listDichvu = con.createQuery(sql).executeAndFetch(Dichvu.class);
 		for (Dichvu obj : listDichvu) {
@@ -665,7 +686,8 @@ public class LoginDlg {
 		for (KhoaPhong obj : listKhoaphong) {
 			//KhoaPhongCache.cacheArrayListKey.add(obj.KP_MAKHOA);
 			//KhoaPhongCache.putKhoaPhong(obj);
-			DbHelper.hashKhoaPhong.put(obj.KP_MABH, obj);
+			DbHelper.hashKhoaPhongKP_MABH.put(obj.KP_MABH, obj);
+			DbHelper.hashKhoaPhongMAKHOA.put(obj.KP_MAKHOA, obj);
 		}
 		
 		sql = "SELECT * FROM phanquyen where U_ID="+DbHelper.getCurrentSessionUserId();

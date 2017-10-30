@@ -63,6 +63,7 @@ public class KhamBenhDlg extends Dialog {
     private Text txtCAN_NANG;
     private Text txtKB_DATE;
     private Text txtKIEU_TT;
+    private Text txtCHANDOAN_BD;
     private Text txtSTS;
 
     public KhamBenh objKhamBenh;
@@ -619,6 +620,21 @@ public class KhamBenhDlg extends Dialog {
 				keyPressKhamBenhDlg(e);
 			}
 		});
+		Label lbltxtCHANDOAN_BD = new Label(shell, SWT.NONE);
+        lbltxtCHANDOAN_BD.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtCHANDOAN_BD.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtCHANDOAN_BD.setText("CHANDOAN_BD :");
+		
+		txtCHANDOAN_BD = new Text(shell, SWT.BORDER);
+        txtCHANDOAN_BD.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtCHANDOAN_BD.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtCHANDOAN_BD.setText("CHANDOAN_BD");
+        txtCHANDOAN_BD.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressKhamBenhDlg(e);
+			}
+		});
 		Label lbltxtSTS = new Label(shell, SWT.NONE);
         lbltxtSTS.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		lbltxtSTS.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
@@ -725,6 +741,8 @@ public class KhamBenhDlg extends Dialog {
             // objKhamBenh.KB_DATE = txtKB_DATE.getText();
             // Integer    = true
             objKhamBenh.KIEU_TT = Utils.getInt( txtKIEU_TT.getText() );
+            // String     = false
+            objKhamBenh.CHANDOAN_BD = txtCHANDOAN_BD.getText();
             // Integer    = true
             objKhamBenh.STS = Utils.getInt( txtSTS.getText() );
             }
@@ -889,6 +907,10 @@ public class KhamBenhDlg extends Dialog {
                 txtKIEU_TT.setText("");
             else
                 txtKIEU_TT.setText(""+objKhamBenh.KIEU_TT.toString());
+            if(objKhamBenh.CHANDOAN_BD==null)
+                txtCHANDOAN_BD.setText("");
+            else
+                txtCHANDOAN_BD.setText(""+objKhamBenh.CHANDOAN_BD.toString());
             if(objKhamBenh.STS==null)
                 txtSTS.setText("");
             else

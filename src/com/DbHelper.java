@@ -13,8 +13,11 @@ import org.sql2o.Sql2oException;
 
 import com.model.dao.Dichvu;
 import com.model.dao.KhoaPhong;
+import com.model.dao.Khohang;
+import com.model.dao.Mabenh;
 import com.model.dao.Phanquyen;
 import com.model.dao.Users;
+import com.model.dao.Vendor;
 import com.openclinic.Main;
 
 public class DbHelper {
@@ -30,7 +33,8 @@ public class DbHelper {
 	private static Sql2o sql2o = new Sql2o(Main.DB_URL, Main.DB_USER, Main.DB_PASS);
 	public static Users currentSessionUserId = null;
 	private static  Connection con;
-	public static Hashtable<String, KhoaPhong> hashKhoaPhong = new Hashtable<>();
+	public static Hashtable<String, KhoaPhong> hashKhoaPhongKP_MABH = new Hashtable<>();
+	public static Hashtable<String, KhoaPhong> hashKhoaPhongMAKHOA = new Hashtable<>();
 	public static ArrayList<Dichvu> listCongKham = new ArrayList<>();
 	public static Hashtable<String, Dichvu> hashCongKham = new Hashtable<>();
 
@@ -40,8 +44,15 @@ public class DbHelper {
 	public static List<Users> listUsers=null;
 	public static Hashtable<String, Users> hashDataUsers = new Hashtable<>();
 	public static Hashtable<String, Users> hashDataUsersMaCCHN = new Hashtable<>();
-
 	
+	public static Hashtable<String, Mabenh> hashDataMabenh = new Hashtable<>();
+	//
+	public static Hashtable<String, Vendor> hashDataVendor = new Hashtable<>();
+	public static List<Vendor> listDataVendor = null;
+	//
+	public static Hashtable<String, Khohang> hashDataKhoHang = new Hashtable<>();
+	public static List<Khohang> listDataKhohang = null;
+	//
 	public DbHelper(){
 		
 	}
@@ -122,7 +133,7 @@ public class DbHelper {
 		//logger.info("getTENKHOA "+comboBoxText);
 		String madvktarr[] = comboBoxText.split("-");
 		String MA_DVKT = madvktarr[0].trim();
-		KhoaPhong obj = DbHelper.hashKhoaPhong.get(MA_DVKT);
+		KhoaPhong obj = DbHelper.hashKhoaPhongKP_MABH.get(MA_DVKT);
 		if(obj!=null){
 			return obj.KP_NAME;
 		}
@@ -135,7 +146,7 @@ public class DbHelper {
 		//logger.info("getMAKHOA "+comboBoxText);
 		String madvktarr[] = comboBoxText.split("-");
 		String MA_DVKT = madvktarr[0].trim();
-		KhoaPhong obj = DbHelper.hashKhoaPhong.get(MA_DVKT);
+		KhoaPhong obj = DbHelper.hashKhoaPhongKP_MABH.get(MA_DVKT);
 		if(obj!=null){
 			return obj.KP_MAKHOA;
 		}
@@ -174,4 +185,30 @@ public class DbHelper {
 			return true;
 		}
 	}
+	
+	public static String getIDC10TenBenh(String ICDCode) {
+		String ret = "";
+		String mabenhIDC[] = ICDCode.split(";");
+		for(int i=0; i<mabenhIDC.length; i++){
+			Mabenh obj = DbHelper.hashDataMabenh.get(mabenhIDC[i].trim());
+			ret += obj.MABENH_NAME;
+			if(i<mabenhIDC.length-1){
+				ret+=";";
+			}
+		}
+		return ret;
+	}
+//	public String getIDC_TENBENH()
+//    {
+//        return DbHelper.getIDC10TenBenh(getIDC_MA_BENH());
+//    }
+//    public String getIDC_MA_BENH()
+//    {
+//    	if(this.MA_BENHKHAC!=null && this.MA_BENHKHAC.length()>0){
+//    		return this.MA_BENH +";"+this.MA_BENHKHAC;
+//    	}
+//    	else{
+//    		return this.MA_BENH;
+//    	}
+//    }
 }

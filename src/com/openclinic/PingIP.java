@@ -26,9 +26,12 @@ import com.openclinic.utils.Utils;
 public class PingIP {
 
 	public static void main(String[] args) {
-		System.out.println(  Utils.getDatetime(new Date(), "dd/MM/YYYY") );
-		String TEN_BENH_NHAN = String.format("%5.5s", "MA_NOI_CHUYEN").trim();
-		System.out.println("["+TEN_BENH_NHAN+"]");
+		double taxVAT = Utils.getDouble("0.1");
+		System.out.println(taxVAT);
+
+//		System.out.println(  Utils.getDatetime(new Date(), "dd/MM/YYYY") );
+//		String TEN_BENH_NHAN = String.format("%5.5s", "MA_NOI_CHUYEN").trim();
+//		System.out.println("["+TEN_BENH_NHAN+"]");
 		//System.out.println(java.text.NumberFormat.getInstance(java.util.Locale.ITALY).format(123456));
 		// System.out.println(Utils.getDatetime(new Date(), "yyyyMMddHHmm"));
 		//System.out.println(Utils.getDatetime(new Date(),"yyyy-MM-dd HH:mm"));

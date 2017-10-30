@@ -37,12 +37,14 @@ public class CtNhapthuocDlg extends Dialog {
     private Text txtTENTHUOC;
     private Text txtDONVI;
     private Text txtHANDUNG;
+    private Text txtLOT_ID;
+    private Text txtDONGIA;
+    private Text txtTHANHTIEN;
     private Text txtSOLUONG;
     private Text txtSL_TONKHO;
     private Text txtSL_OUTSTANDING;
     private Text txtSL_DADUNG;
-    private Text txtDONGIA;
-    private Text txtTHANHTIEN;
+    private Text txtVAT;
     private Text txtSTS;
 
     public CtNhapthuoc objCtNhapthuoc;
@@ -209,6 +211,21 @@ public class CtNhapthuocDlg extends Dialog {
 				keyPressCtNhapthuocDlg(e);
 			}
 		});
+		Label lbltxtLOT_ID = new Label(shell, SWT.NONE);
+        lbltxtLOT_ID.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtLOT_ID.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtLOT_ID.setText("LOT_ID :");
+		
+		txtLOT_ID = new Text(shell, SWT.BORDER);
+        txtLOT_ID.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtLOT_ID.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtLOT_ID.setText("LOT_ID");
+        txtLOT_ID.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressCtNhapthuocDlg(e);
+			}
+		});
 		Label lbltxtSOLUONG = new Label(shell, SWT.NONE);
         lbltxtSOLUONG.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		lbltxtSOLUONG.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
@@ -299,6 +316,21 @@ public class CtNhapthuocDlg extends Dialog {
 				keyPressCtNhapthuocDlg(e);
 			}
 		});
+		Label lbltxtVAT = new Label(shell, SWT.NONE);
+        lbltxtVAT.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtVAT.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtVAT.setText("VAT :");
+		
+		txtVAT = new Text(shell, SWT.BORDER);
+        txtVAT.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtVAT.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtVAT.setText("VAT");
+        txtVAT.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressCtNhapthuocDlg(e);
+			}
+		});
 		Label lbltxtSTS = new Label(shell, SWT.NONE);
         lbltxtSTS.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		lbltxtSTS.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
@@ -353,6 +385,8 @@ public class CtNhapthuocDlg extends Dialog {
             objCtNhapthuoc.DONVI = txtDONVI.getText();
             // Date       = false
             // objCtNhapthuoc.HANDUNG = txtHANDUNG.getText();
+            // String     = false
+            objCtNhapthuoc.LOT_ID = txtLOT_ID.getText();
             // Integer    = true
             objCtNhapthuoc.SOLUONG = Utils.getInt( txtSOLUONG.getText() );
             // Integer    = true
@@ -365,6 +399,8 @@ public class CtNhapthuocDlg extends Dialog {
             objCtNhapthuoc.DONGIA = Utils.getInt( txtDONGIA.getText() );
             // Integer    = true
             objCtNhapthuoc.THANHTIEN = Utils.getInt( txtTHANHTIEN.getText() );
+            // Integer    = true
+            objCtNhapthuoc.VAT = Utils.getInt( txtVAT.getText() );
             // Integer    = true
             objCtNhapthuoc.STS = Utils.getInt( txtSTS.getText() );
             }
@@ -425,6 +461,10 @@ public class CtNhapthuocDlg extends Dialog {
                 txtHANDUNG.setText("");
             else
                 txtHANDUNG.setText(""+objCtNhapthuoc.HANDUNG.toString());
+            if(objCtNhapthuoc.LOT_ID==null)
+                txtLOT_ID.setText("");
+            else
+                txtLOT_ID.setText(""+objCtNhapthuoc.LOT_ID.toString());
             if(objCtNhapthuoc.SOLUONG==null)
                 txtSOLUONG.setText("");
             else
@@ -449,6 +489,10 @@ public class CtNhapthuocDlg extends Dialog {
                 txtTHANHTIEN.setText("");
             else
                 txtTHANHTIEN.setText(""+objCtNhapthuoc.THANHTIEN.toString());
+            if(objCtNhapthuoc.VAT==null)
+                txtVAT.setText("");
+            else
+                txtVAT.setText(""+objCtNhapthuoc.VAT.toString());
             if(objCtNhapthuoc.STS==null)
                 txtSTS.setText("");
             else
