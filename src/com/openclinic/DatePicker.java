@@ -67,7 +67,7 @@ public class DatePicker extends org.eclipse.swt.widgets.Composite {
 		GridData gridData1 = new org.eclipse.swt.layout.GridData();
 		gridData1.widthHint = 20;
 		GridData gridData100 = new org.eclipse.swt.layout.GridData();
-		gridData100.widthHint = 40;
+		gridData100.widthHint = 47;
 		
 		GridData gridData = new org.eclipse.swt.layout.GridData();
 		gridData.widthHint = 20;
@@ -82,7 +82,7 @@ public class DatePicker extends org.eclipse.swt.widgets.Composite {
 		gridLayout.marginHeight = 0;
 		gridLayout.makeColumnsEqualWidth = false;
 		this.setLayout(gridLayout);
-		setSize(new Point(121, 28));
+		setSize(new Point(136, 28));
 		//
 		dayText = new Text(this, SWT.BORDER);
 		dayText.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_YELLOW));
@@ -254,8 +254,8 @@ public class DatePicker extends org.eclipse.swt.widgets.Composite {
 							c.setTime(dt); 
 							c.add(Calendar.MONTH, -monthCount);
 							dt = c.getTime();
-							System.out.println("TTT = " + dt.toLocaleString());
-							day = 0;
+							//System.out.println("TTT = " + dt.toLocaleString());
+							day = 1;
 							month = dt.getMonth()+1;
 							year = dt.getYear()+1900;
 							updateDateText();
@@ -281,6 +281,8 @@ public class DatePicker extends org.eclipse.swt.widgets.Composite {
 								}
 							}
 							else{
+								month = 1;
+								day = 1;
 								year = year1;
 							}
 						}
@@ -357,13 +359,13 @@ public class DatePicker extends org.eclipse.swt.widgets.Composite {
 	
 	public Calendar getDate2(){
 		Calendar calendar1 = Calendar.getInstance();
-		calendar1.set(year, month, day);
+		calendar1.set(year, month-1, day);
 		return calendar1;
 	}
 	
 	public long getDate3(){
 		Calendar calendar1 = Calendar.getInstance();
-		calendar1.set(year, month, day);
+		calendar1.set(year, month-1, day);
 		return calendar1.getTimeInMillis();
 	}
 	
@@ -391,21 +393,21 @@ public class DatePicker extends org.eclipse.swt.widgets.Composite {
 		if(strDate.trim().length() == 8 && strDate.indexOf("/")==-1){
 			// 20161001 format
 			int dt[] = Utils.getDateTime(strDate, "yyyyMMdd");
-			day 	= dt[0];
-			month 	= dt[1];
+			day 	= dt[0]==0?1:dt[0];
+			month 	= dt[1]==0?1:dt[1];
 			year 	= dt[2];
 		}
 		else if(strDate.trim().length() == 4 ){
 			// 2016 format. Only Year
 			int dt[] = Utils.getDateTime(strDate, "yyyy");
-			day 	= 0;
-			month 	= 0;
+			day 	= 1;
+			month 	= 1;
 			year 	= dt[2];
 		}
 		else{
 			int dt[] = Utils.getDateTime(strDate);
-			day 	= dt[0];
-			month 	= dt[1];
+			day 	= dt[0]==0?1:dt[0];
+			month 	= dt[1]==0?1:dt[1];
 			year 	= dt[2];
 		}
 		updateDateText();
@@ -417,7 +419,7 @@ public class DatePicker extends org.eclipse.swt.widgets.Composite {
 	}
 
 	private void updateDateText() {
-		//System.out.println("Update "+day+"/"+month+"/"+year + " DiffMonth=" + toMonth());
+		System.out.println("Update updateDateText "+day+"/"+month+"/"+year + " DiffMonth=" + toMonth());
 		if(day>0 && day<=31){
 			dayText.setText(""+day);
 			dayText.setEditable(true);

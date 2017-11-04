@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.3.1.final using JasperReports Library version 6.3.1  -->
-<!-- 2017-10-25T14:48:51 -->
+<!-- 2017-11-03T15:56:22 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="PhieuBenhNhan" pageWidth="421" pageHeight="595" whenNoDataType="NoPages" columnWidth="381" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isIgnorePagination="true" uuid="3807cd06-b690-491a-afdb-4d5ce8b0f998">
 	<property name="com.jaspersoft.studio.unit." value="pixel"/>
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
@@ -122,6 +122,7 @@
 	<parameter name="TEN_CSKCB" class="java.lang.String"/>
 	<parameter name="TENKHOAPHONG" class="java.lang.String"/>
 	<parameter name="TENBACSI" class="java.lang.String"/>
+	<parameter name="LOAI_DICH_VU" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -129,7 +130,7 @@
 		<band splitType="Stretch"/>
 	</title>
 	<pageHeader>
-		<band height="188" splitType="Stretch">
+		<band height="213" splitType="Stretch">
 			<staticText>
 				<reportElement positionType="Float" x="3" y="1" width="114" height="14" uuid="d3389e5d-6cbc-41cd-8d16-a7f04317607c"/>
 				<box>
@@ -1251,19 +1252,6 @@
 				</textElement>
 				<textFieldExpression><![CDATA[java.text.NumberFormat.getInstance(java.util.Locale.ITALY).format($P{DICHVU_SUM}.getNB2())]]></textFieldExpression>
 			</textField>
-			<staticText>
-				<reportElement x="0" y="0" width="210" height="20" backcolor="#FFF7F7" uuid="97bcf0a4-53ea-4885-8d41-67ba1f9f0ae0"/>
-				<box>
-					<topPen lineWidth="1.0" lineStyle="Dotted"/>
-					<leftPen lineWidth="1.0"/>
-					<bottomPen lineWidth="1.0" lineStyle="Dotted"/>
-					<rightPen lineWidth="1.0"/>
-				</box>
-				<textElement>
-					<font fontName="Times New Roman" size="10" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Thủ thuật, dịch vụ kỹ thuật]]></text>
-			</staticText>
 			<textField>
 				<reportElement x="300" y="0" width="30" height="20" backcolor="#FFF7F7" uuid="d6d30291-bd10-42c9-834e-f3d846b688a9"/>
 				<box>
@@ -1453,6 +1441,13 @@
 					</jr:column>
 				</jr:table>
 			</componentElement>
+			<textField>
+				<reportElement x="0" y="0" width="210" height="20" uuid="99e0d875-64ab-4bc3-a153-79cc3f61ec77"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{LOAI_DICH_VU}.toString()]]></textFieldExpression>
+			</textField>
 		</band>
 		<band height="44">
 			<staticText>

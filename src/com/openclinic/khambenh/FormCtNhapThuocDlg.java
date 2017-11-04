@@ -1,5 +1,6 @@
 package com.openclinic.khambenh;
 
+import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.logging.log4j.LogManager;
@@ -28,6 +29,7 @@ import com.model.dao.ThuocListDlg;
 import com.openclinic.DatePicker;
 import com.openclinic.LoginDlg;
 import com.openclinic.utils.Utils;
+
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.FormData;
@@ -801,6 +803,43 @@ public class FormCtNhapThuocDlg extends Dialog {
 	}
 
     private void saveCtNhapthuocDlg(){
+    	boolean isError = false;
+    	if( Utils.getInt( txtSOLUONG.getText() ) <= 0){
+    		txtSOLUONG.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
+    		txtSOLUONG.forceFocus();
+    		isError = true;
+    	}
+    	else{
+    		txtSOLUONG.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+    	}
+    	if( Utils.getInt( txtDONGIA.getText() ) <= 0){
+    		txtDONGIA.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
+    		txtDONGIA.forceFocus();
+    		isError = true;
+    	}
+    	else{
+    		txtDONGIA.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+    	}
+    	if( txtLOT_ID.getText().trim().length()== 0){
+    		txtLOT_ID.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
+    		txtLOT_ID.forceFocus();
+    		isError = true;
+    	}
+    	else{
+    		txtLOT_ID.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+    	}
+    	if( Utils.differenceInDay(Calendar.getInstance(), txtHANDUNG.getDate2()) < 10 ){
+    		txtHANDUNG.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
+    		txtHANDUNG.forceFocus();
+    		isError = true;
+    	}
+    	else{
+    		txtHANDUNG.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+    	}
+    	
+    	if(isError == true ){
+    		return;
+    	}
         if(objCtNhapthuoc == null){
         	logger.info("saveCtNhapthuocDlg objCtNhapthuoc " );
             objCtNhapthuoc = new CtNhapthuoc();

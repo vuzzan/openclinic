@@ -51,6 +51,12 @@ public class TableLabelProviderBenhNhan extends LabelProvider implements ITableL
 				//String tenKhoa = LoginDlg.hashKhoaPhong.get(MAKHOA);
 				return MAKHOA;
 			}
+			else if(columnIndex==9){
+				String MALK ="["+obj.getString("MA_LK").toString()+"] "+"("+obj.getString("BN_ID").toString()+")";
+				//String tenKhoa = LoginDlg.hashKhoaPhong.get(MAKHOA);
+				return MALK;
+			}
+			
 		}
 		return "";
 	}

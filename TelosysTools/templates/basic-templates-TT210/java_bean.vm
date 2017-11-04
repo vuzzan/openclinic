@@ -246,6 +246,7 @@ this.${field.databaseName} = new java.lang.${field.formattedType(10)}(0.0);    /
 					.addParameter("actionid", 1)
 					.executeUpdate();
             logger.info("Add [$entity.databaseTable] OK: NewID="+createdId);
+            logger.info("Add [$entity.databaseTable] OK: Data="+this.toString());
 		} catch (Exception t) {
             logger.error("Add [$entity.databaseTable] Error: "+"\nException=\n"+ t);
 			throw new RuntimeException("ADD [$entity.databaseTable]. ERROR: "+t.getMessage(), t);
@@ -267,6 +268,11 @@ this.${field.databaseName} = new java.lang.${field.formattedType(10)}(0.0);    /
 		try {
 			connection = DbHelper.getSql2o();
             connection.setRollbackOnException(false);
+            $entity.name temp = ${entity.name}.load(this.#foreach( $field in $entity.keyAttributes)${field.databaseName}#end);
+            if(temp!=null){
+            	logger.info("Begin Update [$entity.databaseTable]: "+temp.toString());
+            }
+			//
 			String sql = "update ${entity.databaseTable} set#foreach( $field in $entity.nonKeyAttributes ) ${field.databaseName}=:${field.databaseName}#if( $foreach.hasNext ),#end#end where #foreach( $field in $entity.keyAttributes)${field.databaseName}#end=:#foreach( $field in $entity.keyAttributes)${field.databaseName}#end";
 			connection
 					.createQuery(
@@ -278,7 +284,7 @@ this.${field.databaseName} = new java.lang.${field.formattedType(10)}(0.0);    /
 					.addParameter("#foreach( $field in $entity.keyAttributes)${field.databaseName}#end", this.#foreach( $field in $entity.keyAttributes)${field.databaseName}#end)
 					.executeUpdate();
             logger.info("Update [$entity.databaseTable] OK: ID="+#foreach( $field in $entity.keyAttributes)${field.databaseName}#end);
-            logger.info("Update [$entity.databaseTable] debug: "+toString());
+            logger.info("End   Update [$entity.databaseTable]: "+toString());
             connection
 					.createQuery(
 							"insert into action_log(u_id,u_action,dbtable,actionid,fieldid) values(:u_id,:u_action,:dbtable,:actionid,:fieldid)",

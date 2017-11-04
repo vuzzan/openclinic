@@ -1,6 +1,7 @@
 package com.openclinic;
 
 import java.io.File;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,8 +27,17 @@ import com.openclinic.utils.Utils;
 public class PingIP {
 
 	public static void main(String[] args) {
-		double taxVAT = Utils.getDouble("0.1");
-		System.out.println(taxVAT);
+		String temp = "49 – 426";
+		//String tmp[] = temp.split(";");
+		System.out.println(temp);
+		System.out.println(temp.replaceAll("–", ""));
+		System.out.println(temp);
+//		DatePicker txtNgaySinh = new DatePicker(null, 0);
+//		txtNgaySinh.setText("2012");
+//		double monthDiff = Utils.monthsBetween(Calendar.getInstance(), txtNgaySinh.getDate2());
+//		System.out.println(monthDiff);
+//		double taxVAT = Utils.getDouble("0.1");
+//		System.out.println(taxVAT);
 
 //		System.out.println(  Utils.getDatetime(new Date(), "dd/MM/YYYY") );
 //		String TEN_BENH_NHAN = String.format("%5.5s", "MA_NOI_CHUYEN").trim();

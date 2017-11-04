@@ -157,6 +157,7 @@ public class LoginDlg {
 		
 
 		startApp();
+		
 		shellLogin.open();
 		shellLogin.layout();
 		while (!shellLogin.isDisposed()) {
@@ -189,6 +190,9 @@ public class LoginDlg {
 		Integer MUCLUONGCOSO = ini.getIntegerProperty("CONF", "MUCLUONGCOSO");
 		if(MUCLUONGCOSO==null){
 			Main.MAX_MUCLUONGCOSO = 1150000;
+		}
+		else{
+			Main.MAX_MUCLUONGCOSO = MUCLUONGCOSO.intValue();
 		}
 		Integer GIAKHAMVIENPHI= ini.getIntegerProperty("CONF", "GIAKHAMVIENPHI");
 		if(GIAKHAMVIENPHI==null){
@@ -272,6 +276,7 @@ public class LoginDlg {
 
 		
 		DbHelper.startConnection();
+		loadCacheDB(DbHelper.getSql2o());
 		//
 		
 	}
@@ -290,6 +295,12 @@ public class LoginDlg {
 				//
 				rememberLogin( button.getSelection() );
 				//
+				String sql = "SELECT * FROM phanquyen where U_ID="+DbHelper.getCurrentSessionUserId();
+				//logger.info("Get cache" + sql);
+				List<Phanquyen> listPhanquyen = DbHelper.getSql2o().createQuery(sql).executeAndFetch(Phanquyen.class);
+				for (Phanquyen objPhanquyen : listPhanquyen) {
+					DbHelper.hashDataPhanquyen.put(objPhanquyen.TABLE_NAME, objPhanquyen);
+				}
 //				shlLogin.setMinimized(true);
 //				//
 				display = shellLogin.getDisplay();
@@ -621,7 +632,7 @@ public class LoginDlg {
 				//
 				DbHelper.setCurrentSessionUserId(list.get(0));
 				//
-				loadCacheDB(con);
+				//loadCacheDB(con);
 				DbHelper.logDB("" + txtId.getText() + " login successful");
 				return list.get(0);
 				//
@@ -690,12 +701,12 @@ public class LoginDlg {
 			DbHelper.hashKhoaPhongMAKHOA.put(obj.KP_MAKHOA, obj);
 		}
 		
-		sql = "SELECT * FROM phanquyen where U_ID="+DbHelper.getCurrentSessionUserId();
-		//logger.info("Get cache" + sql);
-		List<Phanquyen> listPhanquyen = con.createQuery(sql).executeAndFetch(Phanquyen.class);
-		for (Phanquyen obj : listPhanquyen) {
-			DbHelper.hashDataPhanquyen.put(obj.TABLE_NAME, obj);
-		}
+//		sql = "SELECT * FROM phanquyen where U_ID="+DbHelper.getCurrentSessionUserId();
+//		//logger.info("Get cache" + sql);
+//		List<Phanquyen> listPhanquyen = con.createQuery(sql).executeAndFetch(Phanquyen.class);
+//		for (Phanquyen obj : listPhanquyen) {
+//			DbHelper.hashDataPhanquyen.put(obj.TABLE_NAME, obj);
+//		}
 		sql = "SELECT * FROM users where LOAI='BS' order by U_NAME";
 		//logger.info("Get cache" + sql);
 		DbHelper.listUsers = con.createQuery(sql).executeAndFetch(Users.class);
@@ -703,6 +714,13 @@ public class LoginDlg {
 			DbHelper.hashDataUsers.put(obj.U_NAME, obj);
 			DbHelper.hashDataUsersMaCCHN.put(obj.MACCHN, obj);
 		}
+		
+		DbHelper.hashLoaiDichVu.put("1", "Xét nghiệm");
+		DbHelper.hashLoaiDichVu.put("2", "Chẩn đoán hình ảnh");
+		DbHelper.hashLoaiDichVu.put("3", "Thăm dò chức năng");
+		DbHelper.hashLoaiDichVu.put("8", "Thủ thuật, phẫu thuật");
+		DbHelper.hashLoaiDichVu.put("14", "Giường điều trị ngoại trú");
+		DbHelper.hashLoaiDichVu.put("13", "Khám bệnh");
 //		List<Row> listKhoaphong = DbHelper.getSql2o().open().createQuery(sql)
 //				.executeAndFetchTable().rows();
 //		for (Row obj : listKhoaphong) {

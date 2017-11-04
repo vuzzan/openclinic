@@ -105,6 +105,8 @@ import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.events.TraverseEvent;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.GridData;
 
 public class FormKhamBenhDlg extends Dialog {
 	private class TableLabelProvider extends LabelProvider implements
@@ -238,7 +240,7 @@ public class FormKhamBenhDlg extends Dialog {
 	private Combo cbTenBenh;
 	private Combo cbMabenhKhac;
 	private Combo cbTenBenhPhu;
-	private Label txtTenBenhPhu;
+	private Text txtTenBenhPhu;
 
 	private Button btnRadio1;
 	private Button btnRadio2;
@@ -326,8 +328,6 @@ public class FormKhamBenhDlg extends Dialog {
 
 	private Combo cbBenhBanDau;
 
-	private Label lblTONGCONG;
-
 	private Button btnVp;
 	private Text txtLieuDung;
 
@@ -337,6 +337,8 @@ public class FormKhamBenhDlg extends Dialog {
 
 	private static TimerThread timerThread;
 	public static List<Row> listData = null;
+	private Text txtTongCong;
+	private Text txtInfo;
 
 	/**
 	 * Create the dialog.
@@ -378,7 +380,7 @@ public class FormKhamBenhDlg extends Dialog {
 				keyPress(e);
 			}
 		});
-		shellKhamBenh.setSize(1046, 683);
+		shellKhamBenh.setSize(1046, 730);
 		shellKhamBenh.setText("Phiên Khám Bệnh");
 
 		createContents();
@@ -405,8 +407,10 @@ public class FormKhamBenhDlg extends Dialog {
 		cbListBacsiThuoc.select(0);
 
 		startDialog();
-
-		shellKhamBenh.setMaximized(true);
+		//
+		timerThread = new TimerThread();
+		timerThread.start();
+		// shellKhamBenh.setMaximized(true);
 		shellKhamBenh.open();
 		shellKhamBenh.layout();
 		while (!shellKhamBenh.isDisposed()) {
@@ -420,7 +424,7 @@ public class FormKhamBenhDlg extends Dialog {
 	protected void muaPhieuXetNghiem() {
 		if (objPhieuKhamBenh == null) {
 			setCHI_XET_NGHIEM(1);
-			KIEU_THANH_TOAN = Utils.THANHTOAN_VIENPHI;
+			KIEU_THANH_TOAN = Utils.THANHTOAN_MUA_CLS;
 		} else {
 			if (objPhieuKhamBenh.STS > 0) {
 				//
@@ -437,21 +441,21 @@ public class FormKhamBenhDlg extends Dialog {
 				objCongKham = null;
 				//
 				setCHI_XET_NGHIEM(1);
-				KIEU_THANH_TOAN = Utils.THANHTOAN_VIENPHI;
+				KIEU_THANH_TOAN = Utils.THANHTOAN_MUA_CLS;
 			} else {
 				return;
 			}
 			//
 		}
-		for (DvChitiet obj : listCLSData) {
-			if (obj.MA_BAC_SI == null || obj.MA_BAC_SI.length() == 0) {
-				MessageDialog.openError(shellKhamBenh, "Có lỗi",
-						"Cần chỉ định BS cho CLS");
-				tabFolder.setSelection(1);
-				setFocusTabFolder();
-				return;
-			}
-		}
+//		for (DvChitiet obj : listCLSData) {
+//			if (obj.MA_BAC_SI == null || obj.MA_BAC_SI.length() == 0) {
+//				MessageDialog.openError(shellKhamBenh, "Có lỗi",
+//						"Cần chỉ định BS cho CLS");
+//				tabFolder.setSelection(1);
+//				setFocusTabFolder();
+//				return;
+//			}
+//		}
 		if (savePhieuXetNghiem() == false) {
 			printPhieuXetNghiem();
 			doSearchBenhNhan(1);
@@ -464,15 +468,15 @@ public class FormKhamBenhDlg extends Dialog {
 			setCHI_XET_NGHIEM(0);
 		}
 		if (CHI_XET_NGHIEM == 1) {
-			for (DvChitiet obj : listCLSData) {
-				if (obj.MA_BAC_SI == null || obj.MA_BAC_SI.length() == 0) {
-					MessageDialog.openError(shellKhamBenh, "Có lỗi",
-							"Cần chỉ định BS cho CLS");
-					tabFolder.setSelection(1);
-					setFocusTabFolder();
-					return;
-				}
-			}
+//			for (DvChitiet obj : listCLSData) {
+//				if (obj.MA_BAC_SI == null || obj.MA_BAC_SI.length() == 0) {
+//					MessageDialog.openError(shellKhamBenh, "Có lỗi",
+//							"Cần chỉ định BS cho CLS");
+//					tabFolder.setSelection(1);
+//					setFocusTabFolder();
+//					return;
+//				}
+//			}
 		}
 		if (saveFormKhamBenh() == false) {
 			doSearchBenhNhan(1);
@@ -647,7 +651,8 @@ public class FormKhamBenhDlg extends Dialog {
 			String sql = "select * from benh_nhan where LOWER(HO_TEN) like '%"
 					+ hoten + "%'";
 			// System.out.println(sql);
-			List<BenhNhan> listBenhNhan = con.createQuery(sql).executeAndFetch(BenhNhan.class);
+			List<BenhNhan> listBenhNhan = con.createQuery(sql).executeAndFetch(
+					BenhNhan.class);
 			// con.close();
 			if (listBenhNhan != null && listBenhNhan.size() >= 1) {
 				//
@@ -660,8 +665,7 @@ public class FormKhamBenhDlg extends Dialog {
 					objBenhNhan = dlg.objBenhNhan;
 					updateDlg();
 					cbKhoa.forceFocus();
-				}
-				else{
+				} else {
 					txtHoten.selectAll();
 					txtHoten.forceFocus();
 				}
@@ -727,7 +731,9 @@ public class FormKhamBenhDlg extends Dialog {
 			objBenhNhan.setMA_QUAN_LY(txtMathe.txtMaQuanLy);
 			//
 			if (objBenhNhan.BN_ID != null) {
-				objPhieuKhamBenh.BN_ID = objBenhNhan.BN_ID;
+				if (objPhieuKhamBenh != null) {
+					objPhieuKhamBenh.BN_ID = objBenhNhan.BN_ID;
+				}
 			}
 			updateDlg();
 		}
@@ -791,7 +797,7 @@ public class FormKhamBenhDlg extends Dialog {
 	private boolean savePhieuXetNghiem() {
 		boolean isError = false;
 		setCHI_XET_NGHIEM(1);
-		KIEU_THANH_TOAN = Utils.THANHTOAN_VIENPHI;
+		KIEU_THANH_TOAN = Utils.THANHTOAN_MUA_CLS;
 		selectVienPhi();
 
 		if (txtHoten.getText().trim().length() == 0) {
@@ -803,7 +809,6 @@ public class FormKhamBenhDlg extends Dialog {
 			txtHoten.setBackground(SWTResourceManager
 					.getColor(SWT.COLOR_YELLOW));
 		}
-
 		if (txtDiachi.getText().trim().length() == 0) {
 			tabFolder.setSelection(0);
 			txtDiachi.forceFocus();
@@ -901,10 +906,12 @@ public class FormKhamBenhDlg extends Dialog {
 		if (KIEU_THANH_TOAN == Utils.THANHTOAN_BHYT
 				|| KIEU_THANH_TOAN == Utils.THANHTOAN_BHYT_2) {
 			if (txtMathe.txtMathe == null
-					|| (txtMathe.txtMathe != null && txtMathe.txtMathe.trim()
-							.length() == 0)) {
+					|| (txtMathe.txtMathe != null && txtMathe.txtMathe.trim().length() == 0)
+							|| (txtMathe.txtMathe != null && txtMathe.txtMathe.trim().length() != 15 )
+							) {
 				tabFolder.setSelection(0);
-				System.out.println("SAVE TXTMATHE = " + txtMathe.txtMathe);
+				//System.out.println("SAVE TXTMATHE = " + txtMathe.txtMathe);
+				MessageDialog.openError(shellKhamBenh, "Có lỗi", "Mã thẻ không hợp lệ");
 				txtMathe.setColor(SWTResourceManager.getColor(SWT.COLOR_RED));
 				txtMathe.forceFocus();
 				isError = true;
@@ -912,6 +919,7 @@ public class FormKhamBenhDlg extends Dialog {
 				System.out.println("SAVE TXTMATHE2 = " + txtMathe.txtMathe);
 				txtMathe.setColor(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
 			}
+
 			if (cbNoiDKKB.getText().trim().length() == 0) {
 				tabFolder.setSelection(0);
 				cbNoiDKKB.forceFocus();
@@ -922,7 +930,21 @@ public class FormKhamBenhDlg extends Dialog {
 				cbNoiDKKB.setBackground(SWTResourceManager
 						.getColor(SWT.COLOR_YELLOW));
 			}
+
 			if (Utils.differenceInDay(txtTuNgay.getDate2(),
+					txtDenNgay.getDate2()) <= 0) {
+				tabFolder.setSelection(0);
+				txtTuNgay.setColor(SWTResourceManager.getColor(SWT.COLOR_RED));
+				txtDenNgay.setColor(SWTResourceManager.getColor(SWT.COLOR_RED));
+				isError = true;
+			} else {
+				txtTuNgay.setColor(SWTResourceManager
+						.getColor(SWT.COLOR_YELLOW));
+				txtDenNgay.setColor(SWTResourceManager
+						.getColor(SWT.COLOR_YELLOW));
+			}
+
+			if (Utils.differenceInDay(Calendar.getInstance(),
 					txtDenNgay.getDate2()) <= 0) {
 				tabFolder.setSelection(0);
 				txtDenNgay.setColor(SWTResourceManager.getColor(SWT.COLOR_RED));
@@ -931,7 +953,76 @@ public class FormKhamBenhDlg extends Dialog {
 				txtDenNgay.setColor(SWTResourceManager
 						.getColor(SWT.COLOR_YELLOW));
 			}
-
+			// Check Nam/Kham
+			double monthDiff = Utils.differenceInMonths(Calendar.getInstance(),
+					txtNgaySinh.getDate2());
+			if (monthDiff <= 6 * 12) {
+				// Tre em
+				if (cbKhoa.getText().indexOf("03.1899") > -1) {
+					// ok
+					// kham nhi
+				} else {
+					//
+					MessageDialog.openWarning(shellKhamBenh, "Có lỗi",
+							"Chọn khám nhi cho trẻ em < 6 tuổi. " + monthDiff);
+					cbKhoa.select(0);
+					cbKhoa.forceFocus();
+					isError = true;
+					//
+				}
+			}
+			// Check kham phu khoa
+			// Tre em
+			if (cbKhoa.getText().indexOf("13.1899") > -1) {
+				// Phu khoa
+				if (btnGIOITINH.getSelection() == true) {
+					// objBenhNhan.setGIOI_TINH(2);// NU OK
+				} else {
+					MessageDialog.openWarning(shellKhamBenh, "Có lỗi",
+							"Chọn khám phụ sản cho Nam Giới..");
+					cbKhoa.select(0);
+					cbKhoa.forceFocus();
+					isError = true;
+					// objBenhNhan.setGIOI_TINH(1);
+				}
+			}
+			// Load latest kham của mã thẻ đó
+			if (objPhieuKhamBenh == null
+					|| (objPhieuKhamBenh != null && objPhieuKhamBenh.MA_LK == 0)) {
+				BenhNhan objTemp = BenhNhan.load(txtMathe.getMaThe());
+				if (objTemp != null) {
+					// Load latest khambenh of this
+					List<KhamBenh> listTempKhamBenh = KhamBenh
+							.loadLatest(objTemp.BN_ID);
+					if (listTempKhamBenh != null && listTempKhamBenh.size() > 0) {
+						KhamBenh tmpKhamBenh = listTempKhamBenh.get(0);
+						if (tmpKhamBenh.NGAY_VAO != null) {
+							Date NGAY_VAO = Utils.getDateTimeByDate(
+									tmpKhamBenh.NGAY_VAO, "yyyyMMddHHmm");
+							if (Utils.differenceInDay(NGAY_VAO, Calendar
+									.getInstance().getTime()) < 1) {
+								MessageDialog.openWarning(shellKhamBenh,
+										"Có lỗi", "Bệnh nhân với mã thẻ "
+												+ objTemp.MA_THE
+												+ " đã khám trong ngày rồi..");
+								txtMathe.setColor(SWTResourceManager
+										.getColor(SWT.COLOR_RED));
+								isError = true;
+							} else {
+								txtMathe.setColor(SWTResourceManager
+										.getColor(SWT.COLOR_YELLOW));
+							}
+						} else {
+							txtMathe.setColor(SWTResourceManager
+									.getColor(SWT.COLOR_YELLOW));
+						}
+					} else {
+						txtMathe.setColor(SWTResourceManager
+								.getColor(SWT.COLOR_YELLOW));
+					}
+				}
+			}
+			//
 		} else {
 			txtMathe.setColor(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
 			cbNoiDKKB.setBackground(SWTResourceManager
@@ -978,13 +1069,15 @@ public class FormKhamBenhDlg extends Dialog {
 					.getColor(SWT.COLOR_YELLOW));
 		}
 
-		if (cbKhoa.getText().trim().length() == 0) {
-			tabFolder.setSelection(0);
-			cbKhoa.forceFocus();
-			cbKhoa.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
-			isError = true;
-		} else {
-			cbKhoa.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
+		if(CHI_XET_NGHIEM==0){
+			if (cbKhoa.getText().trim().length() == 0) {
+				tabFolder.setSelection(0);
+				cbKhoa.forceFocus();
+				cbKhoa.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
+				isError = true;
+			} else {
+				cbKhoa.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
+			}
 		}
 		if (isError) {
 			// waitingDlgHide();
@@ -1013,15 +1106,19 @@ public class FormKhamBenhDlg extends Dialog {
 				objPhieuKhamBenh.BN_ID = objBenhNhan.BN_ID;
 				objPhieuKhamBenh.TEN_BENH_NHAN = objBenhNhan.HO_TEN;
 				//
-				if (btnRadio1.getSelection() == true
-						|| btnRadio2.getSelection() == true) {
-					objPhieuKhamBenh.KIEU_TT = Utils.THANHTOAN_BHYT;
-				} else if (btnRadio3.getSelection() == true
-						|| btnRadio5.getSelection() == true) {
-					objPhieuKhamBenh.KIEU_TT = Utils.THANHTOAN_VIENPHI;
-				} else {
-					objPhieuKhamBenh.KIEU_TT = Utils.THANHTOAN_TAI_KHAM;
-				}
+				objPhieuKhamBenh.KIEU_TT = KIEU_THANH_TOAN;
+				// if (btnRadio1.getSelection() == true){
+				// objPhieuKhamBenh.KIEU_TT = Utils.THANHTOAN_BHYT;
+				// }
+				// else if (btnRadio2.getSelection() == true){
+				// objPhieuKhamBenh.KIEU_TT = Utils.THANHTOAN_BHYT_2;
+				// }
+				// else if (btnRadio3.getSelection() == true
+				// || btnRadio5.getSelection() == true) {
+				// objPhieuKhamBenh.KIEU_TT = Utils.THANHTOAN_VIENPHI;
+				// } else {
+				// objPhieuKhamBenh.KIEU_TT = Utils.THANHTOAN_TAI_KHAM;
+				// }
 				System.out.println("objPhieuKhamBenh.KIEU_TT = "
 						+ objPhieuKhamBenh.KIEU_TT + " KIEUTT="
 						+ KIEU_THANH_TOAN);
@@ -1127,15 +1224,26 @@ public class FormKhamBenhDlg extends Dialog {
 	protected void updateDlg() {
 		if (objBenhNhan != null && objBenhNhan.HO_TEN != null) {
 			// Read by barcode
+			String info = "";
 			txtMathe.setText(objBenhNhan.MA_THE);
 			txtHoten.setText(objBenhNhan.HO_TEN);
 			txtNgaySinh.setText(objBenhNhan.NGAY_SINH);
+			info += objBenhNhan.HO_TEN +". Tuổi: " +txtNgaySinh.getTuoi()+"("+objBenhNhan.NGAY_SINH+").";
 			if (objBenhNhan.GIOI_TINH.intValue() == 1) {
 				btnGIOITINH.setSelection(false);
 				btnGIOITINH.setText("NAM(1)");
+				info += " NAM.";
 			} else {
 				btnGIOITINH.setSelection(true);
 				btnGIOITINH.setText("NU(2)");
+				info += " NỮ.";
+			}
+			info += ""+objBenhNhan.DIA_CHI;
+			if(objBenhNhan.HO_TEN.length()>0){
+				txtInfo.setText(info);
+			}
+			else{
+				txtInfo.setText("");
 			}
 			txtDiachi.setText(objBenhNhan.DIA_CHI);
 			cbNoiDKKB.setText(objBenhNhan.MA_DKBD);
@@ -1199,17 +1307,20 @@ public class FormKhamBenhDlg extends Dialog {
 		}
 		//
 		if (objCongKham != null) {
-			
+			System.out.println("CONG KHAM -----"+objCongKham.toString());
+
 			if (objCongKham.TEN_DICH_VU == null) {
 				cbKhoa.select(0);
 			} else {
-				//cbKhoa.setText(objCongKham.MA_DICH_VU + "-" + objCongKham.TEN_DICH_VU + "(" + objCongKham.DON_GIA2 + ")");
+				// cbKhoa.setText(objCongKham.MA_DICH_VU + "-" +
+				// objCongKham.TEN_DICH_VU + "(" + objCongKham.DON_GIA2 + ")");
 			}
 			//
 		} else {
-			cbKhoa.select(0);
-			//cbKhoa.setText("");
-			//cbKhoa.setText("");
+			System.out.println("CONG KHAM KO CO");
+			cbKhoa.select(-1);
+			cbKhoa.setText("");
+			// cbKhoa.setText("");
 		}
 		// load list CLS
 		loadCanLamSan();
@@ -1330,6 +1441,10 @@ public class FormKhamBenhDlg extends Dialog {
 		tableColumn_16
 				.setToolTipText("Status của người bệnh, (Đang cận LS, xong cận LS nào đó hay chưa )");
 		tableColumn_16.setText("Khoa");
+		
+		TableColumn tblclmnMalkbnid = new TableColumn(tablePhieuKham, SWT.NONE);
+		tblclmnMalkbnid.setWidth(100);
+		tblclmnMalkbnid.setText("MA_LK/BNID");
 		tableViewerPhieuKham.setLabelProvider(new TableLabelProviderBenhNhan());
 		tableViewerPhieuKham.setContentProvider(new ContentProviderBenhNhan());
 		tableViewerPhieuKham.setInput(listData);
@@ -1348,10 +1463,13 @@ public class FormKhamBenhDlg extends Dialog {
 				if (element2 instanceof Row) {
 					Row kunde = (Row) element2;
 					// System.out.println( kunde.toString() );
-					return kunde.getString("HO_TEN").toUpperCase().contains(suchbegriff.toUpperCase()) ||
-							kunde.getString("MA_THE").toUpperCase().contains(suchbegriff.toUpperCase()) ||
-							(kunde.getInteger("MA_LK").intValue() == Utils
-									.getInt(suchbegriff));
+					return kunde.getString("HO_TEN").toUpperCase()
+							.contains(suchbegriff.toUpperCase())
+							|| kunde.getString("MA_THE").toUpperCase()
+									.contains(suchbegriff.toUpperCase())
+							|| (kunde.getInteger("MA_LK").intValue() == Utils.getInt(suchbegriff))
+							|| (kunde.getInteger("BN_ID").intValue() == Utils.getInt(suchbegriff))
+							;
 				}
 				return false;
 			}
@@ -1359,30 +1477,39 @@ public class FormKhamBenhDlg extends Dialog {
 		tableViewerPhieuKham.addFilter(searchFilter);
 
 		Composite compositePhieuKham = new Composite(shellKhamBenh, SWT.NONE);
-		fd_compositeListPhieuKham.bottom = new FormAttachment(100, -486);
+		fd_compositeListPhieuKham.bottom = new FormAttachment(compositePhieuKham, -6);
 		FormData fd_compositePhieuKham = new FormData();
-		fd_compositePhieuKham.top = new FormAttachment(compositeListPhieuKham,
-				6);
-
-		txtSearchPhieuKham = new Text(compositeListPhieuKham, SWT.BORDER);
-		txtSearchPhieuKham.setBackground(SWTResourceManager
-				.getColor(SWT.COLOR_GREEN));
-		txtSearchPhieuKham.setFont(SWTResourceManager.getFont("Tahoma", 14,
-				SWT.NORMAL));
-		txtSearchPhieuKham.setLayoutData(BorderLayout.NORTH);
-		txtSearchPhieuKham.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyReleased(KeyEvent e) {
-				tableViewerPhieuKham.refresh();
-				if (e.keyCode == 13 || e.keyCode == SWT.ARROW_DOWN) {
-					tablePhieuKham.forceFocus();
-				}
-			}
-		});
-
-		fd_compositePhieuKham.bottom = new FormAttachment(100, -10);
 		fd_compositePhieuKham.left = new FormAttachment(0, 10);
 		fd_compositePhieuKham.right = new FormAttachment(100, -10);
+		fd_compositePhieuKham.top = new FormAttachment(0, 213);
+		fd_compositePhieuKham.bottom = new FormAttachment(100);
+		
+		Composite compositeHeaderSearch = new Composite(compositeListPhieuKham, SWT.NONE);
+		compositeHeaderSearch.setLayoutData(BorderLayout.SOUTH);
+		compositeHeaderSearch.setLayout(new GridLayout(2, false));
+				
+						txtSearchPhieuKham = new Text(compositeHeaderSearch, SWT.BORDER);
+						GridData gd_txtSearchPhieuKham = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+						gd_txtSearchPhieuKham.widthHint = 177;
+						txtSearchPhieuKham.setLayoutData(gd_txtSearchPhieuKham);
+						txtSearchPhieuKham.setBackground(SWTResourceManager
+								.getColor(SWT.COLOR_GREEN));
+						txtSearchPhieuKham.setFont(SWTResourceManager.getFont("Tahoma", 14,
+								SWT.NORMAL));
+						
+						txtInfo = new Text(compositeHeaderSearch, SWT.NONE);
+						txtInfo.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
+						txtInfo.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
+						txtInfo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+						txtSearchPhieuKham.addKeyListener(new KeyAdapter() {
+							@Override
+							public void keyReleased(KeyEvent e) {
+								tableViewerPhieuKham.refresh();
+								if (e.keyCode == 13 || e.keyCode == SWT.ARROW_DOWN) {
+									tablePhieuKham.forceFocus();
+								}
+							}
+						});
 		compositePhieuKham.setLayoutData(fd_compositePhieuKham);
 		compositePhieuKham.setLayout(new BorderLayout(0, 0));
 
@@ -1411,11 +1538,11 @@ public class FormKhamBenhDlg extends Dialog {
 		});
 		tabFolder.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.BOLD));
 
-		TabItem tbtmThongtinBenhNhan = new TabItem(tabFolder, SWT.NONE);
-		tbtmThongtinBenhNhan.setToolTipText("Ctrl+1");
-		tbtmThongtinBenhNhan.setImage(SWTResourceManager.getImage(
+		TabItem tabItemThongtinBenhNhan = new TabItem(tabFolder, SWT.NONE);
+		tabItemThongtinBenhNhan.setToolTipText("Ctrl+1");
+		tabItemThongtinBenhNhan.setImage(SWTResourceManager.getImage(
 				FormKhamBenhDlg.class, "/png/person-3x.png"));
-		tbtmThongtinBenhNhan.setText("Thông tin (Ctrl+1)");
+		tabItemThongtinBenhNhan.setText("Thông tin (Ctrl+1)");
 
 		Composite compositeThongTinBenh = new Composite(tabFolder, SWT.NONE);
 		compositeThongTinBenh.addFocusListener(new FocusAdapter() {
@@ -1424,640 +1551,609 @@ public class FormKhamBenhDlg extends Dialog {
 				// System.out.println("FOR CUS MEEEEEE");
 			}
 		});
-		tbtmThongtinBenhNhan.setControl(compositeThongTinBenh);
-		compositeThongTinBenh.setLayout(new FormLayout());
+		tabItemThongtinBenhNhan.setControl(compositeThongTinBenh);
+		compositeThongTinBenh.setLayout(null);
+		
+				Group grpBhyt = new Group(compositeThongTinBenh, SWT.NONE);
+				grpBhyt.setBounds(0, 70, 939, 343);
+				grpBhyt.setFont(SWTResourceManager.getFont("Tahoma", 8, SWT.BOLD));
+				grpBhyt.addListener(SWT.KeyDown, new Listener() {
 
-		Composite compTheBHYT = new Composite(compositeThongTinBenh, SWT.NONE);
-		FormData fd_compTheBHYT = new FormData();
-		fd_compTheBHYT.top = new FormAttachment(0, 55);
-		fd_compTheBHYT.left = new FormAttachment(0);
-		compTheBHYT.setLayoutData(fd_compTheBHYT);
-		compTheBHYT.setLayout(null);
+					@Override
+					public void handleEvent(Event event) {
+						// System.out.println("EVENT FROM DATEPICKER");
+						checkCanNangTreem();
 
-		Group grpBhyt = new Group(compTheBHYT, SWT.NONE);
-		grpBhyt.setBounds(0, 0, 939, 203);
-		grpBhyt.setFont(SWTResourceManager.getFont("Tahoma", 11, SWT.BOLD));
-		grpBhyt.addListener(SWT.KeyDown, new Listener() {
-
-			@Override
-			public void handleEvent(Event event) {
-				// System.out.println("EVENT FROM DATEPICKER");
-				checkCanNangTreem();
-
-			}
-		});
-		grpBhyt.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				System.out.println("KEY EVENT RECV");
-				keyPress(e);
-			}
-		});
-		grpBhyt.addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusGained(FocusEvent e) {
-				System.out.println("PARENT FOCUS");
-				//
-				updateFormFromMaThe();
-				//
-				//
-				txtMathe.forceFocus();
-				//
-			}
-		});
-		grpBhyt.setText("Thông tin bệnh nhân");
-		grpBhyt.setLayout(null);
-
-		txtHoten = new Text(grpBhyt, SWT.BORDER);
-		txtHoten.setBounds(113, 22, 616, 28);
-		txtHoten.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.keyCode == 13) {
-					if (txtHoten.getText().length() > 500 && e.character == '$') {
-						extractData(txtHoten.getText() + "$");
-						e.doit = false;
-						return;
-					} else {
-						checkTheoTenBenhNhan();
-						if (txtNgaySinh.getTuoi() <= 6) {
-							cbKhoa.select(0);
-						}
-						cbKhoa.forceFocus();
+					}
+				});
+				grpBhyt.addKeyListener(new KeyAdapter() {
+					@Override
+					public void keyPressed(KeyEvent e) {
+						System.out.println("KEY EVENT RECV");
+						keyPress(e);
+					}
+				});
+				grpBhyt.addFocusListener(new FocusAdapter() {
+					@Override
+					public void focusGained(FocusEvent e) {
+						System.out.println("PARENT FOCUS");
+						//
+						updateFormFromMaThe();
+						//
+						//
+						txtMathe.forceFocus();
 						//
 					}
-				} else {
-					keyPress(e);
-				}
-			}
-		});
-		txtHoten.addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusLost(FocusEvent e) {
-				txtHoten.setText(Utils.doCapitalizeFirstLetterInString(txtHoten
-						.getText()));
-			}
-
-			@Override
-			public void focusGained(FocusEvent e) {
-				if (KIEU_THANH_TOAN == Utils.THANHTOAN_BHYT) {
-					checkMaTheAndLoad();
-				}
-				// System.out.println("focusLost MATHE " + txtMathe.getMaThe());
-			}
-		});
-		txtHoten.setFont(SWTResourceManager.getFont("Tahoma", 16, SWT.NORMAL));
-		txtHoten.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
-
-		txtNgaySinh = new DatePicker(grpBhyt, SWT.NONE);
-		txtNgaySinh.setBounds(113, 56, 127, 28);
-
-		txtCanNang = new Text(grpBhyt, SWT.BORDER);
-		txtCanNang.setBounds(293, 56, 57, 28);
-		txtCanNang.addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusGained(FocusEvent e) {
-				//
-				System.out.println(txtNgaySinh.getTuoi());
-				if(txtNgaySinh.getTuoi()<=6){
-					cbKhoa.select(0);
-				}
-				//
-				if (txtCanNang.getEditable() == false) {
-					btnGIOITINH.forceFocus();
-				}
-			}
-		});
-		txtCanNang.setText("");
-		txtCanNang
-				.setFont(SWTResourceManager.getFont("Tahoma", 16, SWT.NORMAL));
-		txtCanNang.setTextLimit(5);
-		txtCanNang.setEnabled(true);
-
-		btnGIOITINH = new Button(grpBhyt, SWT.TOGGLE);
-		btnGIOITINH.setBounds(402, 56, 97, 28);
-		btnGIOITINH.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.keyCode == '1') {
-					btnGIOITINH.setText("NAM(1)");
-					btnGIOITINH.setSelection(false);
-				} else if (e.keyCode == '2') {
-					btnGIOITINH.setText("NỮ(2)");
-					btnGIOITINH.setSelection(true);
-				}
-			}
-		});
-		btnGIOITINH.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				boolean gt = btnGIOITINH.getSelection();
-				if (gt == false) {
-					btnGIOITINH.setText("NAM(1)");
-				} else {
-					btnGIOITINH.setText("NỮ(2)");
-				}
-			}
-		});
-		btnGIOITINH.setImage(SWTResourceManager.getImage(FormKhamBenhDlg.class,
-				"/png/person-2x.png"));
-		btnGIOITINH.setFont(SWTResourceManager
-				.getFont("Tahoma", 14, SWT.NORMAL));
-		btnGIOITINH.setText("NAM(1)");
-		btnGIOITINH.setSelection(false);
-
-		Label lblNewLabel_1 = new Label(grpBhyt, SWT.NONE);
-		lblNewLabel_1.setBounds(10, 99, 97, 23);
-		lblNewLabel_1.setForeground(SWTResourceManager.getColor(SWT.COLOR_RED));
-		lblNewLabel_1.setFont(SWTResourceManager.getFont("Tahoma", 12,
-				SWT.NORMAL));
-		lblNewLabel_1.setText("Mã Thẻ");
-		txtMathe = new TheBHXH(grpBhyt, SWT.BORDER);
-		txtMathe.setBounds(113, 90, 386, 37);
-		txtMathe.addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusGained(FocusEvent e) {
-				// System.out.println("FOrcus to txtMathe");
-				txtMathe.setFocus();
-				// MessageDialog.openInformation(shellKhamBenh, "FOCUS",
-				// "FOCUS");
-			}
-
-			@Override
-			public void focusLost(FocusEvent e) {
-
-			}
-		});
-		txtMathe.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				keyPress(e);
-			}
-		});
-		txtMathe.setFont(SWTResourceManager.getFont("Tahoma", 16, SWT.NORMAL));
-
-
-		cbNoiDKKB = new Combo(grpBhyt, SWT.DROP_DOWN | SWT.BORDER);
-		cbNoiDKKB.setBounds(113, 129, 89, 33);
-		cbNoiDKKB
-				.setToolTipText("Bấm F4 để đổ danh sách nơi khám chữa bệnh, hoặc gõ vào tìm");
-		cbNoiDKKB.addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusGained(FocusEvent e) {
-				OS.SendMessage(cbNoiDKKB.handle, OS.CB_SHOWDROPDOWN, 0, 0);
-			}
-		});
-		cbNoiDKKB.addModifyListener(new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
-				onchangeNoiKCB();
-			}
-		});
-		cbNoiDKKB.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.keyCode == 13) {
-					String sql = "";
-					try (Connection con = DbHelper.getSql2o()) {
-						String searchText = cbNoiDKKB.getText().trim()
-								.toLowerCase();
-						sql = "SELECT * FROM ma_cskcb where LOWER(MA_CODE) like '%"
-								+ searchText
-								+ "%' or LOWER(MA_NAME) like '%"
-								+ searchText + "%' order by MA_RANK DESC";
-						System.out.println(sql);
-						java.util.List<MaCskcb> listMstXahuyen = con
-								.createQuery(sql)
-								.executeAndFetch(MaCskcb.class);
-						cbTenCSKCB.setVisible(true);
-						cbTenCSKCB.removeAll();
-						for (MaCskcb obj : listMstXahuyen) {
-							cbTenCSKCB.add(obj.MA_CODE + "-" + obj.MA_NAME);
-						}
-						cbTenCSKCB.select(0);
-						cbTenCSKCB.forceFocus();
-						OS.SendMessage(cbTenCSKCB.handle, OS.CB_SHOWDROPDOWN,
-								1, 0);
-						// con.close();
-					} catch (Exception ee) {
-						ee.printStackTrace();
-					}
-					return;
-				}
-				onchangeNoiKCB();
-			}
-		});
-		cbNoiDKKB.setFont(SWTResourceManager.getFont("Tahoma", 16, SWT.NORMAL));
-		cbNoiDKKB.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
-		cbNoiDKKB.setText("49172");
-
-		txtTuNgay = new DatePicker(grpBhyt, SWT.NONE);
-		txtTuNgay.setBounds(608, 94, 121, 28);
-
-		txtDenNgay = new DatePicker(grpBhyt, SWT.NONE);
-		txtDenNgay.setBounds(607, 128, 122, 28);
-
-		txtDiachi = new Text(grpBhyt, SWT.NONE);
-		txtDiachi.setBounds(113, 168, 616, 28);
-		txtDiachi.addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusLost(FocusEvent e) {
-				cbKhoa.forceFocus();
-			}
-		});
-		txtDiachi.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				System.out.println("KEY CODE = " + e.keyCode);
-				if (e.keyCode == 13) {
-					// search ma huyen xa
-					String sql = "";
-					try (Connection con = DbHelper.getSql2o()) {
-						String searchText = Utils
-								.doCapitalizeFirstLetterInString(txtDiachi
-										.getText());
-						sql = "SELECT * FROM mst_xahuyen where DC_VALUE like '%"
-								+ searchText + "%' order by DC_RANK DESC";
-						System.out.println(sql);
-						java.util.List<MstXahuyen> listMstXahuyen = con
-								.createQuery(sql)
-								// .addParameter("DC_VALUE", searchText)
-								.executeAndFetch(MstXahuyen.class);
-						System.out.println(listMstXahuyen.size());
-						cbMaHuyen.setVisible(true);
-						cbMaHuyen.removeAll();
-						for (MstXahuyen obj : listMstXahuyen) {
-							cbMaHuyen.add(obj.DC_ID + "-" + obj.DC_VALUE);
-							MstXahuyenCache.putMstXahuyen(obj);
-						}
-						cbMaHuyen.select(0);
-						// txtDiachi.setText(cbMaHuyen.getText());
-						cbMaHuyen.forceFocus();
-						OS.SendMessage(cbMaHuyen.handle, OS.CB_SHOWDROPDOWN, 1,
-								0);
-						// con.close();
-					} catch (Exception ee) {
-						ee.printStackTrace();
-					}
-					//
-				}
-				// else if(e.keyCode==SWT.TAB){
-				// //
-				// System.out.println("TAB");
-				// cbKhoa.forceFocus();
-				// return;
-				// //
-				// }
-				keyPress(e);
-			}
-		});
-		txtDiachi.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
-		txtDiachi.setFont(SWTResourceManager.getFont("Tahoma", 16, SWT.NORMAL));
-
-		Label lblaCh = new Label(grpBhyt, SWT.NONE);
-		lblaCh.setBounds(10, 173, 97, 23);
-		lblaCh.setText("Địa Chỉ");
-		lblaCh.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
-
-		Label lblHTn = new Label(grpBhyt, SWT.NONE);
-		lblHTn.setBounds(10, 27, 97, 23);
-		lblHTn.setForeground(SWTResourceManager.getColor(SWT.COLOR_RED));
-		lblHTn.setText("Họ Tên");
-		lblHTn.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
-
-		Label lblNgySinh = new Label(grpBhyt, SWT.NONE);
-		lblNgySinh.setBounds(10, 59, 97, 23);
-		lblNgySinh.setForeground(SWTResourceManager.getColor(SWT.COLOR_RED));
-		lblNgySinh.setText("Ngày Sinh");
-		lblNgySinh
-				.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
-
-		Label lblNikkcb = new Label(grpBhyt, SWT.NONE);
-		lblNikkcb.setBounds(10, 137, 97, 23);
-		lblNikkcb.setForeground(SWTResourceManager.getColor(SWT.COLOR_RED));
-		lblNikkcb.setText("Nơi ĐKKCB");
-		lblNikkcb.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
-
-		txtTenCSKCB = new Label(grpBhyt, SWT.NONE);
-		txtTenCSKCB.setBounds(208, 128, 291, 28);
-		txtTenCSKCB.setFont(SWTResourceManager
-				.getFont("Tahoma", 12, SWT.NORMAL));
-
-		Label lblTNgy = new Label(grpBhyt, SWT.NONE);
-		lblTNgy.setBounds(505, 94, 97, 23);
-		lblTNgy.setForeground(SWTResourceManager.getColor(SWT.COLOR_RED));
-		lblTNgy.setText("Từ Ngày");
-		lblTNgy.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
-
-		Label lblnNgy = new Label(grpBhyt, SWT.NONE);
-		lblnNgy.setBounds(504, 133, 97, 23);
-		lblnNgy.setForeground(SWTResourceManager.getColor(SWT.COLOR_RED));
-		lblnNgy.setText("Đến Ngày");
-		lblnNgy.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
-
-		cbMaHuyen = new Combo(grpBhyt, SWT.NONE);
-		cbMaHuyen.setBounds(113, 168, 599, 27);
-		cbMaHuyen.addModifyListener(new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
-				String dc[] = cbMaHuyen.getText().split("-");
-				if (dc.length == 2 && dc[1].length() > 0) {
-					txtDiachi.setText(dc[1]);
-				}
-			}
-		});
-		cbMaHuyen.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.keyCode == 13) {
-					// Choose
-					Sql2o sql2o = new Sql2o(Main.DB_URL, Main.DB_USER,
-							Main.DB_PASS);
-
-					String sql = "";
-					try (Connection con = sql2o.open()) {
-						cbMaHuyen.setVisible(false);
-						String dc[] = cbMaHuyen.getText().split("-");
-						int id = Integer.parseInt(dc[0]);
-						sql = "update mst_xahuyen set DC_RANK=DC_RANK+1 where DC_ID="
-								+ id;
-						Object res = con.createQuery(sql).executeUpdate()
-								.getKey();
-						// System.out.println(sql + res);
-						// /
-						if (dc.length == 2 && dc[1].length() > 0) {
-							txtDiachi.setText(dc[1]);
-						}
-						txtDiachi.forceFocus();
-						// con.close();
-					} catch (Exception ee) {
-						ee.printStackTrace();
-					}
-				}
-			}
-		});
-		cbMaHuyen.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
-		cbMaHuyen.setVisible(false);
-
-		Label lblHngDvcao = new Label(grpBhyt, SWT.NONE);
-		lblHngDvcao.setBounds(10, 210, 97, 23);
-		lblHngDvcao.setText("DVCao");
-		lblHngDvcao.setFont(SWTResourceManager
-				.getFont("Tahoma", 12, SWT.NORMAL));
-
-		txtDichVuCao = new Text(grpBhyt, SWT.NONE);
-		txtDichVuCao.setBounds(113, 205, 46, 28);
-		txtDichVuCao.addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusGained(FocusEvent e) {
-				System.out.println("GO txtDichVuCao");
-				cbKhoa.forceFocus();
-			}
-		});
-		txtDichVuCao.setEditable(false);
-		txtDichVuCao.setText("-");
-		txtDichVuCao.setFont(SWTResourceManager.getFont("Tahoma", 16,
-				SWT.NORMAL));
-
-		txtThoiDiem5Nam = new DatePicker(grpBhyt, SWT.NONE);
-		txtThoiDiem5Nam.setBounds(243, 205, 127, 28);
-		txtThoiDiem5Nam.setColor(SWTResourceManager.getColor(SWT.COLOR_GRAY));
-
-		Label lblThiim = new Label(grpBhyt, SWT.NONE);
-		lblThiim.setBounds(165, 210, 76, 23);
-		lblThiim.setText("Thời điểm");
-		lblThiim.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
-
-		Label lblTnChaM = new Label(grpBhyt, SWT.NONE);
-		lblTnChaM.setBounds(10, 240, 97, 23);
-		lblTnChaM.setText("Tên Cha mẹ");
-		lblTnChaM.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
-
-		txtTenChaMe = new Text(grpBhyt, SWT.BORDER);
-		txtTenChaMe.setBounds(113, 235, 616, 28);
-		txtTenChaMe.setEnabled(false);
-		txtTenChaMe.setEditable(false);
-		txtTenChaMe.setFont(SWTResourceManager
-				.getFont("Tahoma", 16, SWT.NORMAL));
-
-		Label lblNgyCp = new Label(grpBhyt, SWT.NONE);
-		lblNgyCp.setBounds(10, 269, 97, 23);
-		lblNgyCp.setText("Ngày cấp");
-		lblNgyCp.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
-
-		txtNgayCap = new DatePicker(grpBhyt, SWT.NONE);
-		txtNgayCap.setBounds(113, 269, 127, 28);
-		txtNgayCap.setColor(SWTResourceManager.getColor(SWT.COLOR_GRAY));
-
-		txtMaQuanLy = new Text(grpBhyt, SWT.BORDER);
-		txtMaQuanLy.setBounds(113, 298, 171, 28);
-		txtMaQuanLy.setEditable(false);
-		txtMaQuanLy.setFont(SWTResourceManager
-				.getFont("Tahoma", 16, SWT.NORMAL));
-
-		Label lblMQunL = new Label(grpBhyt, SWT.NONE);
-		lblMQunL.setBounds(10, 303, 97, 23);
-		lblMQunL.setText("Mã Quản Lý");
-		lblMQunL.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
-
-		Label lblChuiKtra = new Label(grpBhyt, SWT.NONE);
-		lblChuiKtra.setBounds(320, 303, 97, 23);
-		lblChuiKtra.setText("Chuỗi KTra");
-		lblChuiKtra.setFont(SWTResourceManager
-				.getFont("Tahoma", 12, SWT.NORMAL));
-
-		txtChuoiKiemTra = new Text(grpBhyt, SWT.BORDER);
-		txtChuoiKiemTra.setBounds(423, 298, 171, 28);
-		txtChuoiKiemTra.setEditable(false);
-		txtChuoiKiemTra.setFont(SWTResourceManager.getFont("Tahoma", 16,
-				SWT.NORMAL));
-
-		cbTenCSKCB = new Combo(grpBhyt, SWT.NONE);
-		cbTenCSKCB.setBounds(113, 128, 616, 27);
-		cbTenCSKCB.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.keyCode == 13) {
-					// Choose
-					String sql = "";
-					try (Connection con = DbHelper.getSql2o()) {
-						cbTenCSKCB.setVisible(false);
-						String dc[] = cbTenCSKCB.getText().split("-");
-						String id = dc[0].trim();
-						sql = "update ma_cskcb set MA_RANK=MA_RANK+1 where MA_CODE='"
-								+ id + "'";
-						con.createQuery(sql).executeUpdate();
-						// /
-						if (dc.length == 2 && dc[1].length() > 0) {
-							txtTenCSKCB.setText(dc[1].trim());
-						}
-						cbNoiDKKB.setText(id);
-						cbNoiDKKB.forceFocus();
-						// con.close();
-					} catch (Exception ee) {
-						ee.printStackTrace();
-					}
-				}
-			}
-		});
-		cbTenCSKCB
-				.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
-		cbTenCSKCB.setVisible(false);
-
-		Label lblNs = new Label(grpBhyt, SWT.NONE);
-		lblNs.setBounds(370, 61, 26, 23);
-		lblNs.setText("NS");
-		lblNs.setForeground(SWTResourceManager.getColor(SWT.COLOR_RED));
-		lblNs.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
-
-		lblKg = new Label(grpBhyt, SWT.NONE);
-		lblKg.setBounds(253, 61, 34, 23);
-		lblKg.setText("Cân");
-		lblKg.setForeground(SWTResourceManager.getColor(SWT.COLOR_RED));
-		lblKg.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
-
-		btnTHANHTOAN = new Button(grpBhyt, SWT.CHECK);
-		btnTHANHTOAN.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				if (DbHelper.currentSessionUserId.LOAI.toUpperCase().equals(
-						"ACCT") != true) {
-					String message = "Không có chỉ định thu chi. Chỉ nhân viên kế toán, thu ngân";
-					MessageDialog.openError(shellKhamBenh, "Có lỗi", message);
-					logger.info(message);
-				} else {
-					logger.info("Thay đổi tình trạng thanh toán"
-							+ DbHelper.currentSessionUserId.LOAI.toUpperCase());
-				}
-				//
-				if (objPhieuKhamBenh != null) {
-					System.out.println("objPhieuKhamBenh.NGAY_TTOAN="
-							+ objPhieuKhamBenh.NGAY_TTOAN);
-					if (objPhieuKhamBenh.NGAY_TTOAN.length() < 6) {
-						btnTHANHTOAN.setSelection(false);
-					} else {
-						btnTHANHTOAN.setSelection(true);
-					}
-				} else {
-					btnTHANHTOAN.setSelection(false);
-				}
-				//
-			}
-		});
-		btnTHANHTOAN.setImage(SWTResourceManager.getImage(
-				FormKhamBenhDlg.class, "/png/spreadsheet-3x.png"));
-		btnTHANHTOAN.setBounds(755, 23, 144, 37);
-		btnTHANHTOAN.setText("ĐÃ THANH TOÁN");
-		Group groupKhoa = new Group(compositeThongTinBenh, SWT.NONE);
-		FormData fd_groupKhoa = new FormData();
-		fd_groupKhoa.right = new FormAttachment(compTheBHYT, 0, SWT.RIGHT);
-		fd_groupKhoa.top = new FormAttachment(0, 264);
-		fd_groupKhoa.left = new FormAttachment(0);
-		groupKhoa.setLayoutData(fd_groupKhoa);
-
-		Label lblBsChnh = new Label(groupKhoa, SWT.NONE);
-		lblBsChnh.setText("Khoa/BS");
-		lblBsChnh.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
-		lblBsChnh.setBounds(10, 18, 97, 23);
-
-		cbKhoa = new Combo(groupKhoa, SWT.NONE);
-		cbKhoa.addTraverseListener(new TraverseListener() {
-			public void keyTraversed(TraverseEvent e) {
-
-			}
-		});
-		cbKhoa.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				System.out.println("widgetSelected text");
-				Dichvu congkham = DbHelper.hashCongKham.get(cbKhoa.getText());
-				//
-				if (congkham != null) {
-					objCongKham.DON_GIA = congkham.DON_GIA;
-					objCongKham.DON_GIA2 = congkham.DON_GIA2;
-					objCongKham.DV_ID = 1;
-					objCongKham.SO_LUONG = 1;
-					objCongKham.MA_DICH_VU = congkham.MA_DVKT;
-					objCongKham.TEN_DICH_VU = congkham.TEN_DVKT;
-					objCongKham.MA_BAC_SI = "";
-					objCongKham.MA_BENH = "";
-					objCongKham.MA_KHOA = DbHelper.getMAKHOA(congkham.MA_DVKT);
-					objCongKham.MA_NHOM = Utils.getInt(congkham.MANHOM_9324);
-					objCongKham.MA_PTTT = 1;
-					objCongKham.MA_VAT_TU = "";
-					// format = "yyyy-MM-dd HH:mm:ss";
-					objCongKham.NGAY_KQ = Utils.getDatetime(new Date(),
-							"yyyyMMddHHmm");
-					objCongKham.NGAY_YL = Utils.getDatetime(new Date(),
-							"yyyyMMddHHmm");
-					objCongKham.THANH_TIEN = objCongKham.DON_GIA2
-							* objCongKham.SO_LUONG;
-					objCongKham.TT_BH = 0;
-					objCongKham.TT_NB = 0;
-					objCongKham.TYLE_TT = 100;
-					//
-					cbListBacSiForm.removeAll();
-					cbListBacSiCLS.removeAll();
-					cbListBacsiThuoc.removeAll();
-					for (Users obj : DbHelper.listUsers) {
-						if (obj.MA_KHOA.equals(congkham.MA_DVKT) == true) {
-							cbListBacSiForm.add(obj.U_NAME);
-							cbListBacSiCLS.add(obj.U_NAME);
-							cbListBacsiThuoc.add(obj.U_NAME);
-						}
-					}
-					cbListBacSiForm.select(0);
-					cbListBacSiCLS.select(0);
-					cbListBacsiThuoc.select(0);
-				}
-				//
-				//				
-			}
-		});
-		cbKhoa.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				OS.SendMessage(cbKhoa.handle, OS.CB_SHOWDROPDOWN, 1, 0);
-				if(e.keyCode==13){
-					return;
-				}
-				//
-				keyPress(e);
-			}
-		});
-		cbKhoa.addModifyListener(new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
+				});
+				grpBhyt.setText("Thông tin bệnh nhân");
+				grpBhyt.setLayout(null);
 				
-			}
-		});
-		cbKhoa.setToolTipText("Bấm ENTER để tìm bệnh");
-		cbKhoa.setFont(SWTResourceManager.getFont("Tahoma", 16, SWT.NORMAL));
-		cbKhoa.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
-		cbKhoa.setBounds(112, 10, 616, 33);
-		cbKhoa.setText("");
+						txtHoten = new Text(grpBhyt, SWT.BORDER);
+						txtHoten.setBounds(113, 22, 503, 28);
+						txtHoten.addKeyListener(new KeyAdapter() {
+							@Override
+							public void keyPressed(KeyEvent e) {
+								//if (e.keyCode == 13 || (e.character == '$')) {
+								if (txtHoten.getText().length()>150) {
+									extractData(txtHoten.getText() + "$");
+									tabFolder.setSelection(0);
+									txtHoten.forceFocus();
+									e.doit = false;
+									return;
+								}
+								if (e.keyCode == 13) {
+									checkTheoTenBenhNhan();
+									if (txtNgaySinh.getTuoi() <= 6) {
+										cbKhoa.select(0);
+									}
+									cbKhoa.forceFocus();
+								} else {
+									keyPress(e);
+								}
+							}
+						});
+						txtHoten.addFocusListener(new FocusAdapter() {
+							@Override
+							public void focusLost(FocusEvent e) {
+								txtHoten.setText(Utils.doCapitalizeFirstLetterInString(txtHoten
+										.getText()));
+							}
 
-		cbListBacSiForm = new Combo(groupKhoa, SWT.NONE);
-		cbListBacSiForm.setToolTipText("List DS bac si theo khoa phong");
-		cbListBacSiForm.setFont(SWTResourceManager.getFont("Tahoma", 16,
-				SWT.NORMAL));
-		cbListBacSiForm.setBackground(SWTResourceManager
-				.getColor(SWT.COLOR_YELLOW));
-		cbListBacSiForm.setBounds(734, 10, 195, 33);
-		cbListBacSiForm.setText("");
+							@Override
+							public void focusGained(FocusEvent e) {
+								if (KIEU_THANH_TOAN == Utils.THANHTOAN_BHYT) {
+									checkMaTheAndLoad();
+								}
+								// System.out.println("focusLost MATHE " + txtMathe.getMaThe());
+							}
+						});
+						txtHoten.setFont(SWTResourceManager.getFont("Tahoma", 16, SWT.NORMAL));
+						txtHoten.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
+						
+								txtNgaySinh = new DatePicker(grpBhyt, SWT.NONE);
+								txtNgaySinh.setBounds(113, 56, 127, 28);
+								
+										txtCanNang = new Text(grpBhyt, SWT.BORDER);
+										txtCanNang.setBounds(293, 56, 57, 28);
+										txtCanNang.addFocusListener(new FocusAdapter() {
+											@Override
+											public void focusGained(FocusEvent e) {
+												//
+												//System.out.println(txtNgaySinh.getTuoi());
+												if (txtNgaySinh.getTuoi() <= 6) {
+													cbKhoa.select(0);
+													txtCanNang.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
+													return;
+												}
+												//
+												if (txtCanNang.getEditable() == false) {
+													btnGIOITINH.forceFocus();
+												}
+											}
+										});
+										txtCanNang.setText("");
+										txtCanNang.setFont(SWTResourceManager.getFont("Tahoma", 16, SWT.NORMAL));
+										txtCanNang.setTextLimit(5);
+										txtCanNang.setEnabled(true);
+										
+												btnGIOITINH = new Button(grpBhyt, SWT.TOGGLE);
+												btnGIOITINH.setBounds(402, 56, 97, 28);
+												btnGIOITINH.addKeyListener(new KeyAdapter() {
+													@Override
+													public void keyPressed(KeyEvent e) {
+														if (e.keyCode == '1') {
+															btnGIOITINH.setText("NAM(1)");
+															btnGIOITINH.setSelection(false);
+														} else if (e.keyCode == '2') {
+															btnGIOITINH.setText("NỮ(2)");
+															btnGIOITINH.setSelection(true);
+														}
+													}
+												});
+												btnGIOITINH.addSelectionListener(new SelectionAdapter() {
+													@Override
+													public void widgetSelected(SelectionEvent e) {
+														boolean gt = btnGIOITINH.getSelection();
+														if (gt == false) {
+															btnGIOITINH.setText("NAM(1)");
+														} else {
+															btnGIOITINH.setText("NỮ(2)");
+														}
+													}
+												});
+												btnGIOITINH.setImage(SWTResourceManager.getImage(FormKhamBenhDlg.class,
+														"/png/person-2x.png"));
+												btnGIOITINH.setFont(SWTResourceManager
+														.getFont("Tahoma", 14, SWT.NORMAL));
+												btnGIOITINH.setText("NAM(1)");
+												btnGIOITINH.setSelection(false);
+												
+														txtDiachi = new Text(grpBhyt, SWT.NONE);
+														txtDiachi.setBounds(113, 89, 503, 28);
+														txtDiachi.addFocusListener(new FocusAdapter() {
+															@Override
+															public void focusLost(FocusEvent e) {
+																cbKhoa.forceFocus();
+															}
+														});
+														txtDiachi.addKeyListener(new KeyAdapter() {
+															@Override
+															public void keyPressed(KeyEvent e) {
+																System.out.println("KEY CODE = " + e.keyCode);
+																if (e.keyCode == 13) {
+																	// search ma huyen xa
+																	String sql = "";
+																	try (Connection con = DbHelper.getSql2o()) {
+																		String searchText = Utils
+																				.doCapitalizeFirstLetterInString(txtDiachi
+																						.getText());
+																		sql = "SELECT * FROM mst_xahuyen where DC_VALUE like '%"
+																				+ searchText + "%' order by DC_RANK DESC";
+																		System.out.println(sql);
+																		java.util.List<MstXahuyen> listMstXahuyen = con
+																				.createQuery(sql)
+																				// .addParameter("DC_VALUE", searchText)
+																				.executeAndFetch(MstXahuyen.class);
+																		System.out.println(listMstXahuyen.size());
+																		cbMaHuyen.setVisible(true);
+																		cbMaHuyen.removeAll();
+																		for (MstXahuyen obj : listMstXahuyen) {
+																			cbMaHuyen.add(obj.DC_ID + "-" + obj.DC_VALUE);
+																			MstXahuyenCache.putMstXahuyen(obj);
+																		}
+																		cbMaHuyen.select(0);
+																		// txtDiachi.setText(cbMaHuyen.getText());
+																		cbMaHuyen.forceFocus();
+																		OS.SendMessage(cbMaHuyen.handle, OS.CB_SHOWDROPDOWN, 1,
+																				0);
+																		// con.close();
+																	} catch (Exception ee) {
+																		ee.printStackTrace();
+																	}
+																	//
+																}
+																// else if(e.keyCode==SWT.TAB){
+																// //
+																// System.out.println("TAB");
+																// cbKhoa.forceFocus();
+																// return;
+																// //
+																// }
+																keyPress(e);
+															}
+														});
+														txtDiachi.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
+														txtDiachi.setFont(SWTResourceManager.getFont("Tahoma", 16, SWT.NORMAL));
+														
+																Label lbDiaChi = new Label(grpBhyt, SWT.NONE);
+																lbDiaChi.setBounds(10, 94, 97, 23);
+																lbDiaChi.setText("Địa Chỉ");
+																lbDiaChi.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
+																
+																		Label lblNewLabel_1 = new Label(grpBhyt, SWT.NONE);
+																		lblNewLabel_1.setBounds(10, 132, 97, 23);
+																		lblNewLabel_1.setForeground(SWTResourceManager.getColor(SWT.COLOR_RED));
+																		lblNewLabel_1.setFont(SWTResourceManager.getFont("Tahoma", 12,
+																				SWT.NORMAL));
+																		lblNewLabel_1.setText("Mã Thẻ");
+																		txtMathe = new TheBHXH(grpBhyt, SWT.BORDER);
+																		txtMathe.setBounds(113, 123, 386, 37);
+																		txtMathe.addFocusListener(new FocusAdapter() {
+																			@Override
+																			public void focusGained(FocusEvent e) {
+																				// System.out.println("FOrcus to txtMathe");
+																				txtMathe.setFocus();
+																				// MessageDialog.openInformation(shellKhamBenh, "FOCUS",
+																				// "FOCUS");
+																			}
+
+																			@Override
+																			public void focusLost(FocusEvent e) {
+
+																			}
+																		});
+																		txtMathe.addKeyListener(new KeyAdapter() {
+																			@Override
+																			public void keyPressed(KeyEvent e) {
+																				keyPress(e);
+																			}
+																		});
+																		txtMathe.setFont(SWTResourceManager.getFont("Tahoma", 16, SWT.NORMAL));
+																		
+																				cbNoiDKKB = new Combo(grpBhyt, SWT.DROP_DOWN | SWT.BORDER);
+																				cbNoiDKKB.setBounds(113, 162, 89, 33);
+																				cbNoiDKKB
+																						.setToolTipText("Bấm F4 để đổ danh sách nơi khám chữa bệnh, hoặc gõ vào tìm");
+																				cbNoiDKKB.addFocusListener(new FocusAdapter() {
+																					@Override
+																					public void focusGained(FocusEvent e) {
+																						OS.SendMessage(cbNoiDKKB.handle, OS.CB_SHOWDROPDOWN, 0, 0);
+																					}
+																				});
+																				cbNoiDKKB.addModifyListener(new ModifyListener() {
+																					public void modifyText(ModifyEvent e) {
+																						onchangeNoiKCB();
+																					}
+																				});
+																				cbNoiDKKB.addKeyListener(new KeyAdapter() {
+																					@Override
+																					public void keyPressed(KeyEvent e) {
+																						if (e.keyCode == 13) {
+																							String sql = "";
+																							try (Connection con = DbHelper.getSql2o()) {
+																								String searchText = cbNoiDKKB.getText().trim()
+																										.toLowerCase();
+																								sql = "SELECT * FROM ma_cskcb where LOWER(MA_CODE) like '%"
+																										+ searchText
+																										+ "%' or LOWER(MA_NAME) like '%"
+																										+ searchText + "%' order by MA_RANK DESC";
+																								System.out.println(sql);
+																								java.util.List<MaCskcb> listMstXahuyen = con
+																										.createQuery(sql)
+																										.executeAndFetch(MaCskcb.class);
+																								cbTenCSKCB.setVisible(true);
+																								cbTenCSKCB.removeAll();
+																								for (MaCskcb obj : listMstXahuyen) {
+																									cbTenCSKCB.add(obj.MA_CODE + "-" + obj.MA_NAME);
+																								}
+																								cbTenCSKCB.select(0);
+																								cbTenCSKCB.forceFocus();
+																								OS.SendMessage(cbTenCSKCB.handle, OS.CB_SHOWDROPDOWN,
+																										1, 0);
+																								// con.close();
+																							} catch (Exception ee) {
+																								ee.printStackTrace();
+																							}
+																							return;
+																						}
+																						else{
+																							keyPress(e);
+																						}
+																						onchangeNoiKCB();
+																					}
+																				});
+																				cbNoiDKKB.setFont(SWTResourceManager.getFont("Tahoma", 16, SWT.NORMAL));
+																				cbNoiDKKB.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
+																				cbNoiDKKB.setText("49172");
+																				
+																						txtTuNgay = new DatePicker(grpBhyt, SWT.NONE);
+																						txtTuNgay.setToolTipText("Từ ngày 2");
+																						txtTuNgay.setBounds(112, 201, 144, 28);
+																						
+																								txtDenNgay = new DatePicker(grpBhyt, SWT.NONE);
+																								txtDenNgay.setToolTipText("Đến ngày 1");
+																								txtDenNgay.setBounds(354, 201, 145, 28);
+																								
+																								
+																										Label lblHTn = new Label(grpBhyt, SWT.NONE);
+																										lblHTn.setBounds(10, 27, 97, 23);
+																										lblHTn.setForeground(SWTResourceManager.getColor(SWT.COLOR_RED));
+																										lblHTn.setText("Họ Tên");
+																										lblHTn.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
+																										
+																												Label lblNgySinh = new Label(grpBhyt, SWT.NONE);
+																												lblNgySinh.setBounds(10, 59, 97, 23);
+																												lblNgySinh.setForeground(SWTResourceManager.getColor(SWT.COLOR_RED));
+																												lblNgySinh.setText("Ngày Sinh");
+																												lblNgySinh
+																														.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
+																												
+																														Label lblNikkcb = new Label(grpBhyt, SWT.NONE);
+																														lblNikkcb.setBounds(10, 170, 97, 23);
+																														lblNikkcb.setForeground(SWTResourceManager.getColor(SWT.COLOR_RED));
+																														lblNikkcb.setText("Nơi ĐKKCB");
+																														lblNikkcb.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
+																														
+																																txtTenCSKCB = new Label(grpBhyt, SWT.NONE);
+																																txtTenCSKCB.setBounds(208, 166, 386, 28);
+																																txtTenCSKCB.setFont(SWTResourceManager
+																																		.getFont("Tahoma", 12, SWT.NORMAL));
+																																
+																																		Label lblTNgy = new Label(grpBhyt, SWT.NONE);
+																																		lblTNgy.setBounds(10, 201, 76, 23);
+																																		lblTNgy.setForeground(SWTResourceManager.getColor(SWT.COLOR_RED));
+																																		lblTNgy.setText("Từ Ngày");
+																																		lblTNgy.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
+																																		
+																																				Label lblnNgy = new Label(grpBhyt, SWT.NONE);
+																																				lblnNgy.setBounds(259, 201, 76, 23);
+																																				lblnNgy.setForeground(SWTResourceManager.getColor(SWT.COLOR_RED));
+																																				lblnNgy.setText("Đến Ngày");
+																																				lblnNgy.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
+																																				
+																																						cbMaHuyen = new Combo(grpBhyt, SWT.NONE);
+																																						cbMaHuyen.setBounds(113, 168, 470, 27);
+																																						cbMaHuyen.addModifyListener(new ModifyListener() {
+																																							public void modifyText(ModifyEvent e) {
+																																								String dc[] = cbMaHuyen.getText().split("-");
+																																								if (dc.length == 2 && dc[1].length() > 0) {
+																																									txtDiachi.setText(dc[1]);
+																																								}
+																																							}
+																																						});
+																																						cbMaHuyen.addKeyListener(new KeyAdapter() {
+																																							@Override
+																																							public void keyPressed(KeyEvent e) {
+																																								if (e.keyCode == 13) {
+																																									// Choose
+																																									Sql2o sql2o = new Sql2o(Main.DB_URL, Main.DB_USER,
+																																											Main.DB_PASS);
+
+																																									String sql = "";
+																																									try (Connection con = sql2o.open()) {
+																																										cbMaHuyen.setVisible(false);
+																																										String dc[] = cbMaHuyen.getText().split("-");
+																																										int id = Integer.parseInt(dc[0]);
+																																										sql = "update mst_xahuyen set DC_RANK=DC_RANK+1 where DC_ID="
+																																												+ id;
+																																										Object res = con.createQuery(sql).executeUpdate()
+																																												.getKey();
+																																										// System.out.println(sql + res);
+																																										// /
+																																										if (dc.length == 2 && dc[1].length() > 0) {
+																																											txtDiachi.setText(dc[1]);
+																																										}
+																																										txtDiachi.forceFocus();
+																																										// con.close();
+																																									} catch (Exception ee) {
+																																										ee.printStackTrace();
+																																									}
+																																								}
+																																							}
+																																						});
+																																						cbMaHuyen.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
+																																						cbMaHuyen.setVisible(false);
+																																						
+																																								Label lblHngDvcao = new Label(grpBhyt, SWT.NONE);
+																																								lblHngDvcao.setBounds(10, 239, 97, 23);
+																																								lblHngDvcao.setText("DVCao");
+																																								lblHngDvcao.setFont(SWTResourceManager
+																																										.getFont("Tahoma", 12, SWT.NORMAL));
+																																								
+																																										txtDichVuCao = new Text(grpBhyt, SWT.NONE);
+																																										txtDichVuCao.setBounds(113, 234, 46, 28);
+																																										txtDichVuCao.addFocusListener(new FocusAdapter() {
+																																											@Override
+																																											public void focusGained(FocusEvent e) {
+																																												// System.out.println("GO txtDichVuCao");
+																																												// cbKhoa.forceFocus();
+																																											}
+																																										});
+																																										txtDichVuCao.setText("-");
+																																										txtDichVuCao.setFont(SWTResourceManager.getFont("Tahoma", 16,
+																																												SWT.NORMAL));
+																																										txtDichVuCao.addKeyListener(new KeyAdapter() {
+																																											@Override
+																																											public void keyPressed(KeyEvent e) {
+																																												keyPress(e);
+																																											}
+																																										});
+																																										txtThoiDiem5Nam = new DatePicker(grpBhyt, SWT.NONE);
+																																										txtThoiDiem5Nam.setBounds(243, 234, 127, 28);
+																																										txtThoiDiem5Nam.setColor(SWTResourceManager.getColor(SWT.COLOR_GRAY));
+																																										txtThoiDiem5Nam.addKeyListener(new KeyAdapter() {
+																																											@Override
+																																											public void keyPressed(KeyEvent e) {
+																																												keyPress(e);
+																																											}
+																																										});
+																																										
+																																												Label lblThiim = new Label(grpBhyt, SWT.NONE);
+																																												lblThiim.setBounds(165, 239, 76, 23);
+																																												lblThiim.setText("Thời điểm");
+																																												lblThiim.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
+																																												
+																																														Label lblTnChaM = new Label(grpBhyt, SWT.NONE);
+																																														lblTnChaM.setBounds(10, 278, 97, 23);
+																																														lblTnChaM.setText("Tên Cha mẹ");
+																																														lblTnChaM.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
+																																														
+																																																txtTenChaMe = new Text(grpBhyt, SWT.BORDER);
+																																																txtTenChaMe.addKeyListener(new KeyAdapter() {
+																																																	@Override
+																																																	public void keyPressed(KeyEvent e) {
+																																																		keyPress(e);
+																																																	}
+																																																});
+																																																txtTenChaMe.setBounds(113, 273, 503, 28);
+																																																txtTenChaMe.setFont(SWTResourceManager
+																																																		.getFont("Tahoma", 16, SWT.NORMAL));
+																																																
+																																																		Label lblNgyCp = new Label(grpBhyt, SWT.NONE);
+																																																		lblNgyCp.setBounds(386, 230, 97, 23);
+																																																		lblNgyCp.setText("Ngày cấp");
+																																																		lblNgyCp.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
+																																																		
+																																																				txtNgayCap = new DatePicker(grpBhyt, SWT.NONE);
+																																																				txtNgayCap.setBounds(489, 230, 127, 28);
+																																																				txtNgayCap.setColor(SWTResourceManager.getColor(SWT.COLOR_GRAY));
+																																																				txtNgayCap.addKeyListener(new KeyAdapter() {
+																																																					@Override
+																																																					public void keyPressed(KeyEvent e) {
+																																																						keyPress(e);
+																																																					}
+																																																				});
+																																																				
+																																																						txtMaQuanLy = new Text(grpBhyt, SWT.BORDER);
+																																																						txtMaQuanLy.setEnabled(false);
+																																																						txtMaQuanLy.setBounds(536, 123, 40, 28);
+																																																						txtMaQuanLy.setFont(SWTResourceManager
+																																																								.getFont("Tahoma", 16, SWT.NORMAL));
+																																																										
+																																																												txtChuoiKiemTra = new Text(grpBhyt, SWT.BORDER);
+																																																												txtChuoiKiemTra.setEnabled(false);
+																																																												txtChuoiKiemTra.setBounds(582, 123, 34, 28);
+																																																												txtChuoiKiemTra.setFont(SWTResourceManager.getFont("Tahoma", 16,
+																																																														SWT.NORMAL));
+																																																												
+																																																														cbTenCSKCB = new Combo(grpBhyt, SWT.NONE);
+																																																														cbTenCSKCB.setBounds(113, 167, 616, 27);
+																																																														cbTenCSKCB.addKeyListener(new KeyAdapter() {
+																																																															@Override
+																																																															public void keyPressed(KeyEvent e) {
+																																																																if (e.keyCode == 13) {
+																																																																	// Choose
+																																																																	String sql = "";
+																																																																	try (Connection con = DbHelper.getSql2o()) {
+																																																																		cbTenCSKCB.setVisible(false);
+																																																																		String dc[] = cbTenCSKCB.getText().split("-");
+																																																																		String id = dc[0].trim();
+																																																																		sql = "update ma_cskcb set MA_RANK=MA_RANK+1 where MA_CODE='"
+																																																																				+ id + "'";
+																																																																		con.createQuery(sql).executeUpdate();
+																																																																		// /
+																																																																		if (dc.length == 2 && dc[1].length() > 0) {
+																																																																			txtTenCSKCB.setText(dc[1].trim());
+																																																																		}
+																																																																		cbNoiDKKB.setText(id);
+																																																																		cbNoiDKKB.forceFocus();
+																																																																		// con.close();
+																																																																	} catch (Exception ee) {
+																																																																		ee.printStackTrace();
+																																																																	}
+																																																																}
+																																																															}
+																																																														});
+																																																														cbTenCSKCB
+																																																																.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
+																																																														cbTenCSKCB.setVisible(false);
+																																																														
+																																																																Label lblNs = new Label(grpBhyt, SWT.NONE);
+																																																																lblNs.setBounds(370, 61, 26, 23);
+																																																																lblNs.setText("NS");
+																																																																lblNs.setForeground(SWTResourceManager.getColor(SWT.COLOR_RED));
+																																																																lblNs.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
+																																																																
+																																																																		lblKg = new Label(grpBhyt, SWT.NONE);
+																																																																		lblKg.setBounds(253, 61, 34, 23);
+																																																																		lblKg.setText("Cân");
+																																																																		lblKg.setForeground(SWTResourceManager.getColor(SWT.COLOR_RED));
+																																																																		lblKg.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
+																																																																		
+																																																																				cbListBacSiForm = new Combo(grpBhyt, SWT.NONE);
+																																																																				cbListBacSiForm.setBounds(446, 300, 171, 33);
+																																																																				cbListBacSiForm.setToolTipText("List DS bac si theo khoa phong");
+																																																																				cbListBacSiForm.setFont(SWTResourceManager.getFont("Tahoma", 16,
+																																																																						SWT.NORMAL));
+																																																																				cbListBacSiForm.setBackground(SWTResourceManager
+																																																																						.getColor(SWT.COLOR_YELLOW));
+																																																																				cbListBacSiForm.setText("");
+																																																																				
+																																																																						cbKhoa = new Combo(grpBhyt, SWT.NONE);
+																																																																						cbKhoa.setBounds(113, 300, 328, 33);
+																																																																						cbKhoa.addTraverseListener(new TraverseListener() {
+																																																																							public void keyTraversed(TraverseEvent e) {
+
+																																																																							}
+																																																																						});
+																																																																						cbKhoa.addSelectionListener(new SelectionAdapter() {
+																																																																							@Override
+																																																																							public void widgetSelected(SelectionEvent e) {
+																																																																								System.out.println("widgetSelected text");
+																																																																								Dichvu congkham = DbHelper.hashCongKham.get(cbKhoa.getText());
+																																																																								//
+																																																																								if (congkham != null) {
+																																																																									if (objCongKham == null) {
+																																																																										objCongKham = new DvChitiet();
+																																																																									}
+																																																																									objCongKham.DON_GIA = congkham.DON_GIA;
+																																																																									objCongKham.DON_GIA2 = congkham.DON_GIA2;
+																																																																									objCongKham.DV_ID = 1;
+																																																																									objCongKham.SO_LUONG = 1;
+																																																																									objCongKham.MA_DICH_VU = congkham.MA_DVKT;
+																																																																									objCongKham.TEN_DICH_VU = congkham.TEN_DVKT;
+																																																																									objCongKham.MA_BAC_SI = "";
+																																																																									objCongKham.MA_BENH = "";
+																																																																									objCongKham.MA_KHOA = DbHelper.getMAKHOA(congkham.MA_DVKT);
+																																																																									objCongKham.MA_NHOM = Utils.getInt(congkham.MANHOM_9324);
+																																																																									objCongKham.MA_PTTT = 1;
+																																																																									objCongKham.MA_VAT_TU = "";
+																																																																									// format = "yyyy-MM-dd HH:mm:ss";
+																																																																									objCongKham.NGAY_KQ = Utils.getDatetime(new Date(),
+																																																																											"yyyyMMddHHmm");
+																																																																									objCongKham.NGAY_YL = Utils.getDatetime(new Date(),
+																																																																											"yyyyMMddHHmm");
+																																																																									objCongKham.THANH_TIEN = objCongKham.DON_GIA2
+																																																																											* objCongKham.SO_LUONG;
+																																																																									objCongKham.TT_BH = 0;
+																																																																									objCongKham.TT_NB = 0;
+																																																																									objCongKham.TYLE_TT = 100;
+																																																																									//
+																																																																									cbListBacSiForm.removeAll();
+																																																																									cbListBacSiCLS.removeAll();
+																																																																									cbListBacsiThuoc.removeAll();
+																																																																									for (Users obj : DbHelper.listUsers) {
+																																																																										if (obj.MA_KHOA.equals(congkham.MA_DVKT) == true) {
+																																																																											cbListBacSiForm.add(obj.U_NAME);
+																																																																											cbListBacSiCLS.add(obj.U_NAME);
+																																																																											cbListBacsiThuoc.add(obj.U_NAME);
+																																																																										}
+																																																																									}
+																																																																									cbListBacSiForm.select(0);
+																																																																									cbListBacSiCLS.select(0);
+																																																																									cbListBacsiThuoc.select(0);
+																																																																								}
+																																																																								//
+																																																																								//
+																																																																							}
+																																																																						});
+																																																																						cbKhoa.addKeyListener(new KeyAdapter() {
+																																																																							@Override
+																																																																							public void keyPressed(KeyEvent e) {
+																																																																								OS.SendMessage(cbKhoa.handle, OS.CB_SHOWDROPDOWN, 1, 0);
+																																																																								if (e.keyCode == 13) {
+																																																																									return;
+																																																																								}
+																																																																								//
+																																																																								keyPress(e);
+																																																																							}
+																																																																						});
+																																																																						cbKhoa.addModifyListener(new ModifyListener() {
+																																																																							public void modifyText(ModifyEvent e) {
+
+																																																																							}
+																																																																						});
+																																																																						cbKhoa.setToolTipText("Bấm ENTER để tìm bệnh");
+																																																																						cbKhoa.setFont(SWTResourceManager.getFont("Tahoma", 16, SWT.NORMAL));
+																																																																						cbKhoa.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
+																																																																						cbKhoa.setText("");
+																																																																				cbListBacSiForm.addKeyListener(new KeyAdapter() {
+																																																																					@Override
+																																																																					public void keyPressed(KeyEvent e) {
+																																																																						keyPress(e);
+																																																																					}
+																																																																				});
 
 		Group group = new Group(compositeThongTinBenh, SWT.NONE);
-		fd_compTheBHYT.right = new FormAttachment(group, 0, SWT.RIGHT);
-		FormData fd_group = new FormData();
-		fd_group.right = new FormAttachment(0, 939);
-		fd_group.top = new FormAttachment(0);
-		fd_group.left = new FormAttachment(0);
-		group.setLayoutData(fd_group);
+		group.setBounds(0, 10, 939, 54);
 
 		lblStatusPhieu = new Label(group, SWT.NONE);
-		lblStatusPhieu.setBounds(788, 28, 141, 23);
+		lblStatusPhieu.setBounds(788, 21, 141, 23);
 		lblStatusPhieu.setText("Tình trạng phiếu");
 		lblStatusPhieu.setFont(SWTResourceManager.getFont("Tahoma", 12,
 				SWT.NORMAL));
 		btnRadio4 = new Button(group, SWT.RADIO);
-		btnRadio4.setBounds(313, 29, 115, 16);
+		btnRadio4.setBounds(339, 28, 115, 16);
 		btnRadio4.setForeground(SWTResourceManager
 				.getColor(SWT.COLOR_LIST_SELECTION));
 		btnRadio4.setText("TÁI KHÁM");
@@ -2070,7 +2166,7 @@ public class FormKhamBenhDlg extends Dialog {
 		});
 		btnRadio5 = new Button(group, SWT.RADIO);
 		btnRadio5.setEnabled(false);
-		btnRadio5.setBounds(434, 29, 87, 16);
+		btnRadio5.setBounds(460, 28, 87, 16);
 		btnRadio5.setForeground(SWTResourceManager
 				.getColor(SWT.COLOR_LIST_SELECTION));
 		btnRadio5.setText("FREE");
@@ -2126,10 +2222,44 @@ public class FormKhamBenhDlg extends Dialog {
 				}
 			}
 		});
-		btnRadio1.setForeground(SWTResourceManager.getColor(SWT.COLOR_LIST_SELECTION));
+		btnRadio1.setForeground(SWTResourceManager
+				.getColor(SWT.COLOR_LIST_SELECTION));
 		btnRadio1.setSelection(true);
 		btnRadio1.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.BOLD));
 		btnRadio1.setText("BH29");
+		
+				btnTHANHTOAN = new Button(group, SWT.CHECK);
+				btnTHANHTOAN.setBounds(638, 21, 144, 23);
+				btnTHANHTOAN.addSelectionListener(new SelectionAdapter() {
+					@Override
+					public void widgetSelected(SelectionEvent e) {
+						if (DbHelper.currentSessionUserId.LOAI.toUpperCase().equals(
+								"ACCT") != true) {
+							String message = "Không có chỉ định thu chi. Chỉ nhân viên kế toán, thu ngân";
+							MessageDialog.openError(shellKhamBenh, "Có lỗi", message);
+							logger.info(message);
+						} else {
+							logger.info("Thay đổi tình trạng thanh toán"
+									+ DbHelper.currentSessionUserId.LOAI.toUpperCase());
+						}
+						//
+						if (objPhieuKhamBenh != null) {
+							System.out.println("objPhieuKhamBenh.NGAY_TTOAN="
+									+ objPhieuKhamBenh.NGAY_TTOAN);
+							if (objPhieuKhamBenh.NGAY_TTOAN.length() < 6) {
+								btnTHANHTOAN.setSelection(false);
+							} else {
+								btnTHANHTOAN.setSelection(true);
+							}
+						} else {
+							btnTHANHTOAN.setSelection(false);
+						}
+						//
+					}
+				});
+				btnTHANHTOAN.setImage(SWTResourceManager.getImage(
+						FormKhamBenhDlg.class, "/png/spreadsheet-3x.png"));
+				btnTHANHTOAN.setText("ĐÃ THANH TOÁN");
 		btnRadio2.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -2170,14 +2300,14 @@ public class FormKhamBenhDlg extends Dialog {
 				}
 			}
 		});
-		TabItem tbtmXetNghiemCanLamSan = new TabItem(tabFolder, SWT.NONE);
-		tbtmXetNghiemCanLamSan.setToolTipText("Ctrl+2");
-		tbtmXetNghiemCanLamSan.setImage(SWTResourceManager.getImage(
+		TabItem tabItemXetNghiemCanLamSan = new TabItem(tabFolder, SWT.NONE);
+		tabItemXetNghiemCanLamSan.setToolTipText("Ctrl+2");
+		tabItemXetNghiemCanLamSan.setImage(SWTResourceManager.getImage(
 				FormKhamBenhDlg.class, "/png/aperture-3x.png"));
-		tbtmXetNghiemCanLamSan.setText("CLS/Xét Nghiệm (Ctrl+2)");
+		tabItemXetNghiemCanLamSan.setText("CLS/Xét Nghiệm (Ctrl+2)");
 
 		Composite compositeCLS = new Composite(tabFolder, SWT.NONE);
-		tbtmXetNghiemCanLamSan.setControl(compositeCLS);
+		tabItemXetNghiemCanLamSan.setControl(compositeCLS);
 		compositeCLS.setLayout(new BorderLayout(0, 0));
 
 		Composite compositeTab1 = new Composite(compositeCLS, SWT.NONE);
@@ -2317,10 +2447,6 @@ public class FormKhamBenhDlg extends Dialog {
 				SWT.NORMAL));
 		txtSearchCLS.setBounds(574, 10, 232, 33);
 
-		lblTONGCONG = new Label(compositeTab1, SWT.NONE);
-		lblTONGCONG.setText("0");
-		lblTONGCONG.setBounds(902, 12, 47, 13);
-
 		btnVp = new Button(compositeTab1, SWT.CHECK);
 		btnVp.addKeyListener(new KeyAdapter() {
 			@Override
@@ -2358,6 +2484,9 @@ public class FormKhamBenhDlg extends Dialog {
 					}
 					//
 					saveAndAddCLS();
+					//
+					txtSearchCLS.selectAll();
+					txtSearchCLS.forceFocus();
 					//
 				} else {
 					keyPress(e);
@@ -2499,15 +2628,22 @@ public class FormKhamBenhDlg extends Dialog {
 		TableColumn tblclmnKiuTt = new TableColumn(tableSelectedCLS, SWT.NONE);
 		tblclmnKiuTt.setWidth(50);
 		tblclmnKiuTt.setText("Kiểu TT");
+		
+				txtTongCong = new Text(compositeTab1, SWT.NONE);
+				txtTongCong.setBounds(20, 372, 679, 31);
+				txtTongCong.setEditable(false);
+				txtTongCong.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
+				txtTongCong.setFont(SWTResourceManager
+						.getFont("Tahoma", 16, SWT.NORMAL));
 		// Tab THUOC BEGIN
-		TabItem tbtmThuoc = new TabItem(tabFolder, SWT.NONE);
-		tbtmThuoc.setToolTipText("Ctrl+3");
-		tbtmThuoc.setImage(SWTResourceManager.getImage(FormKhamBenhDlg.class,
+		TabItem tabItemThuoc = new TabItem(tabFolder, SWT.NONE);
+		tabItemThuoc.setToolTipText("Ctrl+3");
+		tabItemThuoc.setImage(SWTResourceManager.getImage(FormKhamBenhDlg.class,
 				"/png/medical-cross-3x.png"));
-		tbtmThuoc.setText("Thuốc (Ctrl+3)");
+		tabItemThuoc.setText("Thuốc (Ctrl+3)");
 
 		Composite compositeThuoc = new Composite(tabFolder, SWT.NONE);
-		tbtmThuoc.setControl(compositeThuoc);
+		tabItemThuoc.setControl(compositeThuoc);
 		compositeThuoc.setLayout(null);
 
 		Composite compositeTHUOCCenter = new Composite(compositeThuoc, SWT.NONE);
@@ -2529,9 +2665,11 @@ public class FormKhamBenhDlg extends Dialog {
 					}
 				} else if (e.keyCode == 13) {
 					// Move to lieu dung
-					txtLieuDung.selectAll();
-					txtLieuDung.forceFocus();
-					//
+					// txtLieuDung.selectAll();
+					// txtLieuDung.forceFocus();
+					// Move to soluong
+					txtThuocSoLuongChiDinh.selectAll();
+					txtThuocSoLuongChiDinh.forceFocus();
 				}
 			}
 		});
@@ -2679,6 +2817,7 @@ public class FormKhamBenhDlg extends Dialog {
 		grpMBnhTn.setBounds(10, 0, 910, 107);
 
 		cbMaBenh = new Combo(grpMBnhTn, SWT.NONE);
+		cbMaBenh.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
 		cbMaBenh.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -2716,7 +2855,8 @@ public class FormKhamBenhDlg extends Dialog {
 						}
 						cbTenBenh.select(0);
 						cbTenBenh.forceFocus();
-						OS.SendMessage(cbTenBenh.handle, OS.CB_SHOWDROPDOWN, 1, 0);
+						OS.SendMessage(cbTenBenh.handle, OS.CB_SHOWDROPDOWN, 1,
+								0);
 						// con.close();
 					} catch (Exception ex) {
 						ex.printStackTrace();
@@ -2735,7 +2875,10 @@ public class FormKhamBenhDlg extends Dialog {
 		lblMBnhChnh.setText("Mã bệnh chính");
 
 		txtTenBenh = new Label(grpMBnhTn, SWT.BORDER);
-		txtTenBenh.setBounds(297, 12, 449, 28);
+		txtTenBenh
+				.setFont(SWTResourceManager.getFont("Tahoma", 13, SWT.NORMAL));
+		txtTenBenh.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
+		txtTenBenh.setBounds(297, 12, 603, 28);
 
 		cbTenBenh = new Combo(grpMBnhTn, SWT.NONE);
 		cbTenBenh.setBounds(130, 10, 628, 33);
@@ -2787,6 +2930,8 @@ public class FormKhamBenhDlg extends Dialog {
 		lblMBnhPh.setText("Mã bệnh phụ");
 
 		cbMabenhKhac = new Combo(grpMBnhTn, SWT.NONE);
+		cbMabenhKhac.setFont(SWTResourceManager.getFont("Tahoma", 12,
+				SWT.NORMAL));
 		cbMabenhKhac.setBounds(130, 49, 161, 33);
 		cbMabenhKhac.setToolTipText("Bấm ENTER để tìm bệnh");
 		cbMabenhKhac
@@ -2829,9 +2974,37 @@ public class FormKhamBenhDlg extends Dialog {
 			}
 		});
 
-		txtTenBenhPhu = new Label(grpMBnhTn, SWT.BORDER);
-		txtTenBenhPhu.setBounds(297, 42, 449, 28);
-
+		txtTenBenhPhu = new Text(grpMBnhTn, SWT.BORDER);
+		txtTenBenhPhu.setFont(SWTResourceManager.getFont("Tahoma", 13,
+				SWT.NORMAL));
+		txtTenBenhPhu.setBackground(SWTResourceManager
+				.getColor(SWT.COLOR_WHITE));
+		txtTenBenhPhu.setBounds(297, 48, 603, 28);
+		txtTenBenhPhu.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.keyCode == SWT.DEL) {
+					String tmpText = "";
+					String tmp[] = txtTenBenhPhu.getText().trim().split(";");
+					if (tmp.length > 1) {
+						for (int i = 0; i < tmp.length - 1; i++) {
+							tmpText += tmp[i];
+							if (i < tmp.length - 2) {
+								tmpText += ";";
+							}
+						}
+					} else {
+						txtTenBenhPhu.setText("");
+						cbTenBenhPhu.forceFocus();
+					}
+					//
+					if (tmpText.length() > 0) {
+						txtTenBenhPhu.setText(tmpText);
+					}
+					e.doit = false;
+				}
+			}
+		});
 		cbTenBenhPhu = new Combo(grpMBnhTn, SWT.NONE);
 		cbTenBenhPhu.setBounds(130, 49, 628, 29);
 		cbTenBenhPhu.setFont(SWTResourceManager.getFont("Tahoma", 14,
@@ -2909,8 +3082,13 @@ public class FormKhamBenhDlg extends Dialog {
 					String temp = cbLieuDung.getText();
 					temp = Utils.doCapitalizeFirstLetterInString(temp);
 					txtLieuDung.setText(temp);
-					txtThuocSoLuongChiDinh.selectAll();
-					txtThuocSoLuongChiDinh.forceFocus();
+					// txtThuocSoLuongChiDinh.selectAll();
+					// txtThuocSoLuongChiDinh.forceFocus();
+					// Add thuoc
+					selectSoluongThuocAndAdd();
+					// Move to add thuoc
+					txtSearchCtNhapthuoc.selectAll();
+					txtSearchCtNhapthuoc.forceFocus();
 					//
 				} else {
 					keyPress(e);
@@ -2919,7 +3097,7 @@ public class FormKhamBenhDlg extends Dialog {
 		});
 		cbLieuDung
 				.setFont(SWTResourceManager.getFont("Tahoma", 14, SWT.NORMAL));
-		cbLieuDung.setBounds(361, 113, 422, 29);
+		cbLieuDung.setBounds(361, 113, 432, 31);
 		cbLieuDung.setVisible(false);
 
 		txtLieuDung = new Text(compositeThuoc, SWT.BORDER);
@@ -2931,7 +3109,7 @@ public class FormKhamBenhDlg extends Dialog {
 					txtLieuDung.setVisible(false);
 					loadListLieuDung();
 					cbLieuDung.setVisible(true);
-					cbLieuDung.setText(txtLieuDung.getText());
+					// cbLieuDung.setText(txtLieuDung.getText());
 					cbLieuDung.forceFocus();
 					//
 				} else if (e.keyCode == SWT.ARROW_LEFT) {
@@ -2956,32 +3134,34 @@ public class FormKhamBenhDlg extends Dialog {
 
 		txtThuocSoLuongChiDinh = new Text(compositeThuoc, SWT.BORDER
 				| SWT.RIGHT);
-		txtThuocSoLuongChiDinh.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.keyCode == 13) {
-					selectSoluongThuocAndAdd();
-					//
-				}
-			}
-		});
+
 		txtThuocSoLuongChiDinh.setText("0");
 		txtThuocSoLuongChiDinh.setFont(SWTResourceManager.getFont("Tahoma", 12,
 				SWT.NORMAL));
 		txtThuocSoLuongChiDinh.setBackground(SWTResourceManager
 				.getColor(SWT.COLOR_GREEN));
 		txtThuocSoLuongChiDinh.setBounds(301, 113, 57, 33);
+		txtThuocSoLuongChiDinh.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.keyCode == 13) {
+					// Move to lieu dung
+					txtLieuDung.selectAll();
+					txtLieuDung.forceFocus();
+					//
+				}
+			}
+		});
 
 		Composite compositeGroupButtonEnd = new Composite(compositePhieuKham,
 				SWT.NONE);
 		compositeGroupButtonEnd.setLayoutData(BorderLayout.SOUTH);
 		compositeGroupButtonEnd.setFont(SWTResourceManager.getFont("Tahoma",
 				12, SWT.NORMAL));
-		compositeGroupButtonEnd.setLayout(null);
+		compositeGroupButtonEnd.setLayout(new GridLayout(4, false));
 
 		btnNewPhieu = new Button(compositeGroupButtonEnd, SWT.NONE);
 		btnNewPhieu.setToolTipText("Tạo mới, bấm ESC");
-		btnNewPhieu.setBounds(65, 10, 163, 34);
 		btnNewPhieu.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -3008,7 +3188,6 @@ public class FormKhamBenhDlg extends Dialog {
 		});
 		btnSave = new Button(compositeGroupButtonEnd, SWT.NONE);
 		btnSave.setToolTipText("Lưu phiếu, bấm F2");
-		btnSave.setBounds(234, 10, 302, 34);
 		btnSave.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -3036,7 +3215,6 @@ public class FormKhamBenhDlg extends Dialog {
 
 		btnXetNghiem = new Button(compositeGroupButtonEnd, SWT.NONE);
 		btnXetNghiem.setToolTipText("Mua phiếu xét nghiệm, bấm F3");
-		btnXetNghiem.setBounds(542, 10, 255, 34);
 		btnXetNghiem.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -3051,7 +3229,6 @@ public class FormKhamBenhDlg extends Dialog {
 
 		btnInPhieu = new Button(compositeGroupButtonEnd, SWT.NONE);
 		btnInPhieu.setToolTipText("In Phiếu, bấm F9");
-		btnInPhieu.setBounds(803, 10, 158, 34);
 		btnInPhieu.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -3182,14 +3359,16 @@ public class FormKhamBenhDlg extends Dialog {
 		try {
 			Connection con = DbHelper.getSql2o();
 			String sql = "select DISTINCT LIEU_DUNG from thuoc_chitiet where LENGTH(LIEU_DUNG)>0";
-			// System.out.println(sql);
+			System.out.println(sql);
 			org.sql2o.data.Table tb = con.createQuery(sql)
 					.executeAndFetchTable();
 			for (Row r : tb.rows()) {
 				String LIEU_DUNG = r.getString("LIEU_DUNG");
 				cbLieuDung.add(LIEU_DUNG);
+				// System.out.println("Add "+LIEU_DUNG);
 			}
 			cbLieuDung.select(0);
+			//
 		} catch (Exception ex) {
 			logger.error(ex);
 		}
@@ -3233,20 +3412,23 @@ public class FormKhamBenhDlg extends Dialog {
 
 			}
 			txtDiachi.setText(TheBHXH.convertHex2String(data[4]));
-			// txtMaDKKCBBD = data[5].replace("-", "").replace(" ","");
+			cbNoiDKKB.setText(data[5].replaceAll("–", "").replaceAll(" ", ""));
 			txtTuNgay.setText(data[6]);
 			txtDenNgay.setText(data[7]);
 
 			txtNgayCap.setText(data[8]);
 			txtMaQuanLy.setText(data[9]);
 			txtTenChaMe.setText(TheBHXH.convertHex2String(data[10]));
+			txtDichVuCao.setText(data[11]);
 			// txtMaHuongChiPhiDichVuCao = data[11];
+			txtThoiDiem5Nam.setText(data[12]);
 			// txtThoiDiemHuongChiPhiDichVuCao = data[12];
 			txtChuoiKiemTra.setText(data[13]);
 			// Process tylehuong
 			//
 			txtMathe.processMaThe(txtMathe.strMathe);
 			txtMathe.updateMaThe(txtMathe.strMathe);
+			// tabFolder.setSelection(0);
 			//
 		}
 	}
@@ -3277,6 +3459,9 @@ public class FormKhamBenhDlg extends Dialog {
 		loadCongkhamFromDB();
 		//
 		updateDlg();
+		updateGiaTien();
+		tabFolder.setSelection(1);
+		cbListBacSiCLS.forceFocus();
 		//
 	}
 
@@ -3284,13 +3469,23 @@ public class FormKhamBenhDlg extends Dialog {
 		// Reset form kham
 		objBenhNhan = new BenhNhan();
 		objPhieuKhamBenh = null;
+		objDVChiTiet = null;
+		objCongKham = null;
+		objCtNhapthuoc = null;
 		listDataCtNhapthuoc.clear();
 		listCLSData.clear();
 		listDichVu.clear();
 		listThuocData.clear();
+		TONGCONG = 0;
+		TONGCONG_BH = 0;
+		TONGCONG_BHYT = 0;
+		TONGCONG_NB = 0;
 		//
 		KIEU_THANH_TOAN = Utils.THANHTOAN_BHYT_2;
+		updateGiaTien();
 		startDialog();
+		cbBenhBanDau.setVisible(false);
+		txtBenhBanDau.setVisible(true);
 		tabFolder.setSelection(0);
 		setFocusTabFolder();
 	}
@@ -3347,9 +3542,6 @@ public class FormKhamBenhDlg extends Dialog {
 		buttonRefresh(false);
 		//
 		setBeginFocus();
-		//
-		timerThread = new TimerThread();
-		timerThread.start();
 	}
 
 	private void setBeginFocus() {
@@ -3396,9 +3588,10 @@ public class FormKhamBenhDlg extends Dialog {
 			Connection con = DbHelper.getSql2o();
 			String sql = "select * from dv_chitiet where MA_LK="
 					+ objPhieuKhamBenh.MA_LK + " and MA_NHOM=13";
-			// System.out.println(sql);
-			List<DvChitiet> list = con.createQuery(sql).executeAndFetch(DvChitiet.class);
-			// System.out.println("size=" + list.size());
+			System.out.println(sql);
+			List<DvChitiet> list = con.createQuery(sql).executeAndFetch(
+					DvChitiet.class);
+			System.out.println("List<DvChitiet> list size=" + list.size());
 			// con.close();
 			//
 			if (list.size() == 1) {
@@ -3406,7 +3599,8 @@ public class FormKhamBenhDlg extends Dialog {
 				setCHI_XET_NGHIEM(0);
 				logger.info("CONG KHAM LOAD " + objCongKham.TEN_DICH_VU);
 			} else {
-				logger.info("----------------- CONG KHAM LOAD: " + list.size());
+				logger.info("----------------- CONG KHAM LOAD: " +objCongKham +" size="+ list.size());
+				objCongKham = null;
 				setCHI_XET_NGHIEM(1);
 				KIEU_THANH_TOAN = Utils.THANHTOAN_VIENPHI;
 			}
@@ -3463,6 +3657,9 @@ public class FormKhamBenhDlg extends Dialog {
 	private void loadCongKhamData() {
 		String name = cbKhoa.getText();
 		String names[] = name.split("-");
+		if (objCongKham != null) {
+			names[0] = objCongKham.MA_DICH_VU;
+		}
 		// System.out.println("CONG KHAM=" + name + " "+names[0]);
 		//
 		cbKhoa.removeAll();
@@ -3480,13 +3677,15 @@ public class FormKhamBenhDlg extends Dialog {
 			if (KIEU_THANH_TOAN == Utils.THANHTOAN_BHYT) {
 				if (obj.DON_GIA2 == 29000) {
 					idx0++;
-					// System.out.println(obj.MA_DVKT +"-"+obj.TEN_DVKT+"("+obj.DON_GIA2+")");
+					// System.out.println(obj.MA_DVKT
+					// +"-"+obj.TEN_DVKT+"("+obj.DON_GIA2+")");
 					cbKhoa.add(obj.MA_DVKT + "-" + obj.TEN_DVKT + "("
 							+ obj.DON_GIA2 + ")");
 
 					if (obj.MA_DVKT.indexOf(names[0]) > -1) {
 						idxFound = idx0;
-						// System.out.println("IDX="+idxFound+" "+obj.MA_DVKT +" "+names[0]);
+						System.out.println("FOUND IDX=" + idxFound + " "
+								+ obj.MA_DVKT + " " + names[0]);
 					}
 				}
 			} else {
@@ -3494,11 +3693,12 @@ public class FormKhamBenhDlg extends Dialog {
 				// +"-"+obj.TEN_DVKT+"("+obj.DON_GIA2+")");
 				if (obj.DON_GIA2 > 29000) {
 					idx0++;
-					cbKhoa.add(obj.MA_DVKT + "-" + obj.TEN_DVKT + "(" + obj.DON_GIA2 + ")");
+					cbKhoa.add(obj.MA_DVKT + "-" + obj.TEN_DVKT + "("
+							+ obj.DON_GIA2 + ")");
 					if (obj.MA_DVKT.indexOf(names[0]) > -1) {
 						idxFound = idx0;
-						// System.out.println("IDX="+idxFound+" "+obj.MA_DVKT
-						// +" "+names[0]);
+						System.out.println("FOUND IDX=" + idxFound + " "
+								+ obj.MA_DVKT + " " + names[0]);
 					}
 				}
 			}
@@ -3507,15 +3707,15 @@ public class FormKhamBenhDlg extends Dialog {
 		// System.out.println("-------------IDX=" + idxFound);
 		if (objCongKham != null) {
 			//
-			if(objCongKham.DON_GIA2==0 || objCongKham.DON_GIA2>29000){
+			if (objCongKham.DON_GIA2 == 0 || objCongKham.DON_GIA2 > 29000) {
 				KIEU_THANH_TOAN = Utils.THANHTOAN_BHYT_2;
-			}
-			else{
+			} else {
 				KIEU_THANH_TOAN = Utils.THANHTOAN_BHYT;
 			}
 			//
 			cbKhoa.select(idxFound);
-			System.out.println( "COUNT=" + cbKhoa.getItemCount() + " index=" + idxFound );
+			System.out.println("COUNT=" + cbKhoa.getItemCount() + " index="
+					+ idxFound);
 			//
 			cbListBacSiForm.removeAll();
 			cbListBacSiCLS.removeAll();
@@ -3583,16 +3783,27 @@ public class FormKhamBenhDlg extends Dialog {
 			btnRadio5.setSelection(false);
 			selectBHYT();
 		}
+		 else if (KIEU_THANH_TOAN == Utils.THANHTOAN_MUA_CLS) {
+			// BHYT
+			btnRadio1.setSelection(false);
+			btnRadio2.setSelection(false);
+			btnRadio3.setSelection(true);
+			btnRadio4.setSelection(false);
+			btnRadio5.setSelection(false);
+			selectVienPhi();
+
+		}
+		
 	}
 
 	private void setDefaultField() {
 		//
+		txtTenBenh.setText("");
+		txtTenBenhPhu.setText("");
+		txtBenhBanDau.setText("");
+		cbTenBenh.setText("");
+		cbTenBenhPhu.setText("");
 		loadCongKhamData();
-		//
-		txtTenChaMe.setEnabled(false);
-		txtDichVuCao.setEnabled(false);
-		txtNgayCap.setEnabled(false);
-		txtThoiDiem5Nam.setEnabled(false);
 		btnRadio4.setEnabled(false);
 		//
 		updateKIEUTHANHTOAN();
@@ -3960,15 +4171,15 @@ public class FormKhamBenhDlg extends Dialog {
 	protected void keyPress(KeyEvent e) {
 		//
 		switch (e.keyCode) {
-			case SWT.F2:
-				doSaveFormKhamBenh();
-				return;
-			case SWT.F3:
-				muaPhieuXetNghiem();
-				return;
-			case SWT.ESC:
-				// shellKhamBenh.close();
-				return;
+		case SWT.F2:
+			doSaveFormKhamBenh();
+			return;
+		case SWT.F3:
+			muaPhieuXetNghiem();
+			return;
+		case SWT.ESC:
+			// shellKhamBenh.close();
+			return;
 		}
 		controlKey(e);
 	}
@@ -4103,7 +4314,7 @@ public class FormKhamBenhDlg extends Dialog {
 			JRBeanCollectionDataSource report_cong = new JRBeanCollectionDataSource(
 					report.congkham);
 			JRBeanCollectionDataSource report_dv = new JRBeanCollectionDataSource(
-					report.dv);
+					report.listdv);
 			JRBeanCollectionDataSource report_thuoc = new JRBeanCollectionDataSource(
 					report.thuoc);
 			System.out.println(" COUNT = " + report_dv.getRecordCount());
@@ -4122,9 +4333,11 @@ public class FormKhamBenhDlg extends Dialog {
 			params.put("THUOC_SUM", report.sumThuoc);
 			params2.put("BN", report.bn);
 			params2.put("KB", report.kb);
-			params2.put("TIENCONG_DataSource", new JRBeanCollectionDataSource( report.congkham));
-			params2.put("DICHVU_DataSource", new JRBeanCollectionDataSource( report.dv));
-			params2.put("THUOC_DataSource", new JRBeanCollectionDataSource( report.thuoc));
+			params2.put("TIENCONG_DataSource", new JRBeanCollectionDataSource(
+					report.congkham));
+			params2.put("DICHVU_DataSource", new JRBeanCollectionDataSource(report.listdv));
+			params2.put("THUOC_DataSource", new JRBeanCollectionDataSource(
+					report.thuoc));
 			params2.put("DICHVU_SUM", report.sumDv);
 			params2.put("TIENCONG_SUM", report.sumCongkham);
 			params2.put("THUOC_SUM", report.sumThuoc);
@@ -4145,17 +4358,18 @@ public class FormKhamBenhDlg extends Dialog {
 			}
 
 			if (report.congkham != null) {
-				KhoaPhong objKhoaPhong = DbHelper.hashKhoaPhongMAKHOA.get(report.congkham.get(0).MA_KHOA);
-				if(objKhoaPhong!=null){
+				KhoaPhong objKhoaPhong = DbHelper.hashKhoaPhongMAKHOA
+						.get(report.congkham.get(0).MA_KHOA);
+				if (objKhoaPhong != null) {
 					params.put("TENKHOAPHONG", objKhoaPhong.KP_NAME);
 					params2.put("TENKHOAPHONG", objKhoaPhong.KP_NAME);
-					
-				}
-				else{
+
+				} else {
 					params.put("TENKHOAPHONG", report.congkham.get(0).MA_KHOA);
 					params2.put("TENKHOAPHONG", report.congkham.get(0).MA_KHOA);
 				}
-				Users bs = DbHelper.hashDataUsersMaCCHN.get(report.congkham.get(0).MA_BAC_SI);
+				Users bs = DbHelper.hashDataUsersMaCCHN.get(report.congkham
+						.get(0).MA_BAC_SI);
 				if (bs != null) {
 					params.put("TENBACSI", bs.TEN_NHANVIEN);
 					params2.put("TENBACSI", bs.TEN_NHANVIEN);
@@ -4215,7 +4429,7 @@ public class FormKhamBenhDlg extends Dialog {
 					.getClass().getResource("/PhieuCLS.jasper"));
 
 			JRBeanCollectionDataSource report_dv = new JRBeanCollectionDataSource(
-					report.dv);
+					report.listdv);
 			Map<String, Object> params = new HashMap<String, Object>();
 			params.put("BN", report.bn);
 			params.put("KB", report.kb);
@@ -4271,15 +4485,58 @@ public class FormKhamBenhDlg extends Dialog {
 		report.bn = objBenhNhan;
 		report.kb = objPhieuKhamBenh;
 
-		report.dv = new ArrayList<>();
+		report.listdv = new ArrayList<>();
 		report.sumDv = new SumReportDAO();
+//		for (int i = 0; i < listCLSData.size(); i++) {
+//			DvChitiet obj = listCLSData.get(i);
+//			report.sumDv.TT += obj.THANH_TIEN;
+//			report.sumDv.BH += obj.TT_BH;
+//			report.sumDv.NB += obj.TT_NB;
+//			report.sumDv.KH += (obj.THANH_TIEN - obj.TT_BH - obj.TT_NB);
+//			report.dv.add(obj);
+//		}
+		report.sumThuoc = new SumReportDAO();
+		//
+		Hashtable<Integer, SumReportDAO> hashPhanLoaiDV = new Hashtable<Integer, SumReportDAO>();
+		//
 		for (int i = 0; i < listCLSData.size(); i++) {
-			DvChitiet obj = listCLSData.get(i);
-			report.sumDv.TT += obj.THANH_TIEN;
-			report.sumDv.BH += obj.TT_BH;
-			report.sumDv.NB += obj.TT_NB;
-			report.sumDv.KH += (obj.THANH_TIEN - obj.TT_BH - obj.TT_NB);
-			report.dv.add(obj);
+			DvChitiet objDvChitiet = listCLSData.get(i);
+			int MANHOM = objDvChitiet.MA_NHOM;
+			if( hashPhanLoaiDV.get(MANHOM)==null){
+				SumReportDAO obj = new SumReportDAO();
+				//
+				obj.TT2 += objDvChitiet.THANH_TIEN2;
+				obj.TT += objDvChitiet.THANH_TIEN;
+				obj.BH += objDvChitiet.TT_BH;
+				obj.NB += objDvChitiet.TT_NB;
+				obj.KH += (objDvChitiet.THANH_TIEN - objDvChitiet.TT_BH - objDvChitiet.TT_NB);
+				obj.dv.add(objDvChitiet);
+				obj.setPhanLoadDichVu( ""+objDvChitiet.MA_NHOM );
+				//
+				
+				//
+				hashPhanLoaiDV.put(MANHOM, obj);
+			}
+			else{
+				// Exist add...
+				SumReportDAO obj = hashPhanLoaiDV.get(MANHOM);
+				//
+				obj.TT2 += objDvChitiet.THANH_TIEN2;
+				obj.TT += objDvChitiet.THANH_TIEN;
+				obj.BH += objDvChitiet.TT_BH;
+				obj.NB += objDvChitiet.TT_NB;
+				obj.KH += (objDvChitiet.THANH_TIEN - objDvChitiet.TT_BH - objDvChitiet.TT_NB);
+				obj.dv.add(objDvChitiet);
+				obj.setPhanLoadDichVu( ""+objDvChitiet.MA_NHOM );
+				//
+			}
+			//
+			report.sumThuoc.TT2 += objDvChitiet.THANH_TIEN;
+			report.sumThuoc.TT += objDvChitiet.THANH_TIEN;
+			report.sumThuoc.BH += objDvChitiet.TT_BH;
+			report.sumThuoc.NB += objDvChitiet.TT_NB;
+			report.sumThuoc.KH += (objDvChitiet.THANH_TIEN - objDvChitiet.TT_BH - objDvChitiet.TT_NB);
+			//
 		}
 		//
 		report.sumTongCong = report.sumDv;
@@ -4299,17 +4556,51 @@ public class FormKhamBenhDlg extends Dialog {
 		report.bn = objBenhNhan;
 		report.kb = objPhieuKhamBenh;
 
-		report.dv = new ArrayList<>();
+		report.listdv = new ArrayList<>();
 		report.sumDv = new SumReportDAO();
+		//
+		Hashtable<Integer, SumReportDAO> hashPhanLoaiDV = new Hashtable<Integer, SumReportDAO>();
+		//
 		for (int i = 0; i < listCLSData.size(); i++) {
-			DvChitiet obj = listCLSData.get(i);
-			report.sumDv.TT2 += obj.THANH_TIEN2;
-			report.sumDv.TT += obj.THANH_TIEN;
-			report.sumDv.BH += obj.TT_BH;
-			report.sumDv.NB += obj.TT_NB;
-			report.sumDv.KH += (obj.THANH_TIEN - obj.TT_BH - obj.TT_NB);
-			report.dv.add(obj);
+			DvChitiet objDvChitiet = listCLSData.get(i);
+			int MANHOM = objDvChitiet.MA_NHOM;
+			if( hashPhanLoaiDV.get(MANHOM)==null){
+				SumReportDAO obj = new SumReportDAO();
+				//
+				obj.TT2 += objDvChitiet.THANH_TIEN2;
+				obj.TT += objDvChitiet.THANH_TIEN;
+				obj.BH += objDvChitiet.TT_BH;
+				obj.NB += objDvChitiet.TT_NB;
+				obj.KH += (objDvChitiet.THANH_TIEN - objDvChitiet.TT_BH - objDvChitiet.TT_NB);
+				obj.dv.add(objDvChitiet);
+				obj.setPhanLoadDichVu( ""+objDvChitiet.MA_NHOM );
+				//
+				
+				//
+				hashPhanLoaiDV.put(MANHOM, obj);
+			}
+			else{
+				// Exist add...
+				SumReportDAO obj = hashPhanLoaiDV.get(MANHOM);
+				//
+				obj.TT2 += objDvChitiet.THANH_TIEN2;
+				obj.TT += objDvChitiet.THANH_TIEN;
+				obj.BH += objDvChitiet.TT_BH;
+				obj.NB += objDvChitiet.TT_NB;
+				obj.KH += (objDvChitiet.THANH_TIEN - objDvChitiet.TT_BH - objDvChitiet.TT_NB);
+				obj.dv.add(objDvChitiet);
+				obj.setPhanLoadDichVu( ""+objDvChitiet.MA_NHOM );
+				//
+			}
+			//
+			report.sumThuoc.TT2 += objDvChitiet.THANH_TIEN;
+			report.sumThuoc.TT += objDvChitiet.THANH_TIEN;
+			report.sumThuoc.BH += objDvChitiet.TT_BH;
+			report.sumThuoc.NB += objDvChitiet.TT_NB;
+			report.sumThuoc.KH += (objDvChitiet.THANH_TIEN - objDvChitiet.TT_BH - objDvChitiet.TT_NB);
+			//
 		}
+		
 		report.thuoc = new ArrayList<>();
 		report.sumThuoc = new SumReportDAO();
 
@@ -4424,6 +4715,13 @@ public class FormKhamBenhDlg extends Dialog {
 				String key = cbKhoa.getText();
 				Dichvu obj = DbHelper.hashCongKham.get(key);
 				if (obj != null) {
+					objCongKham.TEN_DICH_VU = obj.TEN_DVKT;
+					objCongKham.MA_DICH_VU = obj.MA_DVKT;
+					objCongKham.MA_NHOM = Utils.getInt(obj.MANHOM_9324);
+					objCongKham.DV_ID = obj.DV_ID;
+					objCongKham.DV_ID = obj.DV_ID;
+
+					objCongKham.SO_LUONG = 1;// GIA BH
 					objCongKham.DON_GIA = obj.DON_GIA;// GIA BH
 					objCongKham.THANH_TIEN = obj.DON_GIA * 1;
 					objCongKham.DON_GIA2 = obj.DON_GIA2;// THUC THU
@@ -4605,7 +4903,7 @@ public class FormKhamBenhDlg extends Dialog {
 					obj.TT_NB = obj.THANH_TIEN - obj.TT_BH;
 					TONGCONG_BHYT += obj.THANH_TIEN;
 				} //
-				//
+					//
 				TONGCONG += obj.THANH_TIEN2;
 				TONGCONG_BH += obj.TT_BH;
 				TONGCONG_NB += obj.TT_NB;
@@ -4699,7 +4997,6 @@ public class FormKhamBenhDlg extends Dialog {
 			//
 		}
 
-		lblTONGCONG.setText("" + TONGCONG);
 		//
 		// UPDATE PHIEU KHAM BENH
 		if (objPhieuKhamBenh != null) {
@@ -4797,9 +5094,12 @@ public class FormKhamBenhDlg extends Dialog {
 				// logger.info("Update hieu kham " + TONGCONG);
 			}
 		}
+		txtTongCong.setText("Tổng: " + TONGCONG + ". BH: " + TONGCONG_BH
+				+ " BH Chi:" + TONGCONG_BHYT + " NB: " + TONGCONG_NB);
 		//
 		tableViewerTHUOC.refresh();
 		tableViewerSelectedCLS.refresh();
+		//
 		//
 	}
 
@@ -4954,6 +5254,14 @@ public class FormKhamBenhDlg extends Dialog {
 		Dichvu objDv = (Dichvu) item.getData();
 		//
 		if (objDv != null) {
+			// Check is exist
+			if (hashDichVuChiTiet.get(objDv.MA_DVKT) != null) {
+				// exist
+				MessageDialog.openError(shellKhamBenh, "Có lỗi",
+						"Đã có dịch vụ đó trong danh sách");
+				return;
+			}
+
 			DvChitiet objDVChiTiet = new DvChitiet();
 			// objDVChiTiet.BN_ID = objBenhNhan.BN_ID;
 			// objDVChiTiet.MA_LK = objPhieuKhamBenh.MA_LK;
@@ -4962,7 +5270,6 @@ public class FormKhamBenhDlg extends Dialog {
 			//
 			objDVChiTiet.DV_ID = listCLSData.size() + 1;
 			//
-
 			objDVChiTiet.MA_DICH_VU = objDv.MA_DVKT;
 			objDVChiTiet.TEN_DICH_VU = objDv.TEN_DVKT;
 			objDVChiTiet.DON_GIA = objDv.DON_GIA;
@@ -5003,7 +5310,7 @@ public class FormKhamBenhDlg extends Dialog {
 				hashDichVuChiTiet.put(objDVChiTiet.MA_DICH_VU, objDVChiTiet);
 			}
 			//
-			System.out.println("Add list dv chi iet");
+			// System.out.println("Add list dv chi iet");
 			//
 			updateGiaTien();
 			// ======================================================

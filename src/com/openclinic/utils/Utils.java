@@ -49,7 +49,7 @@ public class Utils {
 	public static ArrayList<String> mstArrayTinhTrangThuoc = new ArrayList<String>();
 	public static ArrayList<Color> mstArrayTinhTrangPhieuKhamBenhColor = new ArrayList<Color>();
 
-	public static String[] mstArrayKieuThanhToan = {"","BHYT1","Viện Phí", "Tái Khám", "Miễn Phí", "BHYT2", "VP CLS"};
+	public static String[] mstArrayKieuThanhToan = {"","BHYT1","Viện Phí", "Tái Khám", "Miễn Phí", "BHYT2", "Mua CLS"};
 	public static Color getTinhTrangPhieuKhamColor(int STS) {
 		if(STS < mstArrayTinhTrangPhieuKhamBenhColor.size() ){
 			return mstArrayTinhTrangPhieuKhamBenhColor.get(STS);
@@ -114,8 +114,10 @@ public class Utils {
 		return sdf.format(now);
 	}
 
-	public static long differenceInDay(Calendar startDate, Calendar endDate) {
-		long diff = endDate.getTimeInMillis() - startDate.getTimeInMillis();
+	public static long differenceInDay(Date startDate, Date endDate) {
+		System.out.println("Start: "+startDate.getTime() + " End: " + endDate.getTime());
+		long diff = endDate.getTime() - startDate.getTime();
+		System.out.println("diff: "+diff);
 
 //		long diff = milliseconds2 - milliseconds1;
 //		  long diffSeconds = diff / 1000;
@@ -124,7 +126,31 @@ public class Utils {
 		  long diffDays = diff / (24 * 60 * 60 * 1000);
 	    return diffDays;
 	}
-	
+	public static long differenceInDay(Calendar startDate, Calendar endDate) {
+		System.out.println("Start: "+startDate.getTime() + " End: " + endDate.getTime());
+		long diff = endDate.getTimeInMillis() - startDate.getTimeInMillis();
+		System.out.println("diff: "+diff);
+
+//		long diff = milliseconds2 - milliseconds1;
+//		  long diffSeconds = diff / 1000;
+//		  long diffMinutes = diff / (60 * 1000);
+//		  long diffHours = diff / (60 * 60 * 1000);
+		  long diffDays = diff / (24 * 60 * 60 * 1000);
+	    return diffDays;
+	}
+	public static double differenceInMonths(Calendar date1, Calendar date2){
+        double monthsBetween = 0;
+        //difference in month for years
+        monthsBetween = (date1.get(Calendar.YEAR)-date2.get(Calendar.YEAR))*12;
+        //difference in month for months
+        monthsBetween += date1.get(Calendar.MONTH)-date2.get(Calendar.MONTH);
+        //difference in month for days
+        if(date1.get(Calendar.DAY_OF_MONTH)!=date1.getActualMaximum(Calendar.DAY_OF_MONTH)
+                && date1.get(Calendar.DAY_OF_MONTH)!=date1.getActualMaximum(Calendar.DAY_OF_MONTH) ){
+            monthsBetween += ((date1.get(Calendar.DAY_OF_MONTH)-date2.get(Calendar.DAY_OF_MONTH))/31d);
+        }
+        return monthsBetween;
+    }
 	public static int differenceInMonths(Date d1, Date d2) {
 	    Calendar c1 = Calendar.getInstance();
 	    c1.setTime(d1);
@@ -178,8 +204,8 @@ public class Utils {
 		// "12/12/2017";
 		String sdt[] = strDate.split("/");
 		int dt[] = new int[3];
-		dt[0] = 0;
-		dt[1] = 0;
+		dt[0] = 1;
+		dt[1] = 1;
 		dt[2] = 2017;
 		//
 		try{
@@ -203,6 +229,7 @@ public class Utils {
 		return dt;
 	}
 	public static int[] getDateTime(String strDate, String format) {
+		//			format = "yyyy-MM-dd HH:mm:ss";
 		SimpleDateFormat sdf = new SimpleDateFormat(format);//"yyyy-MM-dd");
 		int dt[] = new int[3];
 		dt[0] = 0;
@@ -222,6 +249,21 @@ public class Utils {
 		}
 		//
 		return dt;
+	}
+	public static Date getDateTimeByDate(String strDate, String format) {
+		//			format = "yyyy-MM-dd HH:mm:ss";
+		SimpleDateFormat sdf = new SimpleDateFormat(format);//"yyyy-MM-dd");
+	    Date convertedCurrentDate = null;
+		try {
+			convertedCurrentDate = sdf.parse(strDate);
+		    return convertedCurrentDate;
+		    //===============================================
+		} catch (ParseException e1) {
+			e1.printStackTrace();
+			convertedCurrentDate = null;
+		}
+		//
+		return convertedCurrentDate;
 	}
 
 	public static int getInt(String intval) {

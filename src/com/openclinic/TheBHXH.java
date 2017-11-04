@@ -32,6 +32,7 @@ public class TheBHXH extends Composite {
 	private Hashtable<String, Integer> hashValue = new Hashtable<String, Integer>();
 	private String[] listString = new String[] {"DN", "HX", "CH", "NN", "TK", "HC", "XK", "CA", "HT", "TB", "MS", "XB", "XN", "TN", "CC", "CK", "CB", "KC", "HD", "BT", "HN", "TC", "TQ", "TA", "TY", "TE", "HG", "LS", "CN", "HS", "GD", "TL", "XV", "NO"};
 	private int[] muchuong = {0, 100, 100, 95, 80, 100, 100, 100};
+	//                        0  1    2    3   4   5    6    7
 	private Label txt7;
 	public String strMathe = "";
 	/* (non-Javadoc)

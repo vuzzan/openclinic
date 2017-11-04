@@ -11,7 +11,9 @@ import org.sql2o.Connection;
 import org.sql2o.Sql2o;
 import org.sql2o.Sql2oException;
 
+import com.model.dao.BenhNhan;
 import com.model.dao.Dichvu;
+import com.model.dao.KhamBenh;
 import com.model.dao.KhoaPhong;
 import com.model.dao.Khohang;
 import com.model.dao.Mabenh;
@@ -52,6 +54,9 @@ public class DbHelper {
 	//
 	public static Hashtable<String, Khohang> hashDataKhoHang = new Hashtable<>();
 	public static List<Khohang> listDataKhohang = null;
+	//
+	public static Hashtable<String, String> hashLoaiDichVu = new Hashtable<String, String>();
+
 	//
 	public DbHelper(){
 		
@@ -198,17 +203,65 @@ public class DbHelper {
 		}
 		return ret;
 	}
-//	public String getIDC_TENBENH()
-//    {
-//        return DbHelper.getIDC10TenBenh(getIDC_MA_BENH());
-//    }
-//    public String getIDC_MA_BENH()
-//    {
-//    	if(this.MA_BENHKHAC!=null && this.MA_BENHKHAC.length()>0){
-//    		return this.MA_BENH +";"+this.MA_BENHKHAC;
-//    	}
-//    	else{
-//    		return this.MA_BENH;
-//    	}
-//    }
+/*	
+	public String getIDC_TENBENH()
+    {
+        return DbHelper.getIDC10TenBenh(getIDC_MA_BENH());
+    }
+    public String getIDC_MA_BENH()
+    {
+    	if(this.MA_BENHKHAC!=null && this.MA_BENHKHAC.length()>0){
+    		return this.MA_BENH +";"+this.MA_BENHKHAC;
+    	}
+    	else{
+    		return this.MA_BENH;
+    	}
+    }
+    
+    public static List<KhamBenh> loadLatest(int BN_ID) {
+    	Connection connection = null;
+
+		try {
+			connection = DbHelper.getSql2o();
+			String sql = "select * from kham_benh where BN_ID=:BN_ID order by MA_LK desc limit 10";
+			logger.debug(sql);
+			List<KhamBenh> obj = connection
+					.createQuery(
+							sql,
+							true)
+					.addParameter("BN_ID", BN_ID)
+					.executeAndFetch( KhamBenh.class);
+            //logger.info(obj);
+            logger.debug("loadLatest BN_ID "+(obj==null?0:obj.size()));
+            return obj;
+		} catch (Exception t) {
+            logger.error("loadLatest Error: ID="+BN_ID +"\nException=\n"+ t);
+			throw new RuntimeException("LOAD [KhamBenh]. ERROR: "+t.getMessage(), t);
+		}
+    }
+
+
+ public static BenhNhan load(String MA_THE) {
+    	Connection connection = null;
+
+		try {
+			connection = DbHelper.getSql2o();
+			String sql = "select * from benh_nhan where MA_THE=:MA_THE";
+			logger.debug(sql);
+			BenhNhan obj = connection
+					.createQuery(
+							sql,
+							true)
+					.addParameter("MA_THE", MA_THE)
+					.executeAndFetchFirst( BenhNhan.class);
+            logger.info(obj);
+            logger.debug("Load MA_THE "+obj);
+            return obj;
+		} catch (Exception t) {
+            logger.error("Load Error: MA_THE="+MA_THE +"\nException=\n"+ t);
+			throw new RuntimeException("LOAD [BenhNhan]. ERROR: "+t.getMessage(), t);
+		}
+    }
+*
+*/
 }

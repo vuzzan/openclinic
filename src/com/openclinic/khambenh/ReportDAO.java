@@ -15,7 +15,7 @@ public class ReportDAO {
 	public ArrayList<DvChitiet> congkham;
 	public SumReportDAO sumCongkham;
 	
-	public ArrayList<DvChitiet> dv;
+	public ArrayList<SumReportDAO> listdv;
 	public SumReportDAO sumDv;
 	
 	public ArrayList<ThuocChitiet> thuoc;
@@ -34,8 +34,8 @@ public class ReportDAO {
 		return kb;
 	}
 	
-	public ArrayList<DvChitiet> getDV(){
-		return dv;
+	public ArrayList<SumReportDAO> getDV(){
+		return listdv;
 	}
 	
 	public ArrayList<ThuocChitiet> getThuoc(){
