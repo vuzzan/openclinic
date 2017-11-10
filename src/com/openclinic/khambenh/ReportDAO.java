@@ -25,6 +25,9 @@ public class ReportDAO {
 	public String ngayGio;
 	public String strNguoiLap;
 	
+	public String tuNgay;
+	public String denNgay;
+	
 	
 	public BenhNhan getBN(){
 		return bn;

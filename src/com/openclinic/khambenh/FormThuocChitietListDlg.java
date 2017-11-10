@@ -180,7 +180,7 @@ public class FormThuocChitietListDlg extends Dialog {
 				// UPDATE KHO THUOC
 				CtNhapthuoc objCtNhapthuoc = CtNhapthuoc.load(obj.CT_ID);
 				logger.info("======== BEGIN UPDATE KHO THUOC: " + objCtNhapthuoc.toString());
-				objCtNhapthuoc.SL_OUTSTANDING = objCtNhapthuoc.SL_OUTSTANDING - obj.SO_LUONG;
+				//objCtNhapthuoc.SL_OUTSTANDING = objCtNhapthuoc.SL_OUTSTANDING - obj.SO_LUONG;
 				objCtNhapthuoc.SL_DADUNG  = objCtNhapthuoc.SL_DADUNG + obj.SO_LUONG;
 				objCtNhapthuoc.update();
 				logger.info("======== END   UPDATE KHO THUOC: " + objCtNhapthuoc.toString());

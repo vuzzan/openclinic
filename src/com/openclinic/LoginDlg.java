@@ -34,6 +34,7 @@ import com.model.dao.KhoaPhong;
 import com.model.dao.Khohang;
 import com.model.dao.MaCskcb;
 import com.model.dao.Mabenh;
+import com.model.dao.MstLieudung;
 import com.model.dao.Phanquyen;
 import com.model.dao.Users;
 import com.model.dao.Vendor;
@@ -668,6 +669,13 @@ public class LoginDlg {
 		for (MaCskcb obj : listMaCskcbDTO) {
 			MaCskcbCache.cacheArrayListKey.add(obj.MA_CODE);
 			MaCskcbCache.putMaCskcb(obj);
+		}
+		
+		sql = "SELECT * FROM MST_LIEUDUNG ORDER BY RANK DESC";
+		logger.info("Get LIEU DUNG " + sql);
+		DbHelper.listDataMstLieuDung = con.createQuery(sql).executeAndFetch(MstLieudung.class);
+		for (MstLieudung obj : DbHelper.listDataMstLieuDung) {
+			DbHelper.hashDataMstLieuDung.put(obj.LIEUDUNG_NAME, obj);
 		}
 		
 		sql = "SELECT * FROM vendor ORDER BY V_NAME and STS=0";

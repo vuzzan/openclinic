@@ -621,6 +621,7 @@ public class FormNhapThuocDlg extends Dialog {
 			obj2.V_ID = objNhapThuoc.V_ID;
 			obj2.TENKHO = objNhapThuoc.TENKHO;
 			obj2.VAT = objNhapThuoc.VAT;
+			obj2.KHO_ID = objNhapThuoc.KHO_ID;
 			//
 			obj2.insert();
 		}

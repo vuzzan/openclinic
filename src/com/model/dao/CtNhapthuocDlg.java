@@ -33,17 +33,18 @@ public class CtNhapthuocDlg extends Dialog {
     private Text txtNT_ID;
     private Text txtV_ID;
     private Text txtTENKHO;
+    private Text txtKHO_ID;
     private Text txtTHUOC_ID;
     private Text txtTENTHUOC;
     private Text txtDONVI;
     private Text txtHANDUNG;
     private Text txtLOT_ID;
-    private Text txtDONGIA;
-    private Text txtTHANHTIEN;
     private Text txtSOLUONG;
     private Text txtSL_TONKHO;
     private Text txtSL_OUTSTANDING;
     private Text txtSL_DADUNG;
+    private Text txtDONGIA;
+    private Text txtTHANHTIEN;
     private Text txtVAT;
     private Text txtSTS;
 
@@ -146,6 +147,21 @@ public class CtNhapthuocDlg extends Dialog {
 		txtTENKHO.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtTENKHO.setText("TENKHO");
         txtTENKHO.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressCtNhapthuocDlg(e);
+			}
+		});
+		Label lbltxtKHO_ID = new Label(shell, SWT.NONE);
+        lbltxtKHO_ID.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtKHO_ID.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtKHO_ID.setText("KHO_ID :");
+		
+		txtKHO_ID = new Text(shell, SWT.BORDER);
+        txtKHO_ID.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtKHO_ID.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtKHO_ID.setText("KHO_ID");
+        txtKHO_ID.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				keyPressCtNhapthuocDlg(e);
@@ -378,6 +394,8 @@ public class CtNhapthuocDlg extends Dialog {
             // String     = false
             objCtNhapthuoc.TENKHO = txtTENKHO.getText();
             // Integer    = true
+            objCtNhapthuoc.KHO_ID = Utils.getInt( txtKHO_ID.getText() );
+            // Integer    = true
             objCtNhapthuoc.THUOC_ID = Utils.getInt( txtTHUOC_ID.getText() );
             // String     = false
             objCtNhapthuoc.TENTHUOC = txtTENTHUOC.getText();
@@ -445,6 +463,10 @@ public class CtNhapthuocDlg extends Dialog {
                 txtTENKHO.setText("");
             else
                 txtTENKHO.setText(""+objCtNhapthuoc.TENKHO.toString());
+            if(objCtNhapthuoc.KHO_ID==null)
+                txtKHO_ID.setText("");
+            else
+                txtKHO_ID.setText(""+objCtNhapthuoc.KHO_ID.toString());
             if(objCtNhapthuoc.THUOC_ID==null)
                 txtTHUOC_ID.setText("");
             else

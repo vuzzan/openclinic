@@ -1,15 +1,13 @@
 package com.openclinic.khambenh;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
-
 import com.DbHelper;
 import com.model.dao.DvChitiet;
 import com.openclinic.ReadNumber;
 
 public class SumReportDAO {
 	public ArrayList<DvChitiet> dv = new ArrayList<DvChitiet>();
-	public String phanLoadDichVu = "";
+	public String phanLoaiDichVu = "TEST TEST";
 	//
 	public int TT;
 	public int TT2;
@@ -19,9 +17,9 @@ public class SumReportDAO {
 	public int KH;
 	//
 	public String toString(){
-		return "SumReportDAO "+phanLoadDichVu+" TT2="+TT2+" TT="+TT+" "+BH+" NB="+NB+" NB2="+NB2+" Count="+dv.size();
+		return "SumReportDAO "+phanLoaiDichVu+" TT2="+TT2+" TT="+TT+" "+BH+" NB="+NB+" NB2="+NB2+" Count="+dv.size();
  	}
-
+	//
 	public String getTT2String(){
 		return ReadNumber.numberToString(TT);
 	}
@@ -58,9 +56,13 @@ public class SumReportDAO {
 	public int getKH(){
 		return KH;
 	}
-
-	public void setPhanLoadDichVu(String MANHOM) {
-		// TODO Auto-generated method stub
-		phanLoadDichVu = DbHelper.hashLoaiDichVu.get(MANHOM);
+	public String getphanLoaiDichVu(){
+		return phanLoaiDichVu;
+	}
+	public ArrayList<DvChitiet> getdv(){
+		return dv;
+	}
+	public void setPhanLoaiDichVu(String MANHOM) {
+		phanLoaiDichVu = DbHelper.hashLoaiDichVu.get(MANHOM);
 	}
 }

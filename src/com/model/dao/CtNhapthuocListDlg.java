@@ -220,6 +220,10 @@ public class CtNhapthuocListDlg extends Dialog {
 		tbTableColumnCtNhapthuocTENKHO.setWidth(100);
 		tbTableColumnCtNhapthuocTENKHO.setText("TENKHO");
 
+		TableColumn tbTableColumnCtNhapthuocKHO_ID = new TableColumn(tableCtNhapthuoc, SWT.RIGHT);
+		tbTableColumnCtNhapthuocKHO_ID.setWidth(100);
+		tbTableColumnCtNhapthuocKHO_ID.setText("KHO_ID");
+
 		TableColumn tbTableColumnCtNhapthuocTHUOC_ID = new TableColumn(tableCtNhapthuoc, SWT.RIGHT);
 		tbTableColumnCtNhapthuocTHUOC_ID.setWidth(100);
 		tbTableColumnCtNhapthuocTHUOC_ID.setText("THUOC_ID");

@@ -17,6 +17,7 @@ import com.model.dao.KhamBenh;
 import com.model.dao.KhoaPhong;
 import com.model.dao.Khohang;
 import com.model.dao.Mabenh;
+import com.model.dao.MstLieudung;
 import com.model.dao.Phanquyen;
 import com.model.dao.Users;
 import com.model.dao.Vendor;
@@ -54,6 +55,9 @@ public class DbHelper {
 	//
 	public static Hashtable<String, Khohang> hashDataKhoHang = new Hashtable<>();
 	public static List<Khohang> listDataKhohang = null;
+	//
+	public static Hashtable<String, MstLieudung> hashDataMstLieuDung = new Hashtable<>();
+	public static List<MstLieudung> listDataMstLieuDung = null;
 	//
 	public static Hashtable<String, String> hashLoaiDichVu = new Hashtable<String, String>();
 
