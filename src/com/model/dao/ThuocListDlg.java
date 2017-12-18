@@ -336,6 +336,10 @@ public class ThuocListDlg extends Dialog {
 		tbTableColumnThuocKETQUA.setWidth(100);
 		tbTableColumnThuocKETQUA.setText("KETQUA");
 
+		TableColumn tbTableColumnThuocTYP = new TableColumn(tableThuoc, SWT.RIGHT);
+		tbTableColumnThuocTYP.setWidth(100);
+		tbTableColumnThuocTYP.setText("TYP");
+
 		TableColumn tbTableColumnThuocTHUOC_RANK = new TableColumn(tableThuoc, SWT.RIGHT);
 		tbTableColumnThuocTHUOC_RANK.setWidth(100);
 		tbTableColumnThuocTHUOC_RANK.setText("THUOC_RANK");

@@ -46,6 +46,7 @@ public class BenhNhanDlg extends Dialog {
     private Text txtCHUOI_KIEM_TRA;
     private Text txtDATE_ADD;
     private Text txtLAST_EDIT;
+    private Text txtGATE_INFO;
     private Text txtSTS;
 
     public BenhNhan objBenhNhan;
@@ -347,6 +348,21 @@ public class BenhNhanDlg extends Dialog {
 				keyPressBenhNhanDlg(e);
 			}
 		});
+		Label lbltxtGATE_INFO = new Label(shell, SWT.NONE);
+        lbltxtGATE_INFO.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtGATE_INFO.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtGATE_INFO.setText("GATE_INFO :");
+		
+		txtGATE_INFO = new Text(shell, SWT.BORDER);
+        txtGATE_INFO.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtGATE_INFO.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtGATE_INFO.setText("GATE_INFO");
+        txtGATE_INFO.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressBenhNhanDlg(e);
+			}
+		});
 		Label lbltxtSTS = new Label(shell, SWT.NONE);
         lbltxtSTS.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		lbltxtSTS.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
@@ -419,6 +435,8 @@ public class BenhNhanDlg extends Dialog {
             // objBenhNhan.DATE_ADD = txtDATE_ADD.getText();
             // Date       = false
             // objBenhNhan.LAST_EDIT = txtLAST_EDIT.getText();
+            // String     = false
+            objBenhNhan.GATE_INFO = txtGATE_INFO.getText();
             // Integer    = true
             objBenhNhan.STS = Utils.getInt( txtSTS.getText() );
             }
@@ -515,6 +533,10 @@ public class BenhNhanDlg extends Dialog {
                 txtLAST_EDIT.setText("");
             else
                 txtLAST_EDIT.setText(""+objBenhNhan.LAST_EDIT.toString());
+            if(objBenhNhan.GATE_INFO==null)
+                txtGATE_INFO.setText("");
+            else
+                txtGATE_INFO.setText(""+objBenhNhan.GATE_INFO.toString());
             if(objBenhNhan.STS==null)
                 txtSTS.setText("");
             else

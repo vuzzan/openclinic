@@ -49,6 +49,7 @@ public class DatePicker extends org.eclipse.swt.widgets.Composite {
 	protected int day = 0;
 	protected int month = 0;
 	protected int year = 2017;
+	public boolean isNgaySinh0101 = false;
 
 	public DatePicker(Composite parent, int style) {
 		super(parent, style);
@@ -85,7 +86,6 @@ public class DatePicker extends org.eclipse.swt.widgets.Composite {
 		setSize(new Point(136, 28));
 		//
 		dayText = new Text(this, SWT.BORDER);
-		dayText.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_YELLOW));
 		dayText.setLayoutData(gridData1);
 		dayText.setText(""+day);
 		dayText.setTextLimit(2);
@@ -147,7 +147,6 @@ public class DatePicker extends org.eclipse.swt.widgets.Composite {
 		});
 		//
 		monthText = new Text(this, SWT.BORDER);
-		monthText.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_YELLOW));
 		monthText.setLayoutData(gridData);
 		monthText.setText(""+month);
 		monthText.setTextLimit(2);
@@ -209,7 +208,6 @@ public class DatePicker extends org.eclipse.swt.widgets.Composite {
 		});
 		
 		yearText = new Text(this, SWT.BORDER);
-		yearText.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_YELLOW));
 		yearText.setLayoutData(gridData100);
 		yearText.setText(""+year);
 		yearText.setTextLimit(4);
@@ -259,6 +257,7 @@ public class DatePicker extends org.eclipse.swt.widgets.Composite {
 							month = dt.getMonth()+1;
 							year = dt.getYear()+1900;
 							updateDateText();
+							isNgaySinh0101 = true;
 							//
 							//
 						}
@@ -278,12 +277,14 @@ public class DatePicker extends org.eclipse.swt.widgets.Composite {
 									month = 1;
 									day = 1;
 									updateDateText();
+									isNgaySinh0101 = true;
 								}
 							}
 							else{
 								month = 1;
 								day = 1;
 								year = year1;
+								isNgaySinh0101 = true;
 							}
 						}
 						catch(Exception ex){
@@ -316,6 +317,7 @@ public class DatePicker extends org.eclipse.swt.widgets.Composite {
 							int year0 = Calendar.getInstance().get(Calendar.YEAR);
 							year = year0 - year1;
 						}
+						isNgaySinh0101 = true;
 					}
 					else{
 						year = year1;
@@ -351,10 +353,30 @@ public class DatePicker extends org.eclipse.swt.widgets.Composite {
 		int diffYear = endCalendar.get(Calendar.YEAR) - startCalendar.get(Calendar.YEAR);
 		int difInMonths = diffYear * 12 + endCalendar.get(Calendar.MONTH) - startCalendar.get(Calendar.MONTH);
 		difInMonths = -difInMonths -1;
+		//System.out.println("TO MONTH toMonth()= " + difInMonths);
 		return difInMonths;
+	}
+	public String toMonthDay(){
+		Date dt = new Date();
+		Date dt2 = new Date();
+		dt2.setDate(day-1);
+		dt2.setMonth(month-1);
+		dt2.setYear(year-1900);
+		Calendar startCalendar = Calendar.getInstance();
+		Calendar endCalendar = Calendar.getInstance();
+		startCalendar.setTime(dt2);
+		endCalendar.setTime(dt);
+		int diffYear = endCalendar.get(Calendar.YEAR) - startCalendar.get(Calendar.YEAR);
+		int difInMonths = diffYear * 12 + endCalendar.get(Calendar.MONTH) - startCalendar.get(Calendar.MONTH);
+		int difInDate = endCalendar.get(Calendar.DATE) - startCalendar.get(Calendar.DATE);
+		//System.out.println("TO MONTH toMonth()= " + difInMonths);
+		return "" + (diffYear<=0?"":(diffYear +" năm "))+(difInMonths<=0?"":(difInMonths+" tháng "))+(difInDate<0?"":(difInDate+" ngày"));
 	}
 	public String getDate(){
 		return (day<10?"0"+day:day)+"/"+(month<10?"0"+month:month)+"/"+year;
+	}
+	public String getDateByYear(){
+		return ""+year;
 	}
 	
 	public Calendar getDate2(){
@@ -403,12 +425,14 @@ public class DatePicker extends org.eclipse.swt.widgets.Composite {
 			day 	= 1;
 			month 	= 1;
 			year 	= dt[2];
+			isNgaySinh0101 = true;
 		}
 		else{
 			int dt[] = Utils.getDateTime(strDate);
 			day 	= dt[0]==0?1:dt[0];
 			month 	= dt[1]==0?1:dt[1];
 			year 	= dt[2];
+			isNgaySinh0101 = false;
 		}
 		updateDateText();
 	}

@@ -70,7 +70,7 @@ public class FormCtNhapthuocListDlg extends Dialog {
 					return obj.DONVI;
 				}
 				else if(columnIndex==3){
-					return Utils.getDatetimeDefault( obj.HANDUNG );
+					return ( obj.HANDUNG );
 				}
 				else if(columnIndex==4){
 					return Utils.getMoneyDefault(obj.DONGIA);
@@ -79,7 +79,7 @@ public class FormCtNhapthuocListDlg extends Dialog {
 					return ""+obj.SL_TONKHO;
 				}
 				else if(columnIndex==6){
-					return ""+obj.SL_OUTSTANDING;
+					return ""+obj.CTID_FROM;
 				}
 				else if(columnIndex==7){
 					return ""+obj.SL_DADUNG;

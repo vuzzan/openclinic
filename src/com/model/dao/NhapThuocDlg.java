@@ -32,11 +32,12 @@ public class NhapThuocDlg extends Dialog {
 	protected Shell shell;
     private Text txtV_ID;
     private Text txtKHO_ID;
+    private Text txtTENKHO;
+    private Text txtFROM_KHOID;
     private Text txtVENDOR_NAME;
     private Text txtVENDOR_ADDR;
     private Text txtNGAY_NHAP;
     private Text txtNGAY_HD;
-    private Text txtTENKHO;
     private Text txtSO_HOA_DON;
     private Text txtKH_HOA_DON;
     private Text txtTONGCONG;
@@ -91,7 +92,7 @@ public class NhapThuocDlg extends Dialog {
 	 */
 	private void createContents() {
 		shell = new Shell(getParent(), SWT.SHELL_TRIM | SWT.BORDER | SWT.PRIMARY_MODAL);
-		shell.setSize(450, 421);
+		shell.setSize(450, 300);
 		shell.setText("NhapThuocDlg EDIT/NEW");
 		shell.setLayout(new GridLayout(2, false));
         shell.addKeyListener(new KeyAdapter() {
@@ -128,6 +129,36 @@ public class NhapThuocDlg extends Dialog {
 		txtKHO_ID.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtKHO_ID.setText("KHO_ID");
         txtKHO_ID.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressNhapThuocDlg(e);
+			}
+		});
+		Label lbltxtTENKHO = new Label(shell, SWT.NONE);
+        lbltxtTENKHO.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtTENKHO.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtTENKHO.setText("TENKHO :");
+		
+		txtTENKHO = new Text(shell, SWT.BORDER);
+        txtTENKHO.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtTENKHO.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtTENKHO.setText("TENKHO");
+        txtTENKHO.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressNhapThuocDlg(e);
+			}
+		});
+		Label lbltxtFROM_KHOID = new Label(shell, SWT.NONE);
+        lbltxtFROM_KHOID.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtFROM_KHOID.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtFROM_KHOID.setText("FROM_KHOID :");
+		
+		txtFROM_KHOID = new Text(shell, SWT.BORDER);
+        txtFROM_KHOID.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtFROM_KHOID.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtFROM_KHOID.setText("FROM_KHOID");
+        txtFROM_KHOID.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				keyPressNhapThuocDlg(e);
@@ -188,21 +219,6 @@ public class NhapThuocDlg extends Dialog {
 		txtNGAY_HD.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtNGAY_HD.setText("NGAY_HD");
         txtNGAY_HD.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				keyPressNhapThuocDlg(e);
-			}
-		});
-		Label lbltxtTENKHO = new Label(shell, SWT.NONE);
-        lbltxtTENKHO.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
-		lbltxtTENKHO.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lbltxtTENKHO.setText("TENKHO :");
-		
-		txtTENKHO = new Text(shell, SWT.BORDER);
-        txtTENKHO.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
-		txtTENKHO.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        txtTENKHO.setText("TENKHO");
-        txtTENKHO.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				keyPressNhapThuocDlg(e);
@@ -328,6 +344,10 @@ public class NhapThuocDlg extends Dialog {
             // Integer    = true
             objNhapThuoc.KHO_ID = Utils.getInt( txtKHO_ID.getText() );
             // String     = false
+            objNhapThuoc.TENKHO = txtTENKHO.getText();
+            // Integer    = true
+            objNhapThuoc.FROM_KHOID = Utils.getInt( txtFROM_KHOID.getText() );
+            // String     = false
             objNhapThuoc.VENDOR_NAME = txtVENDOR_NAME.getText();
             // String     = false
             objNhapThuoc.VENDOR_ADDR = txtVENDOR_ADDR.getText();
@@ -335,8 +355,6 @@ public class NhapThuocDlg extends Dialog {
             // objNhapThuoc.NGAY_NHAP = txtNGAY_NHAP.getText();
             // Date       = false
             // objNhapThuoc.NGAY_HD = txtNGAY_HD.getText();
-            // String     = false
-            objNhapThuoc.TENKHO = txtTENKHO.getText();
             // String     = false
             objNhapThuoc.SO_HOA_DON = txtSO_HOA_DON.getText();
             // String     = false
@@ -387,6 +405,14 @@ public class NhapThuocDlg extends Dialog {
                 txtKHO_ID.setText("");
             else
                 txtKHO_ID.setText(""+objNhapThuoc.KHO_ID.toString());
+            if(objNhapThuoc.TENKHO==null)
+                txtTENKHO.setText("");
+            else
+                txtTENKHO.setText(""+objNhapThuoc.TENKHO.toString());
+            if(objNhapThuoc.FROM_KHOID==null)
+                txtFROM_KHOID.setText("");
+            else
+                txtFROM_KHOID.setText(""+objNhapThuoc.FROM_KHOID.toString());
             if(objNhapThuoc.VENDOR_NAME==null)
                 txtVENDOR_NAME.setText("");
             else
@@ -403,10 +429,6 @@ public class NhapThuocDlg extends Dialog {
                 txtNGAY_HD.setText("");
             else
                 txtNGAY_HD.setText(""+objNhapThuoc.NGAY_HD.toString());
-            if(objNhapThuoc.TENKHO==null)
-                txtTENKHO.setText("");
-            else
-                txtTENKHO.setText(""+objNhapThuoc.TENKHO.toString());
             if(objNhapThuoc.SO_HOA_DON==null)
                 txtSO_HOA_DON.setText("");
             else

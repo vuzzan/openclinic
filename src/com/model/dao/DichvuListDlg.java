@@ -3,6 +3,11 @@
 */
 package com.model.dao;
 
+
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +48,8 @@ import org.eclipse.swt.layout.GridData;
 import org.sql2o.Connection;
 
 import com.DbHelper;
+import com.openclinic.utils.Utils;
+
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.wb.swt.SWTResourceManager;
@@ -146,10 +153,10 @@ public class DichvuListDlg extends Dialog {
         
 		Composite compositeHeaderDichvu = new Composite(compositeInShellDichvu, SWT.NONE);
 		compositeHeaderDichvu.setLayoutData(BorderLayout.NORTH);
-		compositeHeaderDichvu.setLayout(new GridLayout(2, false));
+		compositeHeaderDichvu.setLayout(new GridLayout(5, false));
 
 		textSearchDichvu = new Text(compositeHeaderDichvu, SWT.BORDER);
-		textSearchDichvu.setFont(SWTResourceManager.getFont("Tahoma", 11, SWT.NORMAL));
+		textSearchDichvu.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		textSearchDichvu.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -161,7 +168,7 @@ public class DichvuListDlg extends Dialog {
 		
 		Button btnNewButtonSearchDichvu = new Button(compositeHeaderDichvu, SWT.NONE);
 		btnNewButtonSearchDichvu.setImage(SWTResourceManager.getImage(DichvuDlg.class, "/png/media-play-2x.png"));
-		btnNewButtonSearchDichvu.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
+		btnNewButtonSearchDichvu.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 
 		btnNewButtonSearchDichvu.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -169,6 +176,18 @@ public class DichvuListDlg extends Dialog {
 				reloadTableDichvu();
 			}
 		});
+		Button btnNewButtonExportExcelDichvu = new Button(compositeHeaderDichvu, SWT.NONE);
+		btnNewButtonExportExcelDichvu.setText("Export Excel");
+		btnNewButtonExportExcelDichvu.setImage(SWTResourceManager.getImage(KhamBenhListDlg.class, "/png/spreadsheet-2x.png"));
+		btnNewButtonExportExcelDichvu.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		btnNewButtonExportExcelDichvu.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				exportExcelTableDichvu();
+			}
+		});
+		
+		
 		GridData gd_btnNewButtonDichvu = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
 		gd_btnNewButtonDichvu.widthHint = 87;
 		btnNewButtonSearchDichvu.setLayoutData(gd_btnNewButtonDichvu);
@@ -176,7 +195,7 @@ public class DichvuListDlg extends Dialog {
         
 		tableViewerDichvu = new TableViewer(compositeInShellDichvu, SWT.BORDER | SWT.FULL_SELECTION);
 		tableDichvu = tableViewerDichvu.getTable();
-		tableDichvu.setFont(SWTResourceManager.getFont("Tahoma", 11, SWT.NORMAL));
+		tableDichvu.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		tableDichvu.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -236,9 +255,9 @@ public class DichvuListDlg extends Dialog {
 		tbTableColumnDichvuCONG_BO.setWidth(100);
 		tbTableColumnDichvuCONG_BO.setText("CONG_BO");
 
-		TableColumn tbTableColumnDichvuMA_COSOKCB = new TableColumn(tableDichvu, SWT.LEFT);
-		tbTableColumnDichvuMA_COSOKCB.setWidth(100);
-		tbTableColumnDichvuMA_COSOKCB.setText("MA_COSOKCB");
+		TableColumn tbTableColumnDichvuNHOM_DV = new TableColumn(tableDichvu, SWT.RIGHT);
+		tbTableColumnDichvuNHOM_DV.setWidth(100);
+		tbTableColumnDichvuNHOM_DV.setText("NHOM_DV");
 
 		TableColumn tbTableColumnDichvuMANHOM_9324 = new TableColumn(tableDichvu, SWT.LEFT);
 		tbTableColumnDichvuMANHOM_9324.setWidth(100);
@@ -248,9 +267,9 @@ public class DichvuListDlg extends Dialog {
 		tbTableColumnDichvuHIEULUC.setWidth(100);
 		tbTableColumnDichvuHIEULUC.setText("HIEULUC");
 
-		TableColumn tbTableColumnDichvuKETQUA = new TableColumn(tableDichvu, SWT.RIGHT);
-		tbTableColumnDichvuKETQUA.setWidth(100);
-		tbTableColumnDichvuKETQUA.setText("KETQUA");
+		TableColumn tbTableColumnDichvuTYP = new TableColumn(tableDichvu, SWT.RIGHT);
+		tbTableColumnDichvuTYP.setWidth(100);
+		tbTableColumnDichvuTYP.setText("TYP");
 
 		TableColumn tbTableColumnDichvuDV_RANK = new TableColumn(tableDichvu, SWT.RIGHT);
 		tbTableColumnDichvuDV_RANK.setWidth(100);
@@ -292,7 +311,17 @@ public class DichvuListDlg extends Dialog {
 			}
 		});
 		mntmDeleteDichvu.setText("Delete");
-
+		
+		MenuItem mntmExportDichvu = new MenuItem(menuDichvu, SWT.NONE);
+		mntmExportDichvu.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				exportExcelTableDichvu();
+			}
+		});
+		mntmExportDichvu.setImage(SWTResourceManager.getImage(DichvuDlg.class, "/png/spreadsheet-2x.png"));
+		mntmExportDichvu.setText("Export Excel");
+		
 		tableViewerDichvu.setLabelProvider(new TableLabelProviderDichvu());
 		tableViewerDichvu.setContentProvider(new ContentProviderDichvu());
 		tableViewerDichvu.setInput(listDataDichvu);
@@ -309,6 +338,81 @@ public class DichvuListDlg extends Dialog {
 		if(textSearchDichvuString!=null){
 			textSearchDichvu.setText(textSearchDichvuString);
 		}
+	}
+	protected void exportExcelTableDichvu() {
+        if(DbHelper.checkPhanQuyen(DbHelper.READ, "dichvu")==false){
+			logger.info("DON'T HAVE READ RIGHT");
+			return;
+		}
+        if(listDataDichvu!=null){
+            // Export to EXCEL
+    		
+			StringBuffer buff_dichvu = new StringBuffer();
+			String dichvu_filename = "dichvu_"+Utils.getDatetimeCurent().replaceAll(":", "_")+".xls";
+			String delimiter = "</td><td>";
+			// Get header...
+			// Get header...
+			buff_dichvu.append( "<table>");
+			buff_dichvu.append( "<tr class='background-color:#dfdfdf'><td>");
+
+			buff_dichvu.append( "MA_DVKT" +delimiter);
+			buff_dichvu.append( "TEN_DVKT" +delimiter);
+			buff_dichvu.append( "MA_GIA" +delimiter);
+			buff_dichvu.append( "DON_GIA" +delimiter);
+			buff_dichvu.append( "DON_GIA2" +delimiter);
+			buff_dichvu.append( "QUYET_DINH" +delimiter);
+			buff_dichvu.append( "CONG_BO" +delimiter);
+			buff_dichvu.append( "NHOM_DV" +delimiter);
+			buff_dichvu.append( "MANHOM_9324" +delimiter);
+			buff_dichvu.append( "HIEULUC" +delimiter);
+			buff_dichvu.append( "TYP" +delimiter);
+			buff_dichvu.append( "DV_RANK" +delimiter);
+			buff_dichvu.append( "STS");
+			// End of header
+			buff_dichvu.append( "</td></tr>");
+			buff_dichvu.append( "\n");
+			// Get data...
+			for( Dichvu obj:  listDataDichvu){
+				buff_dichvu.append( "<tr><td>");
+				buff_dichvu.append( obj.MA_DVKT +delimiter);
+				buff_dichvu.append( obj.TEN_DVKT +delimiter);
+				buff_dichvu.append( obj.MA_GIA +delimiter);
+				buff_dichvu.append( obj.DON_GIA +delimiter);
+				buff_dichvu.append( obj.DON_GIA2 +delimiter);
+				buff_dichvu.append( obj.QUYET_DINH +delimiter);
+				buff_dichvu.append( obj.CONG_BO +delimiter);
+				buff_dichvu.append( obj.NHOM_DV +delimiter);
+				buff_dichvu.append( obj.MANHOM_9324 +delimiter);
+				buff_dichvu.append( obj.HIEULUC +delimiter);
+				buff_dichvu.append( obj.TYP +delimiter);
+				buff_dichvu.append( obj.DV_RANK +delimiter);
+				buff_dichvu.append( obj.STS );
+				// End of header
+				buff_dichvu.append( "</td></tr>");
+			}
+			//
+			buff_dichvu.append( "</table>");
+			Writer out = null;
+			try {
+				out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(dichvu_filename), "UTF-8"));
+				out.write('\uFEFF'); // BOM for UTF-*
+			    out.write(buff_dichvu.toString());
+			} 
+			catch(Exception ee){
+				ee.printStackTrace();
+			}
+			finally {
+			    try {
+					out.close();
+				} catch (Exception e) {
+					e.printStackTrace();
+					logger.error(e);
+				}
+			}
+			//
+            return;
+        }
+		// End of export
 	}
 	protected void reloadTableDichvu() {
         if(DbHelper.checkPhanQuyen(DbHelper.READ, "dichvu")==false){
@@ -340,7 +444,6 @@ public class DichvuListDlg extends Dialog {
         sql += " or LOWER(MA_GIA) like '%"+searchString+"%'";
         sql += " or LOWER(QUYET_DINH) like '%"+searchString+"%'";
         sql += " or LOWER(CONG_BO) like '%"+searchString+"%'";
-        sql += " or LOWER(MA_COSOKCB) like '%"+searchString+"%'";
         sql += " or LOWER(MANHOM_9324) like '%"+searchString+"%'";
         sql += " or LOWER(HIEULUC) like '%"+searchString+"%'";
             sql += " )";

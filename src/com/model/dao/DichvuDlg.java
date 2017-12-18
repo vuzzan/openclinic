@@ -37,10 +37,10 @@ public class DichvuDlg extends Dialog {
     private Text txtDON_GIA2;
     private Text txtQUYET_DINH;
     private Text txtCONG_BO;
-    private Text txtMA_COSOKCB;
+    private Text txtNHOM_DV;
     private Text txtMANHOM_9324;
     private Text txtHIEULUC;
-    private Text txtKETQUA;
+    private Text txtTYP;
     private Text txtDV_RANK;
     private Text txtSTS;
 
@@ -208,16 +208,16 @@ public class DichvuDlg extends Dialog {
 				keyPressDichvuDlg(e);
 			}
 		});
-		Label lbltxtMA_COSOKCB = new Label(shell, SWT.NONE);
-        lbltxtMA_COSOKCB.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
-		lbltxtMA_COSOKCB.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lbltxtMA_COSOKCB.setText("MA_COSOKCB :");
+		Label lbltxtNHOM_DV = new Label(shell, SWT.NONE);
+        lbltxtNHOM_DV.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtNHOM_DV.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtNHOM_DV.setText("NHOM_DV :");
 		
-		txtMA_COSOKCB = new Text(shell, SWT.BORDER);
-        txtMA_COSOKCB.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
-		txtMA_COSOKCB.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        txtMA_COSOKCB.setText("MA_COSOKCB");
-        txtMA_COSOKCB.addKeyListener(new KeyAdapter() {
+		txtNHOM_DV = new Text(shell, SWT.BORDER);
+        txtNHOM_DV.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtNHOM_DV.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtNHOM_DV.setText("NHOM_DV");
+        txtNHOM_DV.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				keyPressDichvuDlg(e);
@@ -253,16 +253,16 @@ public class DichvuDlg extends Dialog {
 				keyPressDichvuDlg(e);
 			}
 		});
-		Label lbltxtKETQUA = new Label(shell, SWT.NONE);
-        lbltxtKETQUA.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
-		lbltxtKETQUA.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lbltxtKETQUA.setText("KETQUA :");
+		Label lbltxtTYP = new Label(shell, SWT.NONE);
+        lbltxtTYP.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtTYP.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtTYP.setText("TYP :");
 		
-		txtKETQUA = new Text(shell, SWT.BORDER);
-        txtKETQUA.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
-		txtKETQUA.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        txtKETQUA.setText("KETQUA");
-        txtKETQUA.addKeyListener(new KeyAdapter() {
+		txtTYP = new Text(shell, SWT.BORDER);
+        txtTYP.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtTYP.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtTYP.setText("TYP");
+        txtTYP.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				keyPressDichvuDlg(e);
@@ -337,14 +337,14 @@ public class DichvuDlg extends Dialog {
             objDichvu.QUYET_DINH = txtQUYET_DINH.getText();
             // String     = false
             objDichvu.CONG_BO = txtCONG_BO.getText();
-            // String     = false
-            objDichvu.MA_COSOKCB = txtMA_COSOKCB.getText();
+            // Integer    = true
+            objDichvu.NHOM_DV = Utils.getInt( txtNHOM_DV.getText() );
             // String     = false
             objDichvu.MANHOM_9324 = txtMANHOM_9324.getText();
             // String     = false
             objDichvu.HIEULUC = txtHIEULUC.getText();
             // Integer    = true
-            objDichvu.KETQUA = Utils.getInt( txtKETQUA.getText() );
+            objDichvu.TYP = Utils.getInt( txtTYP.getText() );
             // Integer    = true
             objDichvu.DV_RANK = Utils.getInt( txtDV_RANK.getText() );
             // Integer    = true
@@ -407,10 +407,10 @@ public class DichvuDlg extends Dialog {
                 txtCONG_BO.setText("");
             else
                 txtCONG_BO.setText(""+objDichvu.CONG_BO.toString());
-            if(objDichvu.MA_COSOKCB==null)
-                txtMA_COSOKCB.setText("");
+            if(objDichvu.NHOM_DV==null)
+                txtNHOM_DV.setText("");
             else
-                txtMA_COSOKCB.setText(""+objDichvu.MA_COSOKCB.toString());
+                txtNHOM_DV.setText(""+objDichvu.NHOM_DV.toString());
             if(objDichvu.MANHOM_9324==null)
                 txtMANHOM_9324.setText("");
             else
@@ -419,10 +419,10 @@ public class DichvuDlg extends Dialog {
                 txtHIEULUC.setText("");
             else
                 txtHIEULUC.setText(""+objDichvu.HIEULUC.toString());
-            if(objDichvu.KETQUA==null)
-                txtKETQUA.setText("");
+            if(objDichvu.TYP==null)
+                txtTYP.setText("");
             else
-                txtKETQUA.setText(""+objDichvu.KETQUA.toString());
+                txtTYP.setText(""+objDichvu.TYP.toString());
             if(objDichvu.DV_RANK==null)
                 txtDV_RANK.setText("");
             else

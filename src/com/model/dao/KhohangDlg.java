@@ -30,6 +30,7 @@ public class KhohangDlg extends Dialog {
 
 	protected Object result;
 	protected Shell shell;
+    private Text txtTYPE;
     private Text txtKHO_NAME;
     private Text txtSTS;
 
@@ -92,6 +93,21 @@ public class KhohangDlg extends Dialog {
 			}
 		});
         
+		Label lbltxtTYPE = new Label(shell, SWT.NONE);
+        lbltxtTYPE.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtTYPE.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtTYPE.setText("TYPE :");
+		
+		txtTYPE = new Text(shell, SWT.BORDER);
+        txtTYPE.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtTYPE.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtTYPE.setText("TYPE");
+        txtTYPE.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressKhohangDlg(e);
+			}
+		});
 		Label lbltxtKHO_NAME = new Label(shell, SWT.NONE);
         lbltxtKHO_NAME.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		lbltxtKHO_NAME.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
@@ -147,7 +163,9 @@ public class KhohangDlg extends Dialog {
             objKhohang = new Khohang();
         }
         if(objKhohang!=null){
-        // String     = false
+        // Integer    = true
+            objKhohang.TYPE = Utils.getInt( txtTYPE.getText() );
+            // String     = false
             objKhohang.KHO_NAME = txtKHO_NAME.getText();
             // Integer    = true
             objKhohang.STS = Utils.getInt( txtSTS.getText() );
@@ -181,6 +199,10 @@ public class KhohangDlg extends Dialog {
             return;
         }
         if(objKhohang != null){
+            if(objKhohang.TYPE==null)
+                txtTYPE.setText("");
+            else
+                txtTYPE.setText(""+objKhohang.TYPE.toString());
             if(objKhohang.KHO_NAME==null)
                 txtKHO_NAME.setText("");
             else

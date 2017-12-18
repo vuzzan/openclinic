@@ -50,6 +50,7 @@ public class KhamBenhDlg extends Dialog {
     private Text txtT_VTYT;
     private Text txtT_TONGCHI;
     private Text txtT_BNTT;
+    private Text txtT_BNCCT;
     private Text txtT_BHTT;
     private Text txtT_NGUONKHAC;
     private Text txtT_NGOAIDS;
@@ -64,6 +65,24 @@ public class KhamBenhDlg extends Dialog {
     private Text txtKB_DATE;
     private Text txtKIEU_TT;
     private Text txtCHANDOAN_BD;
+    private Text txtNV_ID;
+    private Text txtNV_NAME;
+    private Text txtTABLE_ID;
+    private Text txtNGAY_SINH;
+    private Text txtGIOI_TINH;
+    private Text txtDIA_CHI;
+    private Text txtMA_THE;
+    private Text txtMA_DKBD;
+    private Text txtGT_THE_TU;
+    private Text txtGT_THE_DEN;
+    private Text txtNGAY_CAP;
+    private Text txtMIEN_CUNG_CT;
+    private Text txtMA_QUAN_LY;
+    private Text txtTEN_CHA_ME;
+    private Text txtMA_DT_SONG;
+    private Text txtTHOIDIEM_NAMNAM;
+    private Text txtCHUOI_KIEM_TRA;
+    private Text txtGATE_INFO;
     private Text txtSTS;
 
     public KhamBenh objKhamBenh;
@@ -425,6 +444,21 @@ public class KhamBenhDlg extends Dialog {
 				keyPressKhamBenhDlg(e);
 			}
 		});
+		Label lbltxtT_BNCCT = new Label(shell, SWT.NONE);
+        lbltxtT_BNCCT.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtT_BNCCT.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtT_BNCCT.setText("T_BNCCT :");
+		
+		txtT_BNCCT = new Text(shell, SWT.BORDER);
+        txtT_BNCCT.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtT_BNCCT.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtT_BNCCT.setText("T_BNCCT");
+        txtT_BNCCT.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressKhamBenhDlg(e);
+			}
+		});
 		Label lbltxtT_BHTT = new Label(shell, SWT.NONE);
         lbltxtT_BHTT.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		lbltxtT_BHTT.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
@@ -635,6 +669,276 @@ public class KhamBenhDlg extends Dialog {
 				keyPressKhamBenhDlg(e);
 			}
 		});
+		Label lbltxtNV_ID = new Label(shell, SWT.NONE);
+        lbltxtNV_ID.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtNV_ID.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtNV_ID.setText("NV_ID :");
+		
+		txtNV_ID = new Text(shell, SWT.BORDER);
+        txtNV_ID.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtNV_ID.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtNV_ID.setText("NV_ID");
+        txtNV_ID.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressKhamBenhDlg(e);
+			}
+		});
+		Label lbltxtNV_NAME = new Label(shell, SWT.NONE);
+        lbltxtNV_NAME.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtNV_NAME.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtNV_NAME.setText("NV_NAME :");
+		
+		txtNV_NAME = new Text(shell, SWT.BORDER);
+        txtNV_NAME.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtNV_NAME.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtNV_NAME.setText("NV_NAME");
+        txtNV_NAME.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressKhamBenhDlg(e);
+			}
+		});
+		Label lbltxtTABLE_ID = new Label(shell, SWT.NONE);
+        lbltxtTABLE_ID.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtTABLE_ID.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtTABLE_ID.setText("TABLE_ID :");
+		
+		txtTABLE_ID = new Text(shell, SWT.BORDER);
+        txtTABLE_ID.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtTABLE_ID.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtTABLE_ID.setText("TABLE_ID");
+        txtTABLE_ID.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressKhamBenhDlg(e);
+			}
+		});
+		Label lbltxtNGAY_SINH = new Label(shell, SWT.NONE);
+        lbltxtNGAY_SINH.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtNGAY_SINH.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtNGAY_SINH.setText("NGAY_SINH :");
+		
+		txtNGAY_SINH = new Text(shell, SWT.BORDER);
+        txtNGAY_SINH.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtNGAY_SINH.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtNGAY_SINH.setText("NGAY_SINH");
+        txtNGAY_SINH.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressKhamBenhDlg(e);
+			}
+		});
+		Label lbltxtGIOI_TINH = new Label(shell, SWT.NONE);
+        lbltxtGIOI_TINH.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtGIOI_TINH.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtGIOI_TINH.setText("GIOI_TINH :");
+		
+		txtGIOI_TINH = new Text(shell, SWT.BORDER);
+        txtGIOI_TINH.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtGIOI_TINH.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtGIOI_TINH.setText("GIOI_TINH");
+        txtGIOI_TINH.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressKhamBenhDlg(e);
+			}
+		});
+		Label lbltxtDIA_CHI = new Label(shell, SWT.NONE);
+        lbltxtDIA_CHI.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtDIA_CHI.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtDIA_CHI.setText("DIA_CHI :");
+		
+		txtDIA_CHI = new Text(shell, SWT.BORDER);
+        txtDIA_CHI.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtDIA_CHI.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtDIA_CHI.setText("DIA_CHI");
+        txtDIA_CHI.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressKhamBenhDlg(e);
+			}
+		});
+		Label lbltxtMA_THE = new Label(shell, SWT.NONE);
+        lbltxtMA_THE.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtMA_THE.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtMA_THE.setText("MA_THE :");
+		
+		txtMA_THE = new Text(shell, SWT.BORDER);
+        txtMA_THE.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtMA_THE.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtMA_THE.setText("MA_THE");
+        txtMA_THE.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressKhamBenhDlg(e);
+			}
+		});
+		Label lbltxtMA_DKBD = new Label(shell, SWT.NONE);
+        lbltxtMA_DKBD.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtMA_DKBD.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtMA_DKBD.setText("MA_DKBD :");
+		
+		txtMA_DKBD = new Text(shell, SWT.BORDER);
+        txtMA_DKBD.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtMA_DKBD.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtMA_DKBD.setText("MA_DKBD");
+        txtMA_DKBD.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressKhamBenhDlg(e);
+			}
+		});
+		Label lbltxtGT_THE_TU = new Label(shell, SWT.NONE);
+        lbltxtGT_THE_TU.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtGT_THE_TU.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtGT_THE_TU.setText("GT_THE_TU :");
+		
+		txtGT_THE_TU = new Text(shell, SWT.BORDER);
+        txtGT_THE_TU.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtGT_THE_TU.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtGT_THE_TU.setText("GT_THE_TU");
+        txtGT_THE_TU.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressKhamBenhDlg(e);
+			}
+		});
+		Label lbltxtGT_THE_DEN = new Label(shell, SWT.NONE);
+        lbltxtGT_THE_DEN.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtGT_THE_DEN.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtGT_THE_DEN.setText("GT_THE_DEN :");
+		
+		txtGT_THE_DEN = new Text(shell, SWT.BORDER);
+        txtGT_THE_DEN.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtGT_THE_DEN.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtGT_THE_DEN.setText("GT_THE_DEN");
+        txtGT_THE_DEN.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressKhamBenhDlg(e);
+			}
+		});
+		Label lbltxtNGAY_CAP = new Label(shell, SWT.NONE);
+        lbltxtNGAY_CAP.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtNGAY_CAP.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtNGAY_CAP.setText("NGAY_CAP :");
+		
+		txtNGAY_CAP = new Text(shell, SWT.BORDER);
+        txtNGAY_CAP.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtNGAY_CAP.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtNGAY_CAP.setText("NGAY_CAP");
+        txtNGAY_CAP.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressKhamBenhDlg(e);
+			}
+		});
+		Label lbltxtMIEN_CUNG_CT = new Label(shell, SWT.NONE);
+        lbltxtMIEN_CUNG_CT.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtMIEN_CUNG_CT.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtMIEN_CUNG_CT.setText("MIEN_CUNG_CT :");
+		
+		txtMIEN_CUNG_CT = new Text(shell, SWT.BORDER);
+        txtMIEN_CUNG_CT.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtMIEN_CUNG_CT.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtMIEN_CUNG_CT.setText("MIEN_CUNG_CT");
+        txtMIEN_CUNG_CT.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressKhamBenhDlg(e);
+			}
+		});
+		Label lbltxtMA_QUAN_LY = new Label(shell, SWT.NONE);
+        lbltxtMA_QUAN_LY.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtMA_QUAN_LY.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtMA_QUAN_LY.setText("MA_QUAN_LY :");
+		
+		txtMA_QUAN_LY = new Text(shell, SWT.BORDER);
+        txtMA_QUAN_LY.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtMA_QUAN_LY.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtMA_QUAN_LY.setText("MA_QUAN_LY");
+        txtMA_QUAN_LY.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressKhamBenhDlg(e);
+			}
+		});
+		Label lbltxtTEN_CHA_ME = new Label(shell, SWT.NONE);
+        lbltxtTEN_CHA_ME.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtTEN_CHA_ME.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtTEN_CHA_ME.setText("TEN_CHA_ME :");
+		
+		txtTEN_CHA_ME = new Text(shell, SWT.BORDER);
+        txtTEN_CHA_ME.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtTEN_CHA_ME.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtTEN_CHA_ME.setText("TEN_CHA_ME");
+        txtTEN_CHA_ME.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressKhamBenhDlg(e);
+			}
+		});
+		Label lbltxtMA_DT_SONG = new Label(shell, SWT.NONE);
+        lbltxtMA_DT_SONG.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtMA_DT_SONG.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtMA_DT_SONG.setText("MA_DT_SONG :");
+		
+		txtMA_DT_SONG = new Text(shell, SWT.BORDER);
+        txtMA_DT_SONG.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtMA_DT_SONG.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtMA_DT_SONG.setText("MA_DT_SONG");
+        txtMA_DT_SONG.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressKhamBenhDlg(e);
+			}
+		});
+		Label lbltxtTHOIDIEM_NAMNAM = new Label(shell, SWT.NONE);
+        lbltxtTHOIDIEM_NAMNAM.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtTHOIDIEM_NAMNAM.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtTHOIDIEM_NAMNAM.setText("THOIDIEM_NAMNAM :");
+		
+		txtTHOIDIEM_NAMNAM = new Text(shell, SWT.BORDER);
+        txtTHOIDIEM_NAMNAM.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtTHOIDIEM_NAMNAM.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtTHOIDIEM_NAMNAM.setText("THOIDIEM_NAMNAM");
+        txtTHOIDIEM_NAMNAM.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressKhamBenhDlg(e);
+			}
+		});
+		Label lbltxtCHUOI_KIEM_TRA = new Label(shell, SWT.NONE);
+        lbltxtCHUOI_KIEM_TRA.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtCHUOI_KIEM_TRA.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtCHUOI_KIEM_TRA.setText("CHUOI_KIEM_TRA :");
+		
+		txtCHUOI_KIEM_TRA = new Text(shell, SWT.BORDER);
+        txtCHUOI_KIEM_TRA.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtCHUOI_KIEM_TRA.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtCHUOI_KIEM_TRA.setText("CHUOI_KIEM_TRA");
+        txtCHUOI_KIEM_TRA.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressKhamBenhDlg(e);
+			}
+		});
+		Label lbltxtGATE_INFO = new Label(shell, SWT.NONE);
+        lbltxtGATE_INFO.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtGATE_INFO.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtGATE_INFO.setText("GATE_INFO :");
+		
+		txtGATE_INFO = new Text(shell, SWT.BORDER);
+        txtGATE_INFO.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtGATE_INFO.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtGATE_INFO.setText("GATE_INFO");
+        txtGATE_INFO.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressKhamBenhDlg(e);
+			}
+		});
 		Label lbltxtSTS = new Label(shell, SWT.NONE);
         lbltxtSTS.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		lbltxtSTS.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
@@ -716,6 +1020,8 @@ public class KhamBenhDlg extends Dialog {
             // Integer    = true
             objKhamBenh.T_BNTT = Utils.getInt( txtT_BNTT.getText() );
             // Integer    = true
+            objKhamBenh.T_BNCCT = Utils.getInt( txtT_BNCCT.getText() );
+            // Integer    = true
             objKhamBenh.T_BHTT = Utils.getInt( txtT_BHTT.getText() );
             // Integer    = true
             objKhamBenh.T_NGUONKHAC = Utils.getInt( txtT_NGUONKHAC.getText() );
@@ -743,6 +1049,42 @@ public class KhamBenhDlg extends Dialog {
             objKhamBenh.KIEU_TT = Utils.getInt( txtKIEU_TT.getText() );
             // String     = false
             objKhamBenh.CHANDOAN_BD = txtCHANDOAN_BD.getText();
+            // Integer    = true
+            objKhamBenh.NV_ID = Utils.getInt( txtNV_ID.getText() );
+            // String     = false
+            objKhamBenh.NV_NAME = txtNV_NAME.getText();
+            // Integer    = true
+            objKhamBenh.TABLE_ID = Utils.getInt( txtTABLE_ID.getText() );
+            // String     = false
+            objKhamBenh.NGAY_SINH = txtNGAY_SINH.getText();
+            // Integer    = true
+            objKhamBenh.GIOI_TINH = Utils.getInt( txtGIOI_TINH.getText() );
+            // String     = false
+            objKhamBenh.DIA_CHI = txtDIA_CHI.getText();
+            // String     = false
+            objKhamBenh.MA_THE = txtMA_THE.getText();
+            // String     = false
+            objKhamBenh.MA_DKBD = txtMA_DKBD.getText();
+            // String     = false
+            objKhamBenh.GT_THE_TU = txtGT_THE_TU.getText();
+            // String     = false
+            objKhamBenh.GT_THE_DEN = txtGT_THE_DEN.getText();
+            // String     = false
+            objKhamBenh.NGAY_CAP = txtNGAY_CAP.getText();
+            // String     = false
+            objKhamBenh.MIEN_CUNG_CT = txtMIEN_CUNG_CT.getText();
+            // String     = false
+            objKhamBenh.MA_QUAN_LY = txtMA_QUAN_LY.getText();
+            // String     = false
+            objKhamBenh.TEN_CHA_ME = txtTEN_CHA_ME.getText();
+            // Integer    = true
+            objKhamBenh.MA_DT_SONG = Utils.getInt( txtMA_DT_SONG.getText() );
+            // String     = false
+            objKhamBenh.THOIDIEM_NAMNAM = txtTHOIDIEM_NAMNAM.getText();
+            // String     = false
+            objKhamBenh.CHUOI_KIEM_TRA = txtCHUOI_KIEM_TRA.getText();
+            // String     = false
+            objKhamBenh.GATE_INFO = txtGATE_INFO.getText();
             // Integer    = true
             objKhamBenh.STS = Utils.getInt( txtSTS.getText() );
             }
@@ -855,6 +1197,10 @@ public class KhamBenhDlg extends Dialog {
                 txtT_BNTT.setText("");
             else
                 txtT_BNTT.setText(""+objKhamBenh.T_BNTT.toString());
+            if(objKhamBenh.T_BNCCT==null)
+                txtT_BNCCT.setText("");
+            else
+                txtT_BNCCT.setText(""+objKhamBenh.T_BNCCT.toString());
             if(objKhamBenh.T_BHTT==null)
                 txtT_BHTT.setText("");
             else
@@ -911,6 +1257,78 @@ public class KhamBenhDlg extends Dialog {
                 txtCHANDOAN_BD.setText("");
             else
                 txtCHANDOAN_BD.setText(""+objKhamBenh.CHANDOAN_BD.toString());
+            if(objKhamBenh.NV_ID==null)
+                txtNV_ID.setText("");
+            else
+                txtNV_ID.setText(""+objKhamBenh.NV_ID.toString());
+            if(objKhamBenh.NV_NAME==null)
+                txtNV_NAME.setText("");
+            else
+                txtNV_NAME.setText(""+objKhamBenh.NV_NAME.toString());
+            if(objKhamBenh.TABLE_ID==null)
+                txtTABLE_ID.setText("");
+            else
+                txtTABLE_ID.setText(""+objKhamBenh.TABLE_ID.toString());
+            if(objKhamBenh.NGAY_SINH==null)
+                txtNGAY_SINH.setText("");
+            else
+                txtNGAY_SINH.setText(""+objKhamBenh.NGAY_SINH.toString());
+            if(objKhamBenh.GIOI_TINH==null)
+                txtGIOI_TINH.setText("");
+            else
+                txtGIOI_TINH.setText(""+objKhamBenh.GIOI_TINH.toString());
+            if(objKhamBenh.DIA_CHI==null)
+                txtDIA_CHI.setText("");
+            else
+                txtDIA_CHI.setText(""+objKhamBenh.DIA_CHI.toString());
+            if(objKhamBenh.MA_THE==null)
+                txtMA_THE.setText("");
+            else
+                txtMA_THE.setText(""+objKhamBenh.MA_THE.toString());
+            if(objKhamBenh.MA_DKBD==null)
+                txtMA_DKBD.setText("");
+            else
+                txtMA_DKBD.setText(""+objKhamBenh.MA_DKBD.toString());
+            if(objKhamBenh.GT_THE_TU==null)
+                txtGT_THE_TU.setText("");
+            else
+                txtGT_THE_TU.setText(""+objKhamBenh.GT_THE_TU.toString());
+            if(objKhamBenh.GT_THE_DEN==null)
+                txtGT_THE_DEN.setText("");
+            else
+                txtGT_THE_DEN.setText(""+objKhamBenh.GT_THE_DEN.toString());
+            if(objKhamBenh.NGAY_CAP==null)
+                txtNGAY_CAP.setText("");
+            else
+                txtNGAY_CAP.setText(""+objKhamBenh.NGAY_CAP.toString());
+            if(objKhamBenh.MIEN_CUNG_CT==null)
+                txtMIEN_CUNG_CT.setText("");
+            else
+                txtMIEN_CUNG_CT.setText(""+objKhamBenh.MIEN_CUNG_CT.toString());
+            if(objKhamBenh.MA_QUAN_LY==null)
+                txtMA_QUAN_LY.setText("");
+            else
+                txtMA_QUAN_LY.setText(""+objKhamBenh.MA_QUAN_LY.toString());
+            if(objKhamBenh.TEN_CHA_ME==null)
+                txtTEN_CHA_ME.setText("");
+            else
+                txtTEN_CHA_ME.setText(""+objKhamBenh.TEN_CHA_ME.toString());
+            if(objKhamBenh.MA_DT_SONG==null)
+                txtMA_DT_SONG.setText("");
+            else
+                txtMA_DT_SONG.setText(""+objKhamBenh.MA_DT_SONG.toString());
+            if(objKhamBenh.THOIDIEM_NAMNAM==null)
+                txtTHOIDIEM_NAMNAM.setText("");
+            else
+                txtTHOIDIEM_NAMNAM.setText(""+objKhamBenh.THOIDIEM_NAMNAM.toString());
+            if(objKhamBenh.CHUOI_KIEM_TRA==null)
+                txtCHUOI_KIEM_TRA.setText("");
+            else
+                txtCHUOI_KIEM_TRA.setText(""+objKhamBenh.CHUOI_KIEM_TRA.toString());
+            if(objKhamBenh.GATE_INFO==null)
+                txtGATE_INFO.setText("");
+            else
+                txtGATE_INFO.setText(""+objKhamBenh.GATE_INFO.toString());
             if(objKhamBenh.STS==null)
                 txtSTS.setText("");
             else

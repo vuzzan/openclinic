@@ -41,6 +41,8 @@ public class ThuocChitietDlg extends Dialog {
     private Text txtDUONG_DUNG;
     private Text txtLIEU_DUNG;
     private Text txtSO_DANG_KY;
+    private Text txtTT_THAU;
+    private Text txtPHAM_VI;
     private Text txtSO_LUONG;
     private Text txtDON_GIA;
     private Text txtTHANH_TIEN;
@@ -50,10 +52,19 @@ public class ThuocChitietDlg extends Dialog {
     private Text txtMA_PTTT;
     private Text txtTYLE_TT;
     private Text txtCT_ID;
+    private Text txtMUC_HUONG;
+    private Text txtT_NGUON_KHAC;
+    private Text txtT_BNCCT;
+    private Text txtT_NGOAIDS;
     private Text txtNT_ID;
-    private Text txtTT_BH;
-    private Text txtTT_NB;
+    private Text txtTT_BHTT;
+    private Text txtTT_BNTT;
     private Text txtKHO_NAME;
+    private Text txtCUR_DATE;
+    private Text txtTYP;
+    private Text txtTHANHTOAN;
+    private Text txtNV_ID;
+    private Text txtNV_NAME;
     private Text txtSTS;
 
     public ThuocChitiet objThuocChitiet;
@@ -280,6 +291,36 @@ public class ThuocChitietDlg extends Dialog {
 				keyPressThuocChitietDlg(e);
 			}
 		});
+		Label lbltxtTT_THAU = new Label(shell, SWT.NONE);
+        lbltxtTT_THAU.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtTT_THAU.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtTT_THAU.setText("TT_THAU :");
+		
+		txtTT_THAU = new Text(shell, SWT.BORDER);
+        txtTT_THAU.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtTT_THAU.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtTT_THAU.setText("TT_THAU");
+        txtTT_THAU.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressThuocChitietDlg(e);
+			}
+		});
+		Label lbltxtPHAM_VI = new Label(shell, SWT.NONE);
+        lbltxtPHAM_VI.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtPHAM_VI.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtPHAM_VI.setText("PHAM_VI :");
+		
+		txtPHAM_VI = new Text(shell, SWT.BORDER);
+        txtPHAM_VI.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtPHAM_VI.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtPHAM_VI.setText("PHAM_VI");
+        txtPHAM_VI.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressThuocChitietDlg(e);
+			}
+		});
 		Label lbltxtSO_LUONG = new Label(shell, SWT.NONE);
         lbltxtSO_LUONG.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		lbltxtSO_LUONG.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
@@ -415,6 +456,66 @@ public class ThuocChitietDlg extends Dialog {
 				keyPressThuocChitietDlg(e);
 			}
 		});
+		Label lbltxtMUC_HUONG = new Label(shell, SWT.NONE);
+        lbltxtMUC_HUONG.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtMUC_HUONG.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtMUC_HUONG.setText("MUC_HUONG :");
+		
+		txtMUC_HUONG = new Text(shell, SWT.BORDER);
+        txtMUC_HUONG.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtMUC_HUONG.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtMUC_HUONG.setText("MUC_HUONG");
+        txtMUC_HUONG.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressThuocChitietDlg(e);
+			}
+		});
+		Label lbltxtT_NGUON_KHAC = new Label(shell, SWT.NONE);
+        lbltxtT_NGUON_KHAC.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtT_NGUON_KHAC.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtT_NGUON_KHAC.setText("T_NGUON_KHAC :");
+		
+		txtT_NGUON_KHAC = new Text(shell, SWT.BORDER);
+        txtT_NGUON_KHAC.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtT_NGUON_KHAC.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtT_NGUON_KHAC.setText("T_NGUON_KHAC");
+        txtT_NGUON_KHAC.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressThuocChitietDlg(e);
+			}
+		});
+		Label lbltxtT_BNCCT = new Label(shell, SWT.NONE);
+        lbltxtT_BNCCT.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtT_BNCCT.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtT_BNCCT.setText("T_BNCCT :");
+		
+		txtT_BNCCT = new Text(shell, SWT.BORDER);
+        txtT_BNCCT.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtT_BNCCT.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtT_BNCCT.setText("T_BNCCT");
+        txtT_BNCCT.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressThuocChitietDlg(e);
+			}
+		});
+		Label lbltxtT_NGOAIDS = new Label(shell, SWT.NONE);
+        lbltxtT_NGOAIDS.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtT_NGOAIDS.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtT_NGOAIDS.setText("T_NGOAIDS :");
+		
+		txtT_NGOAIDS = new Text(shell, SWT.BORDER);
+        txtT_NGOAIDS.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtT_NGOAIDS.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtT_NGOAIDS.setText("T_NGOAIDS");
+        txtT_NGOAIDS.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressThuocChitietDlg(e);
+			}
+		});
 		Label lbltxtNT_ID = new Label(shell, SWT.NONE);
         lbltxtNT_ID.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		lbltxtNT_ID.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
@@ -430,31 +531,31 @@ public class ThuocChitietDlg extends Dialog {
 				keyPressThuocChitietDlg(e);
 			}
 		});
-		Label lbltxtTT_BH = new Label(shell, SWT.NONE);
-        lbltxtTT_BH.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
-		lbltxtTT_BH.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lbltxtTT_BH.setText("TT_BH :");
+		Label lbltxtTT_BHTT = new Label(shell, SWT.NONE);
+        lbltxtTT_BHTT.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtTT_BHTT.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtTT_BHTT.setText("TT_BHTT :");
 		
-		txtTT_BH = new Text(shell, SWT.BORDER);
-        txtTT_BH.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
-		txtTT_BH.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        txtTT_BH.setText("TT_BH");
-        txtTT_BH.addKeyListener(new KeyAdapter() {
+		txtTT_BHTT = new Text(shell, SWT.BORDER);
+        txtTT_BHTT.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtTT_BHTT.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtTT_BHTT.setText("TT_BHTT");
+        txtTT_BHTT.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				keyPressThuocChitietDlg(e);
 			}
 		});
-		Label lbltxtTT_NB = new Label(shell, SWT.NONE);
-        lbltxtTT_NB.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
-		lbltxtTT_NB.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lbltxtTT_NB.setText("TT_NB :");
+		Label lbltxtTT_BNTT = new Label(shell, SWT.NONE);
+        lbltxtTT_BNTT.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtTT_BNTT.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtTT_BNTT.setText("TT_BNTT :");
 		
-		txtTT_NB = new Text(shell, SWT.BORDER);
-        txtTT_NB.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
-		txtTT_NB.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        txtTT_NB.setText("TT_NB");
-        txtTT_NB.addKeyListener(new KeyAdapter() {
+		txtTT_BNTT = new Text(shell, SWT.BORDER);
+        txtTT_BNTT.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtTT_BNTT.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtTT_BNTT.setText("TT_BNTT");
+        txtTT_BNTT.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				keyPressThuocChitietDlg(e);
@@ -470,6 +571,81 @@ public class ThuocChitietDlg extends Dialog {
 		txtKHO_NAME.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtKHO_NAME.setText("KHO_NAME");
         txtKHO_NAME.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressThuocChitietDlg(e);
+			}
+		});
+		Label lbltxtCUR_DATE = new Label(shell, SWT.NONE);
+        lbltxtCUR_DATE.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtCUR_DATE.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtCUR_DATE.setText("CUR_DATE :");
+		
+		txtCUR_DATE = new Text(shell, SWT.BORDER);
+        txtCUR_DATE.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtCUR_DATE.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtCUR_DATE.setText("CUR_DATE");
+        txtCUR_DATE.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressThuocChitietDlg(e);
+			}
+		});
+		Label lbltxtTYP = new Label(shell, SWT.NONE);
+        lbltxtTYP.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtTYP.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtTYP.setText("TYP :");
+		
+		txtTYP = new Text(shell, SWT.BORDER);
+        txtTYP.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtTYP.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtTYP.setText("TYP");
+        txtTYP.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressThuocChitietDlg(e);
+			}
+		});
+		Label lbltxtTHANHTOAN = new Label(shell, SWT.NONE);
+        lbltxtTHANHTOAN.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtTHANHTOAN.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtTHANHTOAN.setText("THANHTOAN :");
+		
+		txtTHANHTOAN = new Text(shell, SWT.BORDER);
+        txtTHANHTOAN.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtTHANHTOAN.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtTHANHTOAN.setText("THANHTOAN");
+        txtTHANHTOAN.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressThuocChitietDlg(e);
+			}
+		});
+		Label lbltxtNV_ID = new Label(shell, SWT.NONE);
+        lbltxtNV_ID.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtNV_ID.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtNV_ID.setText("NV_ID :");
+		
+		txtNV_ID = new Text(shell, SWT.BORDER);
+        txtNV_ID.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtNV_ID.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtNV_ID.setText("NV_ID");
+        txtNV_ID.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressThuocChitietDlg(e);
+			}
+		});
+		Label lbltxtNV_NAME = new Label(shell, SWT.NONE);
+        lbltxtNV_NAME.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtNV_NAME.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtNV_NAME.setText("NV_NAME :");
+		
+		txtNV_NAME = new Text(shell, SWT.BORDER);
+        txtNV_NAME.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtNV_NAME.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtNV_NAME.setText("NV_NAME");
+        txtNV_NAME.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				keyPressThuocChitietDlg(e);
@@ -537,6 +713,10 @@ public class ThuocChitietDlg extends Dialog {
             objThuocChitiet.LIEU_DUNG = txtLIEU_DUNG.getText();
             // String     = false
             objThuocChitiet.SO_DANG_KY = txtSO_DANG_KY.getText();
+            // String     = false
+            objThuocChitiet.TT_THAU = txtTT_THAU.getText();
+            // Integer    = true
+            objThuocChitiet.PHAM_VI = Utils.getInt( txtPHAM_VI.getText() );
             // Integer    = true
             objThuocChitiet.SO_LUONG = Utils.getInt( txtSO_LUONG.getText() );
             // Integer    = true
@@ -556,13 +736,31 @@ public class ThuocChitietDlg extends Dialog {
             // Integer    = true
             objThuocChitiet.CT_ID = Utils.getInt( txtCT_ID.getText() );
             // Integer    = true
+            objThuocChitiet.TYLE_TT = Utils.getInt( txtMUC_HUONG.getText() );
+            // Integer    = true
+            objThuocChitiet.T_NGUON_KHAC = Utils.getInt( txtT_NGUON_KHAC.getText() );
+            // Integer    = true
+            objThuocChitiet.T_BNCCT = Utils.getInt( txtT_BNCCT.getText() );
+            // Integer    = true
+            objThuocChitiet.T_NGOAIDS = Utils.getInt( txtT_NGOAIDS.getText() );
+            // Integer    = true
             objThuocChitiet.NT_ID = Utils.getInt( txtNT_ID.getText() );
             // Integer    = true
-            objThuocChitiet.TT_BH = Utils.getInt( txtTT_BH.getText() );
+            objThuocChitiet.TT_BHTT = Utils.getInt( txtTT_BHTT.getText() );
             // Integer    = true
-            objThuocChitiet.TT_NB = Utils.getInt( txtTT_NB.getText() );
+            objThuocChitiet.TT_BNTT = Utils.getInt( txtTT_BNTT.getText() );
             // String     = false
             objThuocChitiet.KHO_NAME = txtKHO_NAME.getText();
+            // Date       = false
+            // objThuocChitiet.CUR_DATE = txtCUR_DATE.getText();
+            // Integer    = true
+            objThuocChitiet.TYP = Utils.getInt( txtTYP.getText() );
+            // Integer    = true
+            objThuocChitiet.THANHTOAN = Utils.getInt( txtTHANHTOAN.getText() );
+            // Integer    = true
+            objThuocChitiet.NV_ID = Utils.getInt( txtNV_ID.getText() );
+            // String     = false
+            objThuocChitiet.NV_NAME = txtNV_NAME.getText();
             // Integer    = true
             objThuocChitiet.STS = Utils.getInt( txtSTS.getText() );
             }
@@ -639,6 +837,14 @@ public class ThuocChitietDlg extends Dialog {
                 txtSO_DANG_KY.setText("");
             else
                 txtSO_DANG_KY.setText(""+objThuocChitiet.SO_DANG_KY.toString());
+            if(objThuocChitiet.TT_THAU==null)
+                txtTT_THAU.setText("");
+            else
+                txtTT_THAU.setText(""+objThuocChitiet.TT_THAU.toString());
+            if(objThuocChitiet.PHAM_VI==null)
+                txtPHAM_VI.setText("");
+            else
+                txtPHAM_VI.setText(""+objThuocChitiet.PHAM_VI.toString());
             if(objThuocChitiet.SO_LUONG==null)
                 txtSO_LUONG.setText("");
             else
@@ -667,30 +873,66 @@ public class ThuocChitietDlg extends Dialog {
                 txtMA_PTTT.setText("");
             else
                 txtMA_PTTT.setText(""+objThuocChitiet.MA_PTTT.toString());
-            if(objThuocChitiet.TYLE_TT==null)
+            if(objThuocChitiet.MUC_HUONG==null)
                 txtTYLE_TT.setText("");
             else
-                txtTYLE_TT.setText(""+objThuocChitiet.TYLE_TT.toString());
+                txtTYLE_TT.setText(""+objThuocChitiet.MUC_HUONG.toString());
             if(objThuocChitiet.CT_ID==null)
                 txtCT_ID.setText("");
             else
                 txtCT_ID.setText(""+objThuocChitiet.CT_ID.toString());
+            if(objThuocChitiet.TYLE_TT==null)
+                txtMUC_HUONG.setText("");
+            else
+                txtMUC_HUONG.setText(""+objThuocChitiet.TYLE_TT.toString());
+            if(objThuocChitiet.T_NGUON_KHAC==null)
+                txtT_NGUON_KHAC.setText("");
+            else
+                txtT_NGUON_KHAC.setText(""+objThuocChitiet.T_NGUON_KHAC.toString());
+            if(objThuocChitiet.T_BNCCT==null)
+                txtT_BNCCT.setText("");
+            else
+                txtT_BNCCT.setText(""+objThuocChitiet.T_BNCCT.toString());
+            if(objThuocChitiet.T_NGOAIDS==null)
+                txtT_NGOAIDS.setText("");
+            else
+                txtT_NGOAIDS.setText(""+objThuocChitiet.T_NGOAIDS.toString());
             if(objThuocChitiet.NT_ID==null)
                 txtNT_ID.setText("");
             else
                 txtNT_ID.setText(""+objThuocChitiet.NT_ID.toString());
-            if(objThuocChitiet.TT_BH==null)
-                txtTT_BH.setText("");
+            if(objThuocChitiet.TT_BHTT==null)
+                txtTT_BHTT.setText("");
             else
-                txtTT_BH.setText(""+objThuocChitiet.TT_BH.toString());
-            if(objThuocChitiet.TT_NB==null)
-                txtTT_NB.setText("");
+                txtTT_BHTT.setText(""+objThuocChitiet.TT_BHTT.toString());
+            if(objThuocChitiet.TT_BNTT==null)
+                txtTT_BNTT.setText("");
             else
-                txtTT_NB.setText(""+objThuocChitiet.TT_NB.toString());
+                txtTT_BNTT.setText(""+objThuocChitiet.TT_BNTT.toString());
             if(objThuocChitiet.KHO_NAME==null)
                 txtKHO_NAME.setText("");
             else
                 txtKHO_NAME.setText(""+objThuocChitiet.KHO_NAME.toString());
+            if(objThuocChitiet.CUR_DATE==null)
+                txtCUR_DATE.setText("");
+            else
+                txtCUR_DATE.setText(""+objThuocChitiet.CUR_DATE.toString());
+            if(objThuocChitiet.TYP==null)
+                txtTYP.setText("");
+            else
+                txtTYP.setText(""+objThuocChitiet.TYP.toString());
+            if(objThuocChitiet.THANHTOAN==null)
+                txtTHANHTOAN.setText("");
+            else
+                txtTHANHTOAN.setText(""+objThuocChitiet.THANHTOAN.toString());
+            if(objThuocChitiet.NV_ID==null)
+                txtNV_ID.setText("");
+            else
+                txtNV_ID.setText(""+objThuocChitiet.NV_ID.toString());
+            if(objThuocChitiet.NV_NAME==null)
+                txtNV_NAME.setText("");
+            else
+                txtNV_NAME.setText(""+objThuocChitiet.NV_NAME.toString());
             if(objThuocChitiet.STS==null)
                 txtSTS.setText("");
             else

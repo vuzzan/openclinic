@@ -21,7 +21,7 @@ public class SumReportDAO {
  	}
 	//
 	public String getTT2String(){
-		return ReadNumber.numberToString(TT);
+		return ReadNumber.numberToString(TT2);
 	}
 	public String getTTString(){
 		return ReadNumber.numberToString(TT);

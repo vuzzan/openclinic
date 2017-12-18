@@ -1,22 +1,27 @@
 package com.openclinic.utils;
 
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.Writer;
+import java.math.BigInteger;
+import java.security.MessageDigest;
 import java.sql.DriverManager;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Hashtable;
-import java.util.Map;
+import java.util.List;
 
+import org.apache.http.client.methods.HttpUriRequest;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
-import org.joda.time.LocalDateTime;
-import org.joda.time.Period;
-import org.joda.time.format.DateTimeFormatter;
+import org.sql2o.data.Column;
+import org.sql2o.data.Row;
 
-import com.DbHelper;
-import com.model.dao.Mabenh;
 import com.openclinic.Main;
 
 public class Utils {
@@ -26,6 +31,7 @@ public class Utils {
 	public static final int THANHTOAN_VIENPHI_FREE = 4;
 	public static final int THANHTOAN_TAI_KHAM = 3;
 	public static final int THANHTOAN_MUA_CLS = 6;
+	public static final int THANHTOAN_MUA_THUOC = 7;
 	
 	public static final int FORM_NEW    = 0;
 	public static final int FORM_UPDATE = 1;
@@ -49,7 +55,7 @@ public class Utils {
 	public static ArrayList<String> mstArrayTinhTrangThuoc = new ArrayList<String>();
 	public static ArrayList<Color> mstArrayTinhTrangPhieuKhamBenhColor = new ArrayList<Color>();
 
-	public static String[] mstArrayKieuThanhToan = {"","BHYT1","Viện Phí", "Tái Khám", "Miễn Phí", "BHYT2", "Mua CLS"};
+	public static String[] mstArrayKieuThanhToan = {"","BHYT1","Viện Phí", "Tái Khám", "Miễn Phí", "BHYT2", "Mua CLS", "Mua Thuốc VP"};
 	public static Color getTinhTrangPhieuKhamColor(int STS) {
 		if(STS < mstArrayTinhTrangPhieuKhamBenhColor.size() ){
 			return mstArrayTinhTrangPhieuKhamBenhColor.get(STS);
@@ -104,7 +110,9 @@ public class Utils {
 	public static String getDatetimeDefault(Date now){
 		return getDatetime(now, "dd/MM/yyyy");
 	}
-	
+	public static String getDatetimeCurent(){
+		return getDatetime(new Date(), "yyyy-MM-dd_HH:mm:ss");
+	}	
 	public static String getDatetime(Date now, String format){
 		if(format==null || format.length()==0){
 			format = "yyyy-MM-dd HH:mm:ss";
@@ -266,12 +274,12 @@ public class Utils {
 		return convertedCurrentDate;
 	}
 
-	public static int getInt(String intval) {
+	public static int getInt(Object intval) {
 		try{
-			return Integer.parseInt(intval);
+			return Integer.parseInt(intval.toString());
 		}
 		catch(Exception e){
-			
+			//e.printStackTrace();
 		}
 		return 0;
 	}
@@ -324,6 +332,80 @@ public class Utils {
 		}
 		//
 		return beginStatus;
+	}
+	public static void exportListRowToExcel(String filename, org.sql2o.data.Table tableDataPhieuKham) {
+		List<Row> listRow = tableDataPhieuKham.rows();
+		String delimiter = ",";
+		if(listRow.size()>0){
+			StringBuffer buff = new StringBuffer();
+			// Get header...
+			List<Column> listColumn = tableDataPhieuKham.columns();
+			for(Column col : listColumn){
+				buff.append( col.getName() +delimiter);
+			}
+			buff.append( "\n");
+			//
+			for(Row row: listRow){
+				for(Column col : listColumn){
+					buff.append( row.getObject(col.getName()).toString() +delimiter);
+				}
+				buff.append( "\n");
+			}
+			Writer out = null;
+			try {
+				out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filename), "UTF-8"));
+				out.write('\uFEFF'); // BOM for UTF-*
+				//out.write("sep=\t\n"); // 
+				//out.write(0xef); // emits 0xef
+			    //out.write(0xbb); // emits 0xbb
+			    //out.write(0xbf); // emits 0xbf
+			    out.write(buff.toString());
+			} 
+			catch(Exception ee){
+				ee.printStackTrace();
+			}
+			finally {
+			    try {
+					out.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			//
+		}
+	}
+	public static String diffMonthDate(int day, int month, int year) {
+		Calendar endDate = Calendar.getInstance();
+		Calendar startDate = Calendar.getInstance();
+		long dayDiff = differenceInDay(startDate, endDate);
+		return "";
+	}
+
+	
+	public static void setHeader(HttpUriRequest mainPage, String string) {
+		mainPage.setHeader("Content-Type", "application/json");
+//		mainPage.setHeader("DNT", "1");
+//		mainPage.setHeader("Host", "gdbhyt.baohiemxahoi.gov.vn");
+//		mainPage.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+//		mainPage.setHeader("Accept-Language", "en-US,en;q=0.5");
+//		mainPage.setHeader("Accept-Encoding", "gzip, deflate, br");
+//		mainPage.setHeader("Connection", "keep-alive");
+//		mainPage.setHeader("Upgrade-Insecure-Requests", "1");
+	}
+
+	public static String MungPass(String pass) {
+		try{
+		    MessageDigest m = MessageDigest.getInstance("MD5");
+		    byte[] data = pass.getBytes(); 
+		    m.update(data,0,data.length);
+		    BigInteger i = new BigInteger(1,m.digest());
+		    return String.format("%1$032X", i);
+		}
+		catch(Exception ee){
+			ee.printStackTrace();
+		}
+		return "";
 	}
 
 }

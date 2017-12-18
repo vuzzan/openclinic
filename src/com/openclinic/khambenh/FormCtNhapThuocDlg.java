@@ -91,6 +91,8 @@ public class FormCtNhapThuocDlg extends Dialog {
     private Text txtKETQUA;
     private Text txtTHUOC_RANK;
     private Label lblSL;
+    private Label lblGiBn;
+    private Text txtDONGIA_BAN;
 	/**
 	 * Create the dialog.
 	 * @param parent
@@ -186,22 +188,43 @@ public class FormCtNhapThuocDlg extends Dialog {
 		lblSL = new Label(group, SWT.NONE);
 		lblSL.setText("SỐ LÔ:");
 		lblSL.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
-		lblSL.setBounds(430, 53, 59, 19);
+		lblSL.setBounds(236, 53, 59, 19);
 		
 		
 		txtLOT_ID = new Text(group, SWT.BORDER);
 		txtLOT_ID.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
-		txtLOT_ID.setBounds(495, 50, 124, 25);
+		txtLOT_ID.setBounds(301, 50, 124, 25);
 
 		Label lbltxtDONGIA = new Label(group, SWT.NONE);
-		lbltxtDONGIA.setBounds(622, 56, 73, 19);
+		lbltxtDONGIA.setBounds(431, 53, 73, 19);
 		lbltxtDONGIA.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
 		lbltxtDONGIA.setText("ĐƠN GIÁ:");
 		
 		txtDONGIA = new Text(group, SWT.BORDER);
-		txtDONGIA.setBounds(715, 53, 99, 25);
+		txtDONGIA.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent e) {
+				if(Utils.getInt( txtDONGIA_BAN.getText() )==0 ){
+					txtDONGIA_BAN.setText(txtDON_GIA.getText());
+					txtDONGIA_BAN.selectAll();
+					txtDONGIA_BAN.forceFocus();
+				}
+			}
+		});
+		txtDONGIA.setBounds(520, 50, 99, 25);
 		txtDONGIA.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
 		txtDONGIA.setText("0");
+		
+		lblGiBn = new Label(group, SWT.NONE);
+		lblGiBn.setText("GIÁ BÁN:");
+		lblGiBn.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
+		lblGiBn.setBounds(635, 53, 73, 19);
+		
+		txtDONGIA_BAN = new Text(group, SWT.BORDER);
+		txtDONGIA_BAN.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
+		txtDONGIA_BAN.setText("0");
+		txtDONGIA_BAN.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
+		txtDONGIA_BAN.setBounds(715, 53, 99, 25);
 		
 		Group groupChiTietThuoc = new Group(shell, SWT.NONE);
 		groupChiTietThuoc.setBounds(5, 0, 824, 329);
@@ -773,6 +796,9 @@ public class FormCtNhapThuocDlg extends Dialog {
 						//
 						//
 						txtDONGIA.setText(""+objThuoc.DON_GIA);
+						if(objThuoc.TYP==2){
+							txtDONGIA_BAN.setText(""+objThuoc.DON_GIA_TT);
+						}
 						txtTENTHUOC.setText(""+objThuoc.TEN_THUOC);
 						objCtNhapthuoc.THUOC_ID = objThuoc.THUOC_ID;
 						txtSOLUONG.forceFocus();
@@ -848,19 +874,35 @@ public class FormCtNhapThuocDlg extends Dialog {
             // String     = false
             objCtNhapthuoc.TENTHUOC = txtTENTHUOC.getText();
             // String     = false
-            objCtNhapthuoc.HANDUNG = txtHANDUNG.getDate2().getTime();
+            objCtNhapthuoc.HANDUNG = txtHANDUNG.getDate();
             // Integer    = true
             objCtNhapthuoc.SOLUONG = Utils.getInt( txtSOLUONG.getText() );
             //
             objCtNhapthuoc.DONVI = objThuoc!=null?objThuoc.DON_VI_TINH:"";
+            // Integer    = true
+            objCtNhapthuoc.TYP = objThuoc.TYP;
+            objCtNhapthuoc.SO_DANG_KY= objThuoc.SODANGKY_AX;
+            //"Ghi thông tin thầu của thuốc gồm: số quyết định trúng thầu, gói thầu, nhóm thầu theo danh mục đã thống nhất với cơ quan BHXH, cách nhau bằng dấu “;”. Mã gói thầu và nhóm thầu tham chiếu bảng 9.
+            //Ví dụ thuốc trúng thầu theo quyết định số 12/QĐ-SYT thuộc gói Generic nhóm 2 ghi 12/QĐ-SYT;G1;N2
+            //(trường hợp không có quyết định thầu ghi số công văn gửi cơ quan BHXH)"
+            objCtNhapthuoc.TT_THAU= objThuoc.QUYET_DINH+";G"+objThuoc.LOAI_THAU+";"+objThuoc.NHOM_THAU;
+            objCtNhapthuoc.HAM_LUONG= objThuoc.HAMLUONG_AX;
             //
             objCtNhapthuoc.LOT_ID = txtLOT_ID.getText();
             // Integer    = true
             objCtNhapthuoc.SL_TONKHO = objCtNhapthuoc.SOLUONG;
             // Integer    = true
             objCtNhapthuoc.DONGIA = Utils.getInt( txtDONGIA.getText() );
+            //
+            if(objCtNhapthuoc.TYP==2){
+            	objCtNhapthuoc.DONGIA_BAN = Utils.getInt( txtDONGIA_BAN.getText() );
+            	if(objCtNhapthuoc.DONGIA_BAN==0){
+            		objCtNhapthuoc.DONGIA_BAN = objCtNhapthuoc.DONGIA;
+            	}
+            }
             // Integer    = true
             objCtNhapthuoc.THANHTIEN = objCtNhapthuoc.DONGIA * objCtNhapthuoc.SOLUONG;
+            //
         }
         //
         logger.info(objCtNhapthuoc.toString());

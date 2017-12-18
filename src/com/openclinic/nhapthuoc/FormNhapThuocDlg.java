@@ -1,71 +1,81 @@
 package com.openclinic.nhapthuoc;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
+
+import net.sf.jasperreports.engine.JREmptyDataSource;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.util.JRLoader;
+import net.sf.jasperreports.view.JasperViewer;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.eclipse.swt.widgets.Dialog;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
-
-import swing2swt.layout.BorderLayout;
-
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.internal.win32.DLLVERSIONINFO;
-import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.wb.swt.SWTResourceManager;
-import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.layout.FormLayout;
-import org.eclipse.swt.layout.FormData;
-import org.eclipse.swt.layout.FormAttachment;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Table;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Monitor;
-import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Dialog;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
-import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Monitor;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.wb.swt.SWTResourceManager;
+import org.sql2o.Connection;
+
+import swing2swt.layout.BorderLayout;
 
 import com.DbHelper;
+import com.model.cache.MaCskcbCache;
 import com.model.dao.CtNhapthuoc;
 import com.model.dao.CtNhapthuocDlg;
+import com.model.dao.DvChitiet;
+import com.model.dao.KhoaPhong;
 import com.model.dao.Khohang;
-import com.model.dao.KhohangListDlg;
 import com.model.dao.NhapThuoc;
-import com.model.dao.NhapThuocDlg;
 import com.model.dao.Thuoc;
-import com.model.dao.ThuocDlg;
+import com.model.dao.ThuocChitiet;
+import com.model.dao.Users;
 import com.model.dao.Vendor;
-import com.model.dao.VendorListDlg;
 import com.openclinic.DatePicker;
 import com.openclinic.khambenh.FormCtNhapThuocDlg;
+import com.openclinic.khambenh.ReportDAO;
+import com.openclinic.khambenh.SumReportDAO;
 import com.openclinic.utils.Utils;
-
-import org.eclipse.swt.layout.GridLayout;
-import org.sql2o.Connection;
-import org.eclipse.swt.widgets.Combo;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.ModifyEvent;
 
 public class FormNhapThuocDlg extends Dialog {
 	static Logger logger = LogManager.getLogger(FormNhapThuocDlg.class
@@ -91,7 +101,7 @@ public class FormNhapThuocDlg extends Dialog {
 				} else if (columnIndex == 4) {
 					return Utils.getMoneyDefault(obj.THANHTIEN);
 				} else if (columnIndex == 5) {
-					return Utils.getDatetimeDefault(obj.HANDUNG);
+					return obj.HANDUNG;
 				} else if (columnIndex == 6) {
 					return (obj.LOT_ID);
 				}
@@ -143,6 +153,7 @@ public class FormNhapThuocDlg extends Dialog {
 
     public Thuoc objThuoc;
 	private Combo txtVENDOR_NAME;
+	private String objTenKho;
 
 	// END ADD THUOC
 	/**
@@ -284,7 +295,6 @@ public class FormNhapThuocDlg extends Dialog {
 		lbltxtTONGCONG.setText("TONGCONG :");
 		
 		txtTONGCONG = new Text(compositeTableHeader, SWT.BORDER | SWT.RIGHT);
-		txtTONGCONG.setEditable(false);
 		txtTONGCONG.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		txtTONGCONG.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		txtTONGCONG.addKeyListener(new KeyAdapter() {
@@ -487,6 +497,12 @@ public class FormNhapThuocDlg extends Dialog {
 		btnSave.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
 
 		btnPrint = new Button(compositeFooter, SWT.NONE);
+		btnPrint.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				printPhieu();
+			}
+		});
 		fd_button.top = new FormAttachment(btnPrint, 0, SWT.TOP);
 		fd_button.left = new FormAttachment(btnPrint, 6);
 		FormData fd_button_1 = new FormData();
@@ -515,7 +531,62 @@ public class FormNhapThuocDlg extends Dialog {
 			tableViewerCtNhapthuoc.setInput(listDataCtNhapthuoc);
 			reloadTableCtNhapthuoc();
 		}
+		//
 		loadNhapThuocDlgData();
+	}
+
+	protected void printPhieu() {
+		// REPORT BHYT ALL DICH VU
+		java.sql.Connection con = null;
+		try {
+			String reportName = "PhieuNhapThuoc.jasper";
+			JasperReport jr = (JasperReport) JRLoader.loadObject(this.getClass().getResource("/" + reportName));
+			// logger.info("JasperCompileManager " + jr);
+			//
+			ArrayList<CtNhapthuoc> thuoc = new ArrayList<>();
+			int i=1;
+			for( CtNhapthuoc obj: listDataCtNhapthuoc){
+				obj.STT = i++;
+				thuoc.add(obj);
+			}
+			JRBeanCollectionDataSource report_thuoc = new JRBeanCollectionDataSource( thuoc);
+			Map<String, Object> params = new HashMap<String, Object>();
+
+			SumReportDAO sumCongkham = new SumReportDAO();
+			sumCongkham.TT = objNhapThuoc.TONGCONG;
+			sumCongkham.TT2 = objNhapThuoc.TONGCONG_VAT;
+			
+			params.put("TONGCONG_SUM", sumCongkham);
+			params.put("NT", objNhapThuoc);
+			params.put("THUOC_DataSource", report_thuoc);
+			params.put("NGAY_GIO", Utils.getDatetimeLocal("Duy Xuyên", new Date()));
+			params.put("NGUOI_LAP", DbHelper.currentSessionUserId.TEN_NHANVIEN);
+			JasperPrint jp = JasperFillManager.fillReport(jr, params,new JREmptyDataSource());
+			JasperViewer.viewReport(jp, false);
+			// JasperPrintManager.printReport(jp, true);
+			// JasperPrintManager.printReport(jp_all, true);
+			// JasperPrintManager.printReport(jp,false);
+			//
+			//
+			// OutputStream os = new FileOutputStream("STUDENT_MARK_"+".pdf");
+			// JasperExportManager.exportReportToPdfStream(jp, os);
+
+			// os.flush();
+			// os.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		} finally {
+			try {
+				if (con != null && !con.isClosed()) {
+					// con.close();
+				}
+			} catch (Exception e) {
+				logger.error(e);
+				e.printStackTrace();
+			}
+		}
+		
 	}
 
 	protected void keyPressNhapThuocDlg(KeyEvent e) {
@@ -523,16 +594,11 @@ public class FormNhapThuocDlg extends Dialog {
 			saveDlg();
 		}
 		else if(e.keyCode==SWT.F9){
-			printPhieuNhapThuoc();
+			printPhieu();
 		}
 		else if(e.keyCode==SWT.ESC){
 			shellNhapThuoc.close();
 		}
-		
-	}
-
-	private void printPhieuNhapThuoc() {
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -628,8 +694,9 @@ public class FormNhapThuocDlg extends Dialog {
 		shellNhapThuoc.close();
 	}
 
-	public void setNhapThuocDlgData(NhapThuoc obj) {
+	public void setNhapThuocDlgData(NhapThuoc obj, String tenKho) {
 		this.objNhapThuoc = obj;
+		this.objTenKho = tenKho;
 	}
 
 	public void loadNhapThuocDlgData() {
@@ -761,10 +828,14 @@ public class FormNhapThuocDlg extends Dialog {
 		for (CtNhapthuoc obj2 : listDataCtNhapthuoc) {
 			objNhapThuoc.TONGCONG += obj2.THANHTIEN;
 		}
-		objNhapThuoc.TONGCONG_VAT =(int)(((float)taxVAT/(float)100)*objNhapThuoc.TONGCONG.intValue());
+		//objNhapThuoc.TONGCONG_VAT =(int) ((float) 1+((float)taxVAT/(float)100)*objNhapThuoc.TONGCONG.intValue());
+		objNhapThuoc.TONGCONG_VAT = (int) ((float)objNhapThuoc.TONGCONG.intValue() * ((float)(1) + (float)taxVAT/(float)100));
+		//objNhapThuoc.TONGCONG_VAT = (int) ((float)Utils.getInt(txtTONGCONG.getText()) * ((float)(1) + (float)taxVAT/(float)100));
 		//
-		if(txtTONGCONG!=null)
+		if(txtTONGCONG!=null){
 			txtTONGCONG.setText(objNhapThuoc.TONGCONG.toString());
+		}
+		//
 		if(txtTONGCONG_VAT!=null)
 			txtTONGCONG_VAT.setText(""+ objNhapThuoc.TONGCONG_VAT);
 		//

@@ -3,6 +3,11 @@
 */
 package com.model.dao;
 
+
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +48,8 @@ import org.eclipse.swt.layout.GridData;
 import org.sql2o.Connection;
 
 import com.DbHelper;
+import com.openclinic.utils.Utils;
+
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.wb.swt.SWTResourceManager;
@@ -146,10 +153,10 @@ public class BenhNhanListDlg extends Dialog {
         
 		Composite compositeHeaderBenhNhan = new Composite(compositeInShellBenhNhan, SWT.NONE);
 		compositeHeaderBenhNhan.setLayoutData(BorderLayout.NORTH);
-		compositeHeaderBenhNhan.setLayout(new GridLayout(2, false));
+		compositeHeaderBenhNhan.setLayout(new GridLayout(5, false));
 
 		textSearchBenhNhan = new Text(compositeHeaderBenhNhan, SWT.BORDER);
-		textSearchBenhNhan.setFont(SWTResourceManager.getFont("Tahoma", 11, SWT.NORMAL));
+		textSearchBenhNhan.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		textSearchBenhNhan.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -161,7 +168,7 @@ public class BenhNhanListDlg extends Dialog {
 		
 		Button btnNewButtonSearchBenhNhan = new Button(compositeHeaderBenhNhan, SWT.NONE);
 		btnNewButtonSearchBenhNhan.setImage(SWTResourceManager.getImage(BenhNhanDlg.class, "/png/media-play-2x.png"));
-		btnNewButtonSearchBenhNhan.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
+		btnNewButtonSearchBenhNhan.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 
 		btnNewButtonSearchBenhNhan.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -169,6 +176,18 @@ public class BenhNhanListDlg extends Dialog {
 				reloadTableBenhNhan();
 			}
 		});
+		Button btnNewButtonExportExcelBenhNhan = new Button(compositeHeaderBenhNhan, SWT.NONE);
+		btnNewButtonExportExcelBenhNhan.setText("Export Excel");
+		btnNewButtonExportExcelBenhNhan.setImage(SWTResourceManager.getImage(KhamBenhListDlg.class, "/png/spreadsheet-2x.png"));
+		btnNewButtonExportExcelBenhNhan.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		btnNewButtonExportExcelBenhNhan.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				exportExcelTableBenhNhan();
+			}
+		});
+		
+		
 		GridData gd_btnNewButtonBenhNhan = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
 		gd_btnNewButtonBenhNhan.widthHint = 87;
 		btnNewButtonSearchBenhNhan.setLayoutData(gd_btnNewButtonBenhNhan);
@@ -176,7 +195,7 @@ public class BenhNhanListDlg extends Dialog {
         
 		tableViewerBenhNhan = new TableViewer(compositeInShellBenhNhan, SWT.BORDER | SWT.FULL_SELECTION);
 		tableBenhNhan = tableViewerBenhNhan.getTable();
-		tableBenhNhan.setFont(SWTResourceManager.getFont("Tahoma", 11, SWT.NORMAL));
+		tableBenhNhan.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		tableBenhNhan.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -274,6 +293,10 @@ public class BenhNhanListDlg extends Dialog {
 		tbTableColumnBenhNhanLAST_EDIT.setWidth(100);
 		tbTableColumnBenhNhanLAST_EDIT.setText("LAST_EDIT");
 
+		TableColumn tbTableColumnBenhNhanGATE_INFO = new TableColumn(tableBenhNhan, SWT.LEFT);
+		tbTableColumnBenhNhanGATE_INFO.setWidth(100);
+		tbTableColumnBenhNhanGATE_INFO.setText("GATE_INFO");
+
 		TableColumn tbTableColumnBenhNhanSTS = new TableColumn(tableBenhNhan, SWT.RIGHT);
 		tbTableColumnBenhNhanSTS.setWidth(100);
 		tbTableColumnBenhNhanSTS.setText("STS");
@@ -310,7 +333,17 @@ public class BenhNhanListDlg extends Dialog {
 			}
 		});
 		mntmDeleteBenhNhan.setText("Delete");
-
+		
+		MenuItem mntmExportBenhNhan = new MenuItem(menuBenhNhan, SWT.NONE);
+		mntmExportBenhNhan.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				exportExcelTableBenhNhan();
+			}
+		});
+		mntmExportBenhNhan.setImage(SWTResourceManager.getImage(BenhNhanDlg.class, "/png/spreadsheet-2x.png"));
+		mntmExportBenhNhan.setText("Export Excel");
+		
 		tableViewerBenhNhan.setLabelProvider(new TableLabelProviderBenhNhan());
 		tableViewerBenhNhan.setContentProvider(new ContentProviderBenhNhan());
 		tableViewerBenhNhan.setInput(listDataBenhNhan);
@@ -327,6 +360,91 @@ public class BenhNhanListDlg extends Dialog {
 		if(textSearchBenhNhanString!=null){
 			textSearchBenhNhan.setText(textSearchBenhNhanString);
 		}
+	}
+	protected void exportExcelTableBenhNhan() {
+        if(DbHelper.checkPhanQuyen(DbHelper.READ, "benh_nhan")==false){
+			logger.info("DON'T HAVE READ RIGHT");
+			return;
+		}
+        if(listDataBenhNhan!=null){
+            // Export to EXCEL
+    		
+			StringBuffer buff_benh_nhan = new StringBuffer();
+			String benh_nhan_filename = "benh_nhan_"+Utils.getDatetimeCurent().replaceAll(":", "_")+".xls";
+			String delimiter = "</td><td>";
+			// Get header...
+			// Get header...
+			buff_benh_nhan.append( "<table>");
+			buff_benh_nhan.append( "<tr class='background-color:#dfdfdf'><td>");
+
+			buff_benh_nhan.append( "HO_TEN" +delimiter);
+			buff_benh_nhan.append( "NGAY_SINH" +delimiter);
+			buff_benh_nhan.append( "GIOI_TINH" +delimiter);
+			buff_benh_nhan.append( "DIA_CHI" +delimiter);
+			buff_benh_nhan.append( "MA_THE" +delimiter);
+			buff_benh_nhan.append( "MA_DKBD" +delimiter);
+			buff_benh_nhan.append( "GT_THE_TU" +delimiter);
+			buff_benh_nhan.append( "GT_THE_DEN" +delimiter);
+			buff_benh_nhan.append( "NGAY_CAP" +delimiter);
+			buff_benh_nhan.append( "MA_QUAN_LY" +delimiter);
+			buff_benh_nhan.append( "TEN_CHA_ME" +delimiter);
+			buff_benh_nhan.append( "MA_DT_SONG" +delimiter);
+			buff_benh_nhan.append( "THOIDIEM_NAMNAM" +delimiter);
+			buff_benh_nhan.append( "CHUOI_KIEM_TRA" +delimiter);
+			buff_benh_nhan.append( "DATE_ADD" +delimiter);
+			buff_benh_nhan.append( "LAST_EDIT" +delimiter);
+			buff_benh_nhan.append( "GATE_INFO" +delimiter);
+			buff_benh_nhan.append( "STS");
+			// End of header
+			buff_benh_nhan.append( "</td></tr>");
+			buff_benh_nhan.append( "\n");
+			// Get data...
+			for( BenhNhan obj:  listDataBenhNhan){
+				buff_benh_nhan.append( "<tr><td>");
+				buff_benh_nhan.append( obj.HO_TEN +delimiter);
+				buff_benh_nhan.append( obj.NGAY_SINH +delimiter);
+				buff_benh_nhan.append( obj.GIOI_TINH +delimiter);
+				buff_benh_nhan.append( obj.DIA_CHI +delimiter);
+				buff_benh_nhan.append( obj.MA_THE +delimiter);
+				buff_benh_nhan.append( obj.MA_DKBD +delimiter);
+				buff_benh_nhan.append( obj.GT_THE_TU +delimiter);
+				buff_benh_nhan.append( obj.GT_THE_DEN +delimiter);
+				buff_benh_nhan.append( obj.NGAY_CAP +delimiter);
+				buff_benh_nhan.append( obj.MA_QUAN_LY +delimiter);
+				buff_benh_nhan.append( obj.TEN_CHA_ME +delimiter);
+				buff_benh_nhan.append( obj.MA_DT_SONG +delimiter);
+				buff_benh_nhan.append( obj.THOIDIEM_NAMNAM +delimiter);
+				buff_benh_nhan.append( obj.CHUOI_KIEM_TRA +delimiter);
+				buff_benh_nhan.append( obj.DATE_ADD +delimiter);
+				buff_benh_nhan.append( obj.LAST_EDIT +delimiter);
+				buff_benh_nhan.append( obj.GATE_INFO +delimiter);
+				buff_benh_nhan.append( obj.STS );
+				// End of header
+				buff_benh_nhan.append( "</td></tr>");
+			}
+			//
+			buff_benh_nhan.append( "</table>");
+			Writer out = null;
+			try {
+				out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(benh_nhan_filename), "UTF-8"));
+				out.write('\uFEFF'); // BOM for UTF-*
+			    out.write(buff_benh_nhan.toString());
+			} 
+			catch(Exception ee){
+				ee.printStackTrace();
+			}
+			finally {
+			    try {
+					out.close();
+				} catch (Exception e) {
+					e.printStackTrace();
+					logger.error(e);
+				}
+			}
+			//
+            return;
+        }
+		// End of export
 	}
 	protected void reloadTableBenhNhan() {
         if(DbHelper.checkPhanQuyen(DbHelper.READ, "benh_nhan")==false){
@@ -365,6 +483,7 @@ public class BenhNhanListDlg extends Dialog {
         sql += " or LOWER(TEN_CHA_ME) like '%"+searchString+"%'";
         sql += " or LOWER(THOIDIEM_NAMNAM) like '%"+searchString+"%'";
         sql += " or LOWER(CHUOI_KIEM_TRA) like '%"+searchString+"%'";
+        sql += " or LOWER(GATE_INFO) like '%"+searchString+"%'";
             sql += " )";
         }
 		try  {

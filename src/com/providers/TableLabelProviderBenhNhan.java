@@ -9,6 +9,8 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.sql2o.data.Row;
 
+import com.DbHelper;
+import com.model.dao.KhoaPhong;
 import com.openclinic.utils.Utils;
 
 public class TableLabelProviderBenhNhan extends LabelProvider implements ITableLabelProvider, IColorProvider {
@@ -26,7 +28,7 @@ public class TableLabelProviderBenhNhan extends LabelProvider implements ITableL
 				return Utils.getDatetime( obj.getDate("KB_DATE"), "HH:mm dd/MM/YY");
 			}
 			else if(columnIndex==2){
-				return obj.getString("HO_TEN").toString();
+				return obj.getString("TEN_BENH_NHAN").toString();
 			}
 			else if(columnIndex==3){
 				return obj.getString("MA_THE").toString();
@@ -35,21 +37,29 @@ public class TableLabelProviderBenhNhan extends LabelProvider implements ITableL
 				return Utils.getKieuThanhToan( obj.getInteger("KIEU_TT").intValue() );
 			}
 			else if(columnIndex==5){
-				return obj.getString("T_VTYT").toString();
+				return ""+ java.text.NumberFormat.getInstance(java.util.Locale.ITALY)
+						.format(obj.getInteger("T_BNTT").intValue())   +"|"+ 
+						java.text.NumberFormat.getInstance(java.util.Locale.ITALY)
+						.format(obj.getInteger("T_TONGCHI").intValue()) ;
 			}
 			else if(columnIndex==6){
 				if( obj.getString("NGAY_TTOAN").toString().length()> 10 ){
-					return "Đã TT";
+					return "Xong";
 				}
-				return "Chưa";
+				return "";
 			}
 			else if(columnIndex==7){
-				return obj.getString("MA_KHOA").toString();
+				return obj.getString("NV_NAME").toString();
 			}
 			else if(columnIndex==8){
 				String MAKHOA =obj.getString("MA_KHOA").toString();
-				//String tenKhoa = LoginDlg.hashKhoaPhong.get(MAKHOA);
-				return MAKHOA;
+				KhoaPhong objKhoa = DbHelper.hashKhoaPhongMAKHOA.get(MAKHOA);
+				if(objKhoa==null){
+					return MAKHOA;
+				}
+				else{
+					return objKhoa.KP_NAME;
+				}
 			}
 			else if(columnIndex==9){
 				String MALK ="["+obj.getString("MA_LK").toString()+"] "+"("+obj.getString("BN_ID").toString()+")";
@@ -72,7 +82,7 @@ public class TableLabelProviderBenhNhan extends LabelProvider implements ITableL
 		if(element instanceof Row){
 			Row obj = (Row)element;
 			if( obj.getString("NGAY_TTOAN").toString().length()> 10 ){
-				return SWTResourceManager.getColor(SWT.COLOR_GREEN);
+				return SWTResourceManager.getColor(SWT.COLOR_DARK_GREEN);
 			}
 			
 			return Utils.getTinhTrangPhieuKhamColor( obj.getInteger("STS").intValue() );

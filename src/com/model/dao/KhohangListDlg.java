@@ -208,6 +208,10 @@ public class KhohangListDlg extends Dialog {
 		tableKhohang.setHeaderVisible(true);
 		tableKhohang.setLayoutData(BorderLayout.CENTER);
 
+		TableColumn tbTableColumnKhohangTYPE = new TableColumn(tableKhohang, SWT.RIGHT);
+		tbTableColumnKhohangTYPE.setWidth(100);
+		tbTableColumnKhohangTYPE.setText("TYPE");
+
 		TableColumn tbTableColumnKhohangKHO_NAME = new TableColumn(tableKhohang, SWT.LEFT);
 		tbTableColumnKhohangKHO_NAME.setWidth(100);
 		tbTableColumnKhohangKHO_NAME.setText("KHO_NAME");

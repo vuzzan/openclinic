@@ -4,7 +4,7 @@ import com.openclinic.khambenh.FormKhamBenhDlg;
 
 public class TimerThread extends Thread {
 
-	public int timer = 2000;
+	public int timer = 1000;
 	public boolean isStop = false;
 	@Override
 	public void run() {
@@ -12,8 +12,10 @@ public class TimerThread extends Thread {
 		while(isStop == false){
 			//System.out.println("TIMER START............");
 			if(isStop == false){
-				FormKhamBenhDlg.doSearchBenhNhan(1);
+				//FormKhamBenhDlg.doSearchBenhNhan();
 			}
+			
+			//
 			try{
 				//System.out.println("TIMER WAIT............"+timer);
 				Thread.sleep(timer);

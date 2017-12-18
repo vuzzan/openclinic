@@ -3,6 +3,11 @@
 */
 package com.model.dao;
 
+
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +48,8 @@ import org.eclipse.swt.layout.GridData;
 import org.sql2o.Connection;
 
 import com.DbHelper;
+import com.openclinic.utils.Utils;
+
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.wb.swt.SWTResourceManager;
@@ -146,10 +153,10 @@ public class KhamBenhListDlg extends Dialog {
         
 		Composite compositeHeaderKhamBenh = new Composite(compositeInShellKhamBenh, SWT.NONE);
 		compositeHeaderKhamBenh.setLayoutData(BorderLayout.NORTH);
-		compositeHeaderKhamBenh.setLayout(new GridLayout(2, false));
+		compositeHeaderKhamBenh.setLayout(new GridLayout(5, false));
 
 		textSearchKhamBenh = new Text(compositeHeaderKhamBenh, SWT.BORDER);
-		textSearchKhamBenh.setFont(SWTResourceManager.getFont("Tahoma", 11, SWT.NORMAL));
+		textSearchKhamBenh.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		textSearchKhamBenh.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -161,7 +168,7 @@ public class KhamBenhListDlg extends Dialog {
 		
 		Button btnNewButtonSearchKhamBenh = new Button(compositeHeaderKhamBenh, SWT.NONE);
 		btnNewButtonSearchKhamBenh.setImage(SWTResourceManager.getImage(KhamBenhDlg.class, "/png/media-play-2x.png"));
-		btnNewButtonSearchKhamBenh.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
+		btnNewButtonSearchKhamBenh.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 
 		btnNewButtonSearchKhamBenh.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -169,6 +176,18 @@ public class KhamBenhListDlg extends Dialog {
 				reloadTableKhamBenh();
 			}
 		});
+		Button btnNewButtonExportExcelKhamBenh = new Button(compositeHeaderKhamBenh, SWT.NONE);
+		btnNewButtonExportExcelKhamBenh.setText("Export Excel");
+		btnNewButtonExportExcelKhamBenh.setImage(SWTResourceManager.getImage(KhamBenhListDlg.class, "/png/spreadsheet-2x.png"));
+		btnNewButtonExportExcelKhamBenh.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		btnNewButtonExportExcelKhamBenh.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				exportExcelTableKhamBenh();
+			}
+		});
+		
+		
 		GridData gd_btnNewButtonKhamBenh = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
 		gd_btnNewButtonKhamBenh.widthHint = 87;
 		btnNewButtonSearchKhamBenh.setLayoutData(gd_btnNewButtonKhamBenh);
@@ -176,7 +195,7 @@ public class KhamBenhListDlg extends Dialog {
         
 		tableViewerKhamBenh = new TableViewer(compositeInShellKhamBenh, SWT.BORDER | SWT.FULL_SELECTION);
 		tableKhamBenh = tableViewerKhamBenh.getTable();
-		tableKhamBenh.setFont(SWTResourceManager.getFont("Tahoma", 11, SWT.NORMAL));
+		tableKhamBenh.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		tableKhamBenh.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -288,6 +307,10 @@ public class KhamBenhListDlg extends Dialog {
 		tbTableColumnKhamBenhT_BNTT.setWidth(100);
 		tbTableColumnKhamBenhT_BNTT.setText("T_BNTT");
 
+		TableColumn tbTableColumnKhamBenhT_BNCCT = new TableColumn(tableKhamBenh, SWT.RIGHT);
+		tbTableColumnKhamBenhT_BNCCT.setWidth(100);
+		tbTableColumnKhamBenhT_BNCCT.setText("T_BNCCT");
+
 		TableColumn tbTableColumnKhamBenhT_BHTT = new TableColumn(tableKhamBenh, SWT.RIGHT);
 		tbTableColumnKhamBenhT_BHTT.setWidth(100);
 		tbTableColumnKhamBenhT_BHTT.setText("T_BHTT");
@@ -346,6 +369,78 @@ public class KhamBenhListDlg extends Dialog {
 		tbTableColumnKhamBenhCHANDOAN_BD.setWidth(100);
 		tbTableColumnKhamBenhCHANDOAN_BD.setText("CHANDOAN_BD");
 
+		TableColumn tbTableColumnKhamBenhNV_ID = new TableColumn(tableKhamBenh, SWT.RIGHT);
+		tbTableColumnKhamBenhNV_ID.setWidth(100);
+		tbTableColumnKhamBenhNV_ID.setText("NV_ID");
+
+		TableColumn tbTableColumnKhamBenhNV_NAME = new TableColumn(tableKhamBenh, SWT.LEFT);
+		tbTableColumnKhamBenhNV_NAME.setWidth(100);
+		tbTableColumnKhamBenhNV_NAME.setText("NV_NAME");
+
+		TableColumn tbTableColumnKhamBenhTABLE_ID = new TableColumn(tableKhamBenh, SWT.RIGHT);
+		tbTableColumnKhamBenhTABLE_ID.setWidth(100);
+		tbTableColumnKhamBenhTABLE_ID.setText("TABLE_ID");
+
+		TableColumn tbTableColumnKhamBenhNGAY_SINH = new TableColumn(tableKhamBenh, SWT.LEFT);
+		tbTableColumnKhamBenhNGAY_SINH.setWidth(100);
+		tbTableColumnKhamBenhNGAY_SINH.setText("NGAY_SINH");
+
+		TableColumn tbTableColumnKhamBenhGIOI_TINH = new TableColumn(tableKhamBenh, SWT.RIGHT);
+		tbTableColumnKhamBenhGIOI_TINH.setWidth(100);
+		tbTableColumnKhamBenhGIOI_TINH.setText("GIOI_TINH");
+
+		TableColumn tbTableColumnKhamBenhDIA_CHI = new TableColumn(tableKhamBenh, SWT.LEFT);
+		tbTableColumnKhamBenhDIA_CHI.setWidth(100);
+		tbTableColumnKhamBenhDIA_CHI.setText("DIA_CHI");
+
+		TableColumn tbTableColumnKhamBenhMA_THE = new TableColumn(tableKhamBenh, SWT.LEFT);
+		tbTableColumnKhamBenhMA_THE.setWidth(100);
+		tbTableColumnKhamBenhMA_THE.setText("MA_THE");
+
+		TableColumn tbTableColumnKhamBenhMA_DKBD = new TableColumn(tableKhamBenh, SWT.LEFT);
+		tbTableColumnKhamBenhMA_DKBD.setWidth(100);
+		tbTableColumnKhamBenhMA_DKBD.setText("MA_DKBD");
+
+		TableColumn tbTableColumnKhamBenhGT_THE_TU = new TableColumn(tableKhamBenh, SWT.LEFT);
+		tbTableColumnKhamBenhGT_THE_TU.setWidth(100);
+		tbTableColumnKhamBenhGT_THE_TU.setText("GT_THE_TU");
+
+		TableColumn tbTableColumnKhamBenhGT_THE_DEN = new TableColumn(tableKhamBenh, SWT.LEFT);
+		tbTableColumnKhamBenhGT_THE_DEN.setWidth(100);
+		tbTableColumnKhamBenhGT_THE_DEN.setText("GT_THE_DEN");
+
+		TableColumn tbTableColumnKhamBenhNGAY_CAP = new TableColumn(tableKhamBenh, SWT.LEFT);
+		tbTableColumnKhamBenhNGAY_CAP.setWidth(100);
+		tbTableColumnKhamBenhNGAY_CAP.setText("NGAY_CAP");
+
+		TableColumn tbTableColumnKhamBenhMIEN_CUNG_CT = new TableColumn(tableKhamBenh, SWT.LEFT);
+		tbTableColumnKhamBenhMIEN_CUNG_CT.setWidth(100);
+		tbTableColumnKhamBenhMIEN_CUNG_CT.setText("MIEN_CUNG_CT");
+
+		TableColumn tbTableColumnKhamBenhMA_QUAN_LY = new TableColumn(tableKhamBenh, SWT.LEFT);
+		tbTableColumnKhamBenhMA_QUAN_LY.setWidth(100);
+		tbTableColumnKhamBenhMA_QUAN_LY.setText("MA_QUAN_LY");
+
+		TableColumn tbTableColumnKhamBenhTEN_CHA_ME = new TableColumn(tableKhamBenh, SWT.LEFT);
+		tbTableColumnKhamBenhTEN_CHA_ME.setWidth(100);
+		tbTableColumnKhamBenhTEN_CHA_ME.setText("TEN_CHA_ME");
+
+		TableColumn tbTableColumnKhamBenhMA_DT_SONG = new TableColumn(tableKhamBenh, SWT.RIGHT);
+		tbTableColumnKhamBenhMA_DT_SONG.setWidth(100);
+		tbTableColumnKhamBenhMA_DT_SONG.setText("MA_DT_SONG");
+
+		TableColumn tbTableColumnKhamBenhTHOIDIEM_NAMNAM = new TableColumn(tableKhamBenh, SWT.LEFT);
+		tbTableColumnKhamBenhTHOIDIEM_NAMNAM.setWidth(100);
+		tbTableColumnKhamBenhTHOIDIEM_NAMNAM.setText("THOIDIEM_NAMNAM");
+
+		TableColumn tbTableColumnKhamBenhCHUOI_KIEM_TRA = new TableColumn(tableKhamBenh, SWT.LEFT);
+		tbTableColumnKhamBenhCHUOI_KIEM_TRA.setWidth(100);
+		tbTableColumnKhamBenhCHUOI_KIEM_TRA.setText("CHUOI_KIEM_TRA");
+
+		TableColumn tbTableColumnKhamBenhGATE_INFO = new TableColumn(tableKhamBenh, SWT.LEFT);
+		tbTableColumnKhamBenhGATE_INFO.setWidth(100);
+		tbTableColumnKhamBenhGATE_INFO.setText("GATE_INFO");
+
 		TableColumn tbTableColumnKhamBenhSTS = new TableColumn(tableKhamBenh, SWT.RIGHT);
 		tbTableColumnKhamBenhSTS.setWidth(100);
 		tbTableColumnKhamBenhSTS.setText("STS");
@@ -382,7 +477,17 @@ public class KhamBenhListDlg extends Dialog {
 			}
 		});
 		mntmDeleteKhamBenh.setText("Delete");
-
+		
+		MenuItem mntmExportKhamBenh = new MenuItem(menuKhamBenh, SWT.NONE);
+		mntmExportKhamBenh.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				exportExcelTableKhamBenh();
+			}
+		});
+		mntmExportKhamBenh.setImage(SWTResourceManager.getImage(KhamBenhDlg.class, "/png/spreadsheet-2x.png"));
+		mntmExportKhamBenh.setText("Export Excel");
+		
 		tableViewerKhamBenh.setLabelProvider(new TableLabelProviderKhamBenh());
 		tableViewerKhamBenh.setContentProvider(new ContentProviderKhamBenh());
 		tableViewerKhamBenh.setInput(listDataKhamBenh);
@@ -399,6 +504,163 @@ public class KhamBenhListDlg extends Dialog {
 		if(textSearchKhamBenhString!=null){
 			textSearchKhamBenh.setText(textSearchKhamBenhString);
 		}
+	}
+	protected void exportExcelTableKhamBenh() {
+        if(DbHelper.checkPhanQuyen(DbHelper.READ, "kham_benh")==false){
+			logger.info("DON'T HAVE READ RIGHT");
+			return;
+		}
+        if(listDataKhamBenh!=null){
+            // Export to EXCEL
+    		
+			StringBuffer buff_kham_benh = new StringBuffer();
+			String kham_benh_filename = "kham_benh_"+Utils.getDatetimeCurent().replaceAll(":", "_")+".xls";
+			String delimiter = "</td><td>";
+			// Get header...
+			// Get header...
+			buff_kham_benh.append( "<table>");
+			buff_kham_benh.append( "<tr class='background-color:#dfdfdf'><td>");
+
+			buff_kham_benh.append( "STT" +delimiter);
+			buff_kham_benh.append( "BN_ID" +delimiter);
+			buff_kham_benh.append( "TEN_BENH_NHAN" +delimiter);
+			buff_kham_benh.append( "TEN_BENH" +delimiter);
+			buff_kham_benh.append( "MA_BENH" +delimiter);
+			buff_kham_benh.append( "MA_BENHKHAC" +delimiter);
+			buff_kham_benh.append( "MA_LYDO_VVIEN" +delimiter);
+			buff_kham_benh.append( "MA_NOI_CHUYEN" +delimiter);
+			buff_kham_benh.append( "MA_TAI_NAN" +delimiter);
+			buff_kham_benh.append( "NGAY_VAO" +delimiter);
+			buff_kham_benh.append( "NGAY_RA" +delimiter);
+			buff_kham_benh.append( "SO_NGAY_DTRI" +delimiter);
+			buff_kham_benh.append( "KET_QUA_DTRI" +delimiter);
+			buff_kham_benh.append( "TINH_TRANG_RV" +delimiter);
+			buff_kham_benh.append( "NGAY_TTOAN" +delimiter);
+			buff_kham_benh.append( "MUC_HUONG" +delimiter);
+			buff_kham_benh.append( "T_THUOC" +delimiter);
+			buff_kham_benh.append( "T_VTYT" +delimiter);
+			buff_kham_benh.append( "T_TONGCHI" +delimiter);
+			buff_kham_benh.append( "T_BNTT" +delimiter);
+			buff_kham_benh.append( "T_BNCCT" +delimiter);
+			buff_kham_benh.append( "T_BHTT" +delimiter);
+			buff_kham_benh.append( "T_NGUONKHAC" +delimiter);
+			buff_kham_benh.append( "T_NGOAIDS" +delimiter);
+			buff_kham_benh.append( "NAM_QT" +delimiter);
+			buff_kham_benh.append( "THANG_QT" +delimiter);
+			buff_kham_benh.append( "MA_LOAI_KCB" +delimiter);
+			buff_kham_benh.append( "MA_KHOA" +delimiter);
+			buff_kham_benh.append( "MA_CSKCB" +delimiter);
+			buff_kham_benh.append( "MA_KHUVUC" +delimiter);
+			buff_kham_benh.append( "MA_PTTT_QT" +delimiter);
+			buff_kham_benh.append( "CAN_NANG" +delimiter);
+			buff_kham_benh.append( "KB_DATE" +delimiter);
+			buff_kham_benh.append( "KIEU_TT" +delimiter);
+			buff_kham_benh.append( "CHANDOAN_BD" +delimiter);
+			buff_kham_benh.append( "NV_ID" +delimiter);
+			buff_kham_benh.append( "NV_NAME" +delimiter);
+			buff_kham_benh.append( "TABLE_ID" +delimiter);
+			buff_kham_benh.append( "NGAY_SINH" +delimiter);
+			buff_kham_benh.append( "GIOI_TINH" +delimiter);
+			buff_kham_benh.append( "DIA_CHI" +delimiter);
+			buff_kham_benh.append( "MA_THE" +delimiter);
+			buff_kham_benh.append( "MA_DKBD" +delimiter);
+			buff_kham_benh.append( "GT_THE_TU" +delimiter);
+			buff_kham_benh.append( "GT_THE_DEN" +delimiter);
+			buff_kham_benh.append( "NGAY_CAP" +delimiter);
+			buff_kham_benh.append( "MIEN_CUNG_CT" +delimiter);
+			buff_kham_benh.append( "MA_QUAN_LY" +delimiter);
+			buff_kham_benh.append( "TEN_CHA_ME" +delimiter);
+			buff_kham_benh.append( "MA_DT_SONG" +delimiter);
+			buff_kham_benh.append( "THOIDIEM_NAMNAM" +delimiter);
+			buff_kham_benh.append( "CHUOI_KIEM_TRA" +delimiter);
+			buff_kham_benh.append( "GATE_INFO" +delimiter);
+			buff_kham_benh.append( "STS");
+			// End of header
+			buff_kham_benh.append( "</td></tr>");
+			buff_kham_benh.append( "\n");
+			// Get data...
+			for( KhamBenh obj:  listDataKhamBenh){
+				buff_kham_benh.append( "<tr><td>");
+				buff_kham_benh.append( obj.STT +delimiter);
+				buff_kham_benh.append( obj.BN_ID +delimiter);
+				buff_kham_benh.append( obj.TEN_BENH_NHAN +delimiter);
+				buff_kham_benh.append( obj.TEN_BENH +delimiter);
+				buff_kham_benh.append( obj.MA_BENH +delimiter);
+				buff_kham_benh.append( obj.MA_BENHKHAC +delimiter);
+				buff_kham_benh.append( obj.MA_LYDO_VVIEN +delimiter);
+				buff_kham_benh.append( obj.MA_NOI_CHUYEN +delimiter);
+				buff_kham_benh.append( obj.MA_TAI_NAN +delimiter);
+				buff_kham_benh.append( obj.NGAY_VAO +delimiter);
+				buff_kham_benh.append( obj.NGAY_RA +delimiter);
+				buff_kham_benh.append( obj.SO_NGAY_DTRI +delimiter);
+				buff_kham_benh.append( obj.KET_QUA_DTRI +delimiter);
+				buff_kham_benh.append( obj.TINH_TRANG_RV +delimiter);
+				buff_kham_benh.append( obj.NGAY_TTOAN +delimiter);
+				buff_kham_benh.append( obj.MUC_HUONG +delimiter);
+				buff_kham_benh.append( obj.T_THUOC +delimiter);
+				buff_kham_benh.append( obj.T_VTYT +delimiter);
+				buff_kham_benh.append( obj.T_TONGCHI +delimiter);
+				buff_kham_benh.append( obj.T_BNTT +delimiter);
+				buff_kham_benh.append( obj.T_BNCCT +delimiter);
+				buff_kham_benh.append( obj.T_BHTT +delimiter);
+				buff_kham_benh.append( obj.T_NGUONKHAC +delimiter);
+				buff_kham_benh.append( obj.T_NGOAIDS +delimiter);
+				buff_kham_benh.append( obj.NAM_QT +delimiter);
+				buff_kham_benh.append( obj.THANG_QT +delimiter);
+				buff_kham_benh.append( obj.MA_LOAI_KCB +delimiter);
+				buff_kham_benh.append( obj.MA_KHOA +delimiter);
+				buff_kham_benh.append( obj.MA_CSKCB +delimiter);
+				buff_kham_benh.append( obj.MA_KHUVUC +delimiter);
+				buff_kham_benh.append( obj.MA_PTTT_QT +delimiter);
+				buff_kham_benh.append( obj.CAN_NANG +delimiter);
+				buff_kham_benh.append( obj.KB_DATE +delimiter);
+				buff_kham_benh.append( obj.KIEU_TT +delimiter);
+				buff_kham_benh.append( obj.CHANDOAN_BD +delimiter);
+				buff_kham_benh.append( obj.NV_ID +delimiter);
+				buff_kham_benh.append( obj.NV_NAME +delimiter);
+				buff_kham_benh.append( obj.TABLE_ID +delimiter);
+				buff_kham_benh.append( obj.NGAY_SINH +delimiter);
+				buff_kham_benh.append( obj.GIOI_TINH +delimiter);
+				buff_kham_benh.append( obj.DIA_CHI +delimiter);
+				buff_kham_benh.append( obj.MA_THE +delimiter);
+				buff_kham_benh.append( obj.MA_DKBD +delimiter);
+				buff_kham_benh.append( obj.GT_THE_TU +delimiter);
+				buff_kham_benh.append( obj.GT_THE_DEN +delimiter);
+				buff_kham_benh.append( obj.NGAY_CAP +delimiter);
+				buff_kham_benh.append( obj.MIEN_CUNG_CT +delimiter);
+				buff_kham_benh.append( obj.MA_QUAN_LY +delimiter);
+				buff_kham_benh.append( obj.TEN_CHA_ME +delimiter);
+				buff_kham_benh.append( obj.MA_DT_SONG +delimiter);
+				buff_kham_benh.append( obj.THOIDIEM_NAMNAM +delimiter);
+				buff_kham_benh.append( obj.CHUOI_KIEM_TRA +delimiter);
+				buff_kham_benh.append( obj.GATE_INFO +delimiter);
+				buff_kham_benh.append( obj.STS );
+				// End of header
+				buff_kham_benh.append( "</td></tr>");
+			}
+			//
+			buff_kham_benh.append( "</table>");
+			Writer out = null;
+			try {
+				out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(kham_benh_filename), "UTF-8"));
+				out.write('\uFEFF'); // BOM for UTF-*
+			    out.write(buff_kham_benh.toString());
+			} 
+			catch(Exception ee){
+				ee.printStackTrace();
+			}
+			finally {
+			    try {
+					out.close();
+				} catch (Exception e) {
+					e.printStackTrace();
+					logger.error(e);
+				}
+			}
+			//
+            return;
+        }
+		// End of export
 	}
 	protected void reloadTableKhamBenh() {
         if(DbHelper.checkPhanQuyen(DbHelper.READ, "kham_benh")==false){
@@ -438,6 +700,20 @@ public class KhamBenhListDlg extends Dialog {
         sql += " or LOWER(MA_KHUVUC) like '%"+searchString+"%'";
         sql += " or LOWER(MA_PTTT_QT) like '%"+searchString+"%'";
         sql += " or LOWER(CHANDOAN_BD) like '%"+searchString+"%'";
+        sql += " or LOWER(NV_NAME) like '%"+searchString+"%'";
+        sql += " or LOWER(NGAY_SINH) like '%"+searchString+"%'";
+        sql += " or LOWER(DIA_CHI) like '%"+searchString+"%'";
+        sql += " or LOWER(MA_THE) like '%"+searchString+"%'";
+        sql += " or LOWER(MA_DKBD) like '%"+searchString+"%'";
+        sql += " or LOWER(GT_THE_TU) like '%"+searchString+"%'";
+        sql += " or LOWER(GT_THE_DEN) like '%"+searchString+"%'";
+        sql += " or LOWER(NGAY_CAP) like '%"+searchString+"%'";
+        sql += " or LOWER(MIEN_CUNG_CT) like '%"+searchString+"%'";
+        sql += " or LOWER(MA_QUAN_LY) like '%"+searchString+"%'";
+        sql += " or LOWER(TEN_CHA_ME) like '%"+searchString+"%'";
+        sql += " or LOWER(THOIDIEM_NAMNAM) like '%"+searchString+"%'";
+        sql += " or LOWER(CHUOI_KIEM_TRA) like '%"+searchString+"%'";
+        sql += " or LOWER(GATE_INFO) like '%"+searchString+"%'";
             sql += " )";
         }
 		try  {

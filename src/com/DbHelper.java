@@ -47,6 +47,9 @@ public class DbHelper {
 	public static List<Users> listUsers=null;
 	public static Hashtable<String, Users> hashDataUsers = new Hashtable<>();
 	public static Hashtable<String, Users> hashDataUsersMaCCHN = new Hashtable<>();
+
+	public static List<Users> listUsersNhanVien =null;
+	public static Hashtable<String, Users> hashDataUsersNhanVien = new Hashtable<>();
 	
 	public static Hashtable<String, Mabenh> hashDataMabenh = new Hashtable<>();
 	//
@@ -61,6 +64,9 @@ public class DbHelper {
 	//
 	public static Hashtable<String, String> hashLoaiDichVu = new Hashtable<String, String>();
 
+	public static BHYTThread objBHYTThread = new BHYTThread();
+
+	public static Hashtable<Integer, String> hashcheckThe = new Hashtable<Integer, String>();
 	//
 	public DbHelper(){
 		
@@ -77,10 +83,7 @@ public class DbHelper {
 			logger.error(e);
 		}
 	}
-//	public static Sql2o getSql2o() {
-//		logger.info("Start SQL2o");
-//        return sql2o;
-//    }
+
     public static Connection getSql2o() {
     	if(con==null){
 			con = sql2o.open();
@@ -152,14 +155,24 @@ public class DbHelper {
 	}
 	
 	public static String getMAKHOA(String comboBoxText){
-		//logger.info("getMAKHOA "+comboBoxText);
-		String madvktarr[] = comboBoxText.split("-");
-		String MA_DVKT = madvktarr[0].trim();
-		KhoaPhong obj = DbHelper.hashKhoaPhongKP_MABH.get(MA_DVKT);
+		logger.info("getMAKHOA "+comboBoxText);
+		//String madvktarr[] = comboBoxText.split("-");
+		//String MA_DVKT = madvktarr[1].trim();
+		//KhoaPhong obj = DbHelper.hashKhoaPhongKP_MABH.get(MA_DVKT);
+		KhoaPhong obj = DbHelper.hashKhoaPhongKP_MABH.get(comboBoxText);
 		if(obj!=null){
+			
 			return obj.KP_MAKHOA;
 		}
 		else{
+			String madvktarr[] = comboBoxText.split("-");
+			if(madvktarr.length>1){
+				String MA_DVKT = madvktarr[1].trim();
+				obj = DbHelper.hashKhoaPhongKP_MABH.get(MA_DVKT);
+				if(obj!=null){
+					return obj.KP_MAKHOA;
+				}
+			}
 			return "";
 		}
 	}
@@ -208,6 +221,20 @@ public class DbHelper {
 		return ret;
 	}
 /*	
+ 
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
 	public String getIDC_TENBENH()
     {
         return DbHelper.getIDC10TenBenh(getIDC_MA_BENH());

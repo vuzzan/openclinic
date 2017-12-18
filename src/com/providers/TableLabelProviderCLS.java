@@ -27,6 +27,7 @@ public class TableLabelProviderCLS extends LabelProvider implements ITableLabelP
 				return obj.MA_DICH_VU;
 			}
 			else if(columnIndex==2){
+				
 				return obj.TEN_DICH_VU;
 			}
 			else if(columnIndex==3){
@@ -36,20 +37,27 @@ public class TableLabelProviderCLS extends LabelProvider implements ITableLabelP
 				return ""+(obj.STS<0?"Chưa lưu":Utils.getTinhTrangCanLamSan(obj.STS));// + " " +obj.hashCode();
 			}
 			else if(columnIndex==5){
+				if( obj.MUC_HUONG==0 ){
+					return ""+(obj.THANH_TIEN2==null?"0":obj.THANH_TIEN2.intValue());
+				}
+
 				return ""+(obj.THANH_TIEN==null?"0":obj.THANH_TIEN.intValue());
 			}
 			else if(columnIndex==6){
-				return ""+(obj.TT_BH==null?"0":obj.TT_BH.intValue());
+				return ""+(obj.TT_BHTT==null?"0":obj.TT_BHTT.intValue());
 			}
 			else if(columnIndex==7){
-				return ""+(obj.TT_NB==null?"0":obj.TT_NB.intValue());
+				return ""+(obj.TT_BNTT==null?"0":obj.TT_BNTT.intValue());
 			}
 			else if(columnIndex==8){
 				Users bacsi = DbHelper.hashDataUsersMaCCHN.get(obj.MA_BAC_SI);
-				return ""+(bacsi==null?"":bacsi.U_NAME);
+				return ""+(bacsi==null?"":bacsi.TEN_NHANVIEN);
 			}
 			else if(columnIndex==9){
-				return ""+(obj.TYLE_TT==0?"Tự CT":"BH");
+				return ""+(obj.MUC_HUONG==0?"Tự CT":"BH");
+			}
+			else if(columnIndex==10){
+				return ""+(obj.THANHTOAN==1?"Xong":"Chưa");
 			}
 			else{
 				return "";
@@ -69,6 +77,12 @@ public class TableLabelProviderCLS extends LabelProvider implements ITableLabelP
 			DvChitiet obj = (DvChitiet)element;
 			if(obj.STS<0){
 				return SWTResourceManager.getColor(SWT.COLOR_GRAY);
+			}
+			else if(obj.THANHTOAN==0){
+				return SWTResourceManager.getColor(SWT.COLOR_GRAY);
+			}
+			else if(obj.THANHTOAN==1){
+				return SWTResourceManager.getColor(SWT.COLOR_DARK_GREEN);
 			}
 			else{
 				return SWTResourceManager.getColor(SWT.COLOR_GREEN);

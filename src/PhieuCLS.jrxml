@@ -1,9 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.3.1.final using JasperReports Library version 6.3.1  -->
-<!-- 2017-11-10T10:12:22 -->
+<!-- 2017-12-15T14:30:07 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="PhieuBenhNhan" pageWidth="421" pageHeight="595" whenNoDataType="NoPages" columnWidth="381" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isTitleNewPage="true" isIgnorePagination="true" uuid="3807cd06-b690-491a-afdb-4d5ce8b0f998">
 	<property name="com.jaspersoft.studio.unit." value="pixel"/>
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<property name="net.sf.jasperreports.print.create.bookmarks" value="true"/>
 	<style name="Table_TH" mode="Opaque" backcolor="#F0F8FF">
 		<box>
 			<pen lineWidth="0.5" lineColor="#000000"/>
@@ -48,8 +57,8 @@
 		<field name="DON_GIA2" class="java.lang.Integer"/>
 		<field name="THANH_TIEN" class="java.lang.Integer"/>
 		<field name="THANH_TIEN2" class="java.lang.Integer"/>
-		<field name="TT_BH" class="java.lang.Integer"/>
-		<field name="TT_NB" class="java.lang.Integer"/>
+		<field name="TT_BHTT" class="java.lang.Integer"/>
+		<field name="TT_BNTT" class="java.lang.Integer"/>
 		<field name="MA_KHOA" class="java.lang.String"/>
 		<field name="MA_BAC_SI" class="java.lang.String"/>
 		<field name="MA_BENH" class="java.lang.String"/>
@@ -89,8 +98,8 @@
 		<field name="DON_GIA2" class="java.lang.Integer"/>
 		<field name="THANH_TIEN" class="java.lang.Integer"/>
 		<field name="THANH_TIEN2" class="java.lang.Integer"/>
-		<field name="TT_BH" class="java.lang.Integer"/>
-		<field name="TT_NB" class="java.lang.Integer"/>
+		<field name="TT_BHTT" class="java.lang.Integer"/>
+		<field name="TT_BNTT" class="java.lang.Integer"/>
 		<field name="MA_KHOA" class="java.lang.String"/>
 		<field name="MA_BAC_SI" class="java.lang.String"/>
 		<field name="MA_BENH" class="java.lang.String"/>
@@ -114,8 +123,8 @@
 		<field name="DON_VI_TINH" class="java.lang.String"/>
 		<field name="TYLE_TT" class="java.lang.Float"/>
 		<field name="THANH_TIEN" class="java.lang.Integer"/>
-		<field name="TT_BH" class="java.lang.Integer"/>
-		<field name="TT_NB" class="java.lang.Integer"/>
+		<field name="TT_BHTT" class="java.lang.Integer"/>
+		<field name="TT_BNTT" class="java.lang.Integer"/>
 		<field name="MA_BENH" class="java.lang.String"/>
 		<field name="STS" class="java.lang.Integer"/>
 	</subDataset>
@@ -145,7 +154,7 @@
 		<band splitType="Stretch"/>
 	</title>
 	<pageHeader>
-		<band height="106" splitType="Stretch">
+		<band height="103" splitType="Stretch">
 			<staticText>
 				<reportElement positionType="Float" x="3" y="1" width="114" height="14" uuid="d3389e5d-6cbc-41cd-8d16-a7f04317607c"/>
 				<box>
@@ -713,7 +722,7 @@
 										<textElement textAlignment="Right" verticalAlignment="Middle">
 											<font fontName="Times New Roman" size="10"/>
 										</textElement>
-										<textFieldExpression><![CDATA[java.text.NumberFormat.getInstance(java.util.Locale.ITALY).format($F{TT_BH})]]></textFieldExpression>
+										<textFieldExpression><![CDATA[java.text.NumberFormat.getInstance(java.util.Locale.ITALY).format($F{TT_BHTT})]]></textFieldExpression>
 									</textField>
 									<textField>
 										<reportElement x="300" y="0" width="30" height="20" uuid="51fbd235-deea-4047-982c-874ef3faa45d"/>
@@ -726,7 +735,7 @@
 										<textElement textAlignment="Right" verticalAlignment="Middle">
 											<font fontName="Times New Roman" size="10"/>
 										</textElement>
-										<textFieldExpression><![CDATA[java.text.NumberFormat.getInstance(java.util.Locale.ITALY).format($F{THANH_TIEN}-$F{TT_BH}-$F{TT_NB})]]></textFieldExpression>
+										<textFieldExpression><![CDATA[java.text.NumberFormat.getInstance(java.util.Locale.ITALY).format($F{THANH_TIEN}-$F{TT_BHTT}-$F{TT_BNTT})]]></textFieldExpression>
 									</textField>
 									<textField>
 										<reportElement x="330" y="0" width="47" height="20" uuid="a442d412-769f-4250-9549-1de93d68078b"/>
@@ -802,7 +811,7 @@
 		</band>
 	</detail>
 	<columnFooter>
-		<band height="101" splitType="Stretch">
+		<band height="92" splitType="Stretch">
 			<staticText>
 				<reportElement positionType="Float" x="0" y="0" width="94" height="14" uuid="3fec49b7-4feb-4d52-b53a-fd471f598d91"/>
 				<box>

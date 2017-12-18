@@ -3,6 +3,11 @@
 */
 package com.model.dao;
 
+
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +48,8 @@ import org.eclipse.swt.layout.GridData;
 import org.sql2o.Connection;
 
 import com.DbHelper;
+import com.openclinic.utils.Utils;
+
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.wb.swt.SWTResourceManager;
@@ -146,10 +153,10 @@ public class ThuocChitietListDlg extends Dialog {
         
 		Composite compositeHeaderThuocChitiet = new Composite(compositeInShellThuocChitiet, SWT.NONE);
 		compositeHeaderThuocChitiet.setLayoutData(BorderLayout.NORTH);
-		compositeHeaderThuocChitiet.setLayout(new GridLayout(2, false));
+		compositeHeaderThuocChitiet.setLayout(new GridLayout(5, false));
 
 		textSearchThuocChitiet = new Text(compositeHeaderThuocChitiet, SWT.BORDER);
-		textSearchThuocChitiet.setFont(SWTResourceManager.getFont("Tahoma", 11, SWT.NORMAL));
+		textSearchThuocChitiet.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		textSearchThuocChitiet.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -161,7 +168,7 @@ public class ThuocChitietListDlg extends Dialog {
 		
 		Button btnNewButtonSearchThuocChitiet = new Button(compositeHeaderThuocChitiet, SWT.NONE);
 		btnNewButtonSearchThuocChitiet.setImage(SWTResourceManager.getImage(ThuocChitietDlg.class, "/png/media-play-2x.png"));
-		btnNewButtonSearchThuocChitiet.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
+		btnNewButtonSearchThuocChitiet.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 
 		btnNewButtonSearchThuocChitiet.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -169,6 +176,18 @@ public class ThuocChitietListDlg extends Dialog {
 				reloadTableThuocChitiet();
 			}
 		});
+		Button btnNewButtonExportExcelThuocChitiet = new Button(compositeHeaderThuocChitiet, SWT.NONE);
+		btnNewButtonExportExcelThuocChitiet.setText("Export Excel");
+		btnNewButtonExportExcelThuocChitiet.setImage(SWTResourceManager.getImage(KhamBenhListDlg.class, "/png/spreadsheet-2x.png"));
+		btnNewButtonExportExcelThuocChitiet.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		btnNewButtonExportExcelThuocChitiet.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				exportExcelTableThuocChitiet();
+			}
+		});
+		
+		
 		GridData gd_btnNewButtonThuocChitiet = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
 		gd_btnNewButtonThuocChitiet.widthHint = 87;
 		btnNewButtonSearchThuocChitiet.setLayoutData(gd_btnNewButtonThuocChitiet);
@@ -176,7 +195,7 @@ public class ThuocChitietListDlg extends Dialog {
         
 		tableViewerThuocChitiet = new TableViewer(compositeInShellThuocChitiet, SWT.BORDER | SWT.FULL_SELECTION);
 		tableThuocChitiet = tableViewerThuocChitiet.getTable();
-		tableThuocChitiet.setFont(SWTResourceManager.getFont("Tahoma", 11, SWT.NORMAL));
+		tableThuocChitiet.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		tableThuocChitiet.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -252,6 +271,14 @@ public class ThuocChitietListDlg extends Dialog {
 		tbTableColumnThuocChitietSO_DANG_KY.setWidth(100);
 		tbTableColumnThuocChitietSO_DANG_KY.setText("SO_DANG_KY");
 
+		TableColumn tbTableColumnThuocChitietTT_THAU = new TableColumn(tableThuocChitiet, SWT.LEFT);
+		tbTableColumnThuocChitietTT_THAU.setWidth(100);
+		tbTableColumnThuocChitietTT_THAU.setText("TT_THAU");
+
+		TableColumn tbTableColumnThuocChitietPHAM_VI = new TableColumn(tableThuocChitiet, SWT.RIGHT);
+		tbTableColumnThuocChitietPHAM_VI.setWidth(100);
+		tbTableColumnThuocChitietPHAM_VI.setText("PHAM_VI");
+
 		TableColumn tbTableColumnThuocChitietSO_LUONG = new TableColumn(tableThuocChitiet, SWT.RIGHT);
 		tbTableColumnThuocChitietSO_LUONG.setWidth(100);
 		tbTableColumnThuocChitietSO_LUONG.setText("SO_LUONG");
@@ -289,21 +316,58 @@ public class ThuocChitietListDlg extends Dialog {
 		tbTableColumnThuocChitietCT_ID.setWidth(100);
 		tbTableColumnThuocChitietCT_ID.setText("CT_ID");
 
+		TableColumn tbTableColumnThuocChitietMUC_HUONG = new TableColumn(tableThuocChitiet, SWT.RIGHT);
+		tbTableColumnThuocChitietMUC_HUONG.setWidth(100);
+		tbTableColumnThuocChitietMUC_HUONG.setText("MUC_HUONG");
+
+		TableColumn tbTableColumnThuocChitietT_NGUON_KHAC = new TableColumn(tableThuocChitiet, SWT.RIGHT);
+		tbTableColumnThuocChitietT_NGUON_KHAC.setWidth(100);
+		tbTableColumnThuocChitietT_NGUON_KHAC.setText("T_NGUON_KHAC");
+
+		TableColumn tbTableColumnThuocChitietT_BNCCT = new TableColumn(tableThuocChitiet, SWT.RIGHT);
+		tbTableColumnThuocChitietT_BNCCT.setWidth(100);
+		tbTableColumnThuocChitietT_BNCCT.setText("T_BNCCT");
+
+		TableColumn tbTableColumnThuocChitietT_NGOAIDS = new TableColumn(tableThuocChitiet, SWT.RIGHT);
+		tbTableColumnThuocChitietT_NGOAIDS.setWidth(100);
+		tbTableColumnThuocChitietT_NGOAIDS.setText("T_NGOAIDS");
+
 		TableColumn tbTableColumnThuocChitietNT_ID = new TableColumn(tableThuocChitiet, SWT.RIGHT);
 		tbTableColumnThuocChitietNT_ID.setWidth(100);
 		tbTableColumnThuocChitietNT_ID.setText("NT_ID");
 
-		TableColumn tbTableColumnThuocChitietTT_BH = new TableColumn(tableThuocChitiet, SWT.RIGHT);
-		tbTableColumnThuocChitietTT_BH.setWidth(100);
-		tbTableColumnThuocChitietTT_BH.setText("TT_BH");
+		TableColumn tbTableColumnThuocChitietTT_BHTT = new TableColumn(tableThuocChitiet, SWT.RIGHT);
+		tbTableColumnThuocChitietTT_BHTT.setWidth(100);
+		tbTableColumnThuocChitietTT_BHTT.setText("TT_BHTT");
 
-		TableColumn tbTableColumnThuocChitietTT_NB = new TableColumn(tableThuocChitiet, SWT.RIGHT);
-		tbTableColumnThuocChitietTT_NB.setWidth(100);
-		tbTableColumnThuocChitietTT_NB.setText("TT_NB");
+		TableColumn tbTableColumnThuocChitietTT_BNTT = new TableColumn(tableThuocChitiet, SWT.RIGHT);
+		tbTableColumnThuocChitietTT_BNTT.setWidth(100);
+		tbTableColumnThuocChitietTT_BNTT.setText("TT_BNTT");
 
 		TableColumn tbTableColumnThuocChitietKHO_NAME = new TableColumn(tableThuocChitiet, SWT.LEFT);
 		tbTableColumnThuocChitietKHO_NAME.setWidth(100);
 		tbTableColumnThuocChitietKHO_NAME.setText("KHO_NAME");
+
+
+		TableColumn tbTableColumnThuocChitietCUR_DATE = new TableColumn(tableThuocChitiet, SWT.NONE);
+		tbTableColumnThuocChitietCUR_DATE.setWidth(100);
+		tbTableColumnThuocChitietCUR_DATE.setText("CUR_DATE");
+
+		TableColumn tbTableColumnThuocChitietTYP = new TableColumn(tableThuocChitiet, SWT.RIGHT);
+		tbTableColumnThuocChitietTYP.setWidth(100);
+		tbTableColumnThuocChitietTYP.setText("TYP");
+
+		TableColumn tbTableColumnThuocChitietTHANHTOAN = new TableColumn(tableThuocChitiet, SWT.RIGHT);
+		tbTableColumnThuocChitietTHANHTOAN.setWidth(100);
+		tbTableColumnThuocChitietTHANHTOAN.setText("THANHTOAN");
+
+		TableColumn tbTableColumnThuocChitietNV_ID = new TableColumn(tableThuocChitiet, SWT.RIGHT);
+		tbTableColumnThuocChitietNV_ID.setWidth(100);
+		tbTableColumnThuocChitietNV_ID.setText("NV_ID");
+
+		TableColumn tbTableColumnThuocChitietNV_NAME = new TableColumn(tableThuocChitiet, SWT.LEFT);
+		tbTableColumnThuocChitietNV_NAME.setWidth(100);
+		tbTableColumnThuocChitietNV_NAME.setText("NV_NAME");
 
 		TableColumn tbTableColumnThuocChitietSTS = new TableColumn(tableThuocChitiet, SWT.RIGHT);
 		tbTableColumnThuocChitietSTS.setWidth(100);
@@ -341,7 +405,17 @@ public class ThuocChitietListDlg extends Dialog {
 			}
 		});
 		mntmDeleteThuocChitiet.setText("Delete");
-
+		
+		MenuItem mntmExportThuocChitiet = new MenuItem(menuThuocChitiet, SWT.NONE);
+		mntmExportThuocChitiet.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				exportExcelTableThuocChitiet();
+			}
+		});
+		mntmExportThuocChitiet.setImage(SWTResourceManager.getImage(ThuocChitietDlg.class, "/png/spreadsheet-2x.png"));
+		mntmExportThuocChitiet.setText("Export Excel");
+		
 		tableViewerThuocChitiet.setLabelProvider(new TableLabelProviderThuocChitiet());
 		tableViewerThuocChitiet.setContentProvider(new ContentProviderThuocChitiet());
 		tableViewerThuocChitiet.setInput(listDataThuocChitiet);
@@ -358,6 +432,127 @@ public class ThuocChitietListDlg extends Dialog {
 		if(textSearchThuocChitietString!=null){
 			textSearchThuocChitiet.setText(textSearchThuocChitietString);
 		}
+	}
+	protected void exportExcelTableThuocChitiet() {
+        if(DbHelper.checkPhanQuyen(DbHelper.READ, "thuoc_chitiet")==false){
+			logger.info("DON'T HAVE READ RIGHT");
+			return;
+		}
+        if(listDataThuocChitiet!=null){
+            // Export to EXCEL
+    		
+			StringBuffer buff_thuoc_chitiet = new StringBuffer();
+			String thuoc_chitiet_filename = "thuoc_chitiet_"+Utils.getDatetimeCurent().replaceAll(":", "_")+".xls";
+			String delimiter = "</td><td>";
+			// Get header...
+			// Get header...
+			buff_thuoc_chitiet.append( "<table>");
+			buff_thuoc_chitiet.append( "<tr class='background-color:#dfdfdf'><td>");
+
+			buff_thuoc_chitiet.append( "STT" +delimiter);
+			buff_thuoc_chitiet.append( "MA_LK" +delimiter);
+			buff_thuoc_chitiet.append( "THUOC_ID" +delimiter);
+			buff_thuoc_chitiet.append( "MA_THUOC" +delimiter);
+			buff_thuoc_chitiet.append( "MA_NHOM" +delimiter);
+			buff_thuoc_chitiet.append( "TEN_THUOC" +delimiter);
+			buff_thuoc_chitiet.append( "DON_VI_TINH" +delimiter);
+			buff_thuoc_chitiet.append( "HAM_LUONG" +delimiter);
+			buff_thuoc_chitiet.append( "DUONG_DUNG" +delimiter);
+			buff_thuoc_chitiet.append( "LIEU_DUNG" +delimiter);
+			buff_thuoc_chitiet.append( "SO_DANG_KY" +delimiter);
+			buff_thuoc_chitiet.append( "TT_THAU" +delimiter);
+			buff_thuoc_chitiet.append( "PHAM_VI" +delimiter);
+			buff_thuoc_chitiet.append( "SO_LUONG" +delimiter);
+			buff_thuoc_chitiet.append( "DON_GIA" +delimiter);
+			buff_thuoc_chitiet.append( "THANH_TIEN" +delimiter);
+			buff_thuoc_chitiet.append( "MA_KHOA" +delimiter);
+			buff_thuoc_chitiet.append( "MA_BAC_SI" +delimiter);
+			buff_thuoc_chitiet.append( "MA_BENH" +delimiter);
+			buff_thuoc_chitiet.append( "MA_PTTT" +delimiter);
+			buff_thuoc_chitiet.append( "TYLE_TT" +delimiter);
+			buff_thuoc_chitiet.append( "CT_ID" +delimiter);
+			buff_thuoc_chitiet.append( "MUC_HUONG" +delimiter);
+			buff_thuoc_chitiet.append( "T_NGUON_KHAC" +delimiter);
+			buff_thuoc_chitiet.append( "T_BNCCT" +delimiter);
+			buff_thuoc_chitiet.append( "T_NGOAIDS" +delimiter);
+			buff_thuoc_chitiet.append( "NT_ID" +delimiter);
+			buff_thuoc_chitiet.append( "TT_BHTT" +delimiter);
+			buff_thuoc_chitiet.append( "TT_BNTT" +delimiter);
+			buff_thuoc_chitiet.append( "KHO_NAME" +delimiter);
+			buff_thuoc_chitiet.append( "CUR_DATE" +delimiter);
+			buff_thuoc_chitiet.append( "TYP" +delimiter);
+			buff_thuoc_chitiet.append( "THANHTOAN" +delimiter);
+			buff_thuoc_chitiet.append( "NV_ID" +delimiter);
+			buff_thuoc_chitiet.append( "NV_NAME" +delimiter);
+			buff_thuoc_chitiet.append( "STS");
+			// End of header
+			buff_thuoc_chitiet.append( "</td></tr>");
+			buff_thuoc_chitiet.append( "\n");
+			// Get data...
+			for( ThuocChitiet obj:  listDataThuocChitiet){
+				buff_thuoc_chitiet.append( "<tr><td>");
+				buff_thuoc_chitiet.append( obj.STT +delimiter);
+				buff_thuoc_chitiet.append( obj.MA_LK +delimiter);
+				buff_thuoc_chitiet.append( obj.THUOC_ID +delimiter);
+				buff_thuoc_chitiet.append( obj.MA_THUOC +delimiter);
+				buff_thuoc_chitiet.append( obj.MA_NHOM +delimiter);
+				buff_thuoc_chitiet.append( obj.TEN_THUOC +delimiter);
+				buff_thuoc_chitiet.append( obj.DON_VI_TINH +delimiter);
+				buff_thuoc_chitiet.append( obj.HAM_LUONG +delimiter);
+				buff_thuoc_chitiet.append( obj.DUONG_DUNG +delimiter);
+				buff_thuoc_chitiet.append( obj.LIEU_DUNG +delimiter);
+				buff_thuoc_chitiet.append( obj.SO_DANG_KY +delimiter);
+				buff_thuoc_chitiet.append( obj.TT_THAU +delimiter);
+				buff_thuoc_chitiet.append( obj.PHAM_VI +delimiter);
+				buff_thuoc_chitiet.append( obj.SO_LUONG +delimiter);
+				buff_thuoc_chitiet.append( obj.DON_GIA +delimiter);
+				buff_thuoc_chitiet.append( obj.THANH_TIEN +delimiter);
+				buff_thuoc_chitiet.append( obj.MA_KHOA +delimiter);
+				buff_thuoc_chitiet.append( obj.MA_BAC_SI +delimiter);
+				buff_thuoc_chitiet.append( obj.MA_BENH +delimiter);
+				buff_thuoc_chitiet.append( obj.MA_PTTT +delimiter);
+				buff_thuoc_chitiet.append( obj.MUC_HUONG +delimiter);
+				buff_thuoc_chitiet.append( obj.CT_ID +delimiter);
+				buff_thuoc_chitiet.append( obj.TYLE_TT +delimiter);
+				buff_thuoc_chitiet.append( obj.T_NGUON_KHAC +delimiter);
+				buff_thuoc_chitiet.append( obj.T_BNCCT +delimiter);
+				buff_thuoc_chitiet.append( obj.T_NGOAIDS +delimiter);
+				buff_thuoc_chitiet.append( obj.NT_ID +delimiter);
+				buff_thuoc_chitiet.append( obj.TT_BHTT +delimiter);
+				buff_thuoc_chitiet.append( obj.TT_BNTT +delimiter);
+				buff_thuoc_chitiet.append( obj.KHO_NAME +delimiter);
+				buff_thuoc_chitiet.append( obj.CUR_DATE +delimiter);
+				buff_thuoc_chitiet.append( obj.TYP +delimiter);
+				buff_thuoc_chitiet.append( obj.THANHTOAN +delimiter);
+				buff_thuoc_chitiet.append( obj.NV_ID +delimiter);
+				buff_thuoc_chitiet.append( obj.NV_NAME +delimiter);
+				buff_thuoc_chitiet.append( obj.STS );
+				// End of header
+				buff_thuoc_chitiet.append( "</td></tr>");
+			}
+			//
+			buff_thuoc_chitiet.append( "</table>");
+			Writer out = null;
+			try {
+				out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(thuoc_chitiet_filename), "UTF-8"));
+				out.write('\uFEFF'); // BOM for UTF-*
+			    out.write(buff_thuoc_chitiet.toString());
+			} 
+			catch(Exception ee){
+				ee.printStackTrace();
+			}
+			finally {
+			    try {
+					out.close();
+				} catch (Exception e) {
+					e.printStackTrace();
+					logger.error(e);
+				}
+			}
+			//
+            return;
+        }
+		// End of export
 	}
 	protected void reloadTableThuocChitiet() {
         if(DbHelper.checkPhanQuyen(DbHelper.READ, "thuoc_chitiet")==false){
@@ -392,10 +587,12 @@ public class ThuocChitietListDlg extends Dialog {
         sql += " or LOWER(DUONG_DUNG) like '%"+searchString+"%'";
         sql += " or LOWER(LIEU_DUNG) like '%"+searchString+"%'";
         sql += " or LOWER(SO_DANG_KY) like '%"+searchString+"%'";
+        sql += " or LOWER(TT_THAU) like '%"+searchString+"%'";
         sql += " or LOWER(MA_KHOA) like '%"+searchString+"%'";
         sql += " or LOWER(MA_BAC_SI) like '%"+searchString+"%'";
         sql += " or LOWER(MA_BENH) like '%"+searchString+"%'";
         sql += " or LOWER(KHO_NAME) like '%"+searchString+"%'";
+        sql += " or LOWER(NV_NAME) like '%"+searchString+"%'";
             sql += " )";
         }
 		try  {

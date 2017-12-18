@@ -21,12 +21,15 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.jface.viewers.IColorProvider;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.custom.CBanner;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseAdapter;
@@ -46,21 +49,81 @@ import com.model.dao.ThuocDlg;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.wb.swt.SWTResourceManager;
+import org.eclipse.swt.widgets.Combo;
 
 public class FormThuocListData extends Dialog {
 	static Logger logger = LogManager.getLogger(FormThuocListData.class.getName());
 	protected Object result;
 	protected Shell shell;
 
-	private class TableLabelProviderThuoc extends LabelProvider implements ITableLabelProvider {
+	private class TableLabelProviderThuoc extends LabelProvider implements ITableLabelProvider, IColorProvider {
 		public Image getColumnImage(Object element, int columnIndex) {
 			return null;
 		}
 		public String getColumnText(Object element, int columnIndex) {
 			if(element instanceof Thuoc){
-				return ((Thuoc) element).getIndex(columnIndex);
+				Thuoc obj = (Thuoc) element;
+				if( obj.TYP==1){
+					if(columnIndex==0){
+						return "Bảo Hiểm";
+					}
+					else if(columnIndex==1){
+						return obj.TEN_THUOC;
+					}
+					else if(columnIndex==2){
+						return obj.DON_VI_TINH;
+					}
+					else if(columnIndex==3){
+						return ""+obj.DON_GIA;
+					}
+					else if(columnIndex==4){
+						return ""+obj.DON_GIA_TT;
+					}
+					else if(columnIndex==5){
+						return ""+obj.HAMLUONG_AX;
+					}
+					else{
+						return "";
+					}
+					//return ((Thuoc) element).getIndex(columnIndex);
+				}
+				else{
+					if(columnIndex==0){
+						return "Viện Phí";
+					}
+					else if(columnIndex==1){
+						return obj.TEN_THUOC;
+					}
+					else if(columnIndex==2){
+						return obj.DON_VI_TINH;
+					}
+					else if(columnIndex==3){
+						return ""+obj.DON_GIA;
+					}
+					else if(columnIndex==4){
+						return ""+obj.DON_GIA_TT;
+					}
+					else{
+						return "";
+					}
+				}
 			}
 			return "";
+		}
+		@Override
+		public Color getForeground(Object element) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		@Override
+		public Color getBackground(Object element) {
+			if(element instanceof Thuoc){
+				Thuoc obj = (Thuoc) element;
+				if( obj.TYP==1){
+					return SWTResourceManager.getColor(SWT.COLOR_GRAY);
+				}
+			}
+			return null;
 		}
 	}
 	private static class ContentProviderThuoc implements IStructuredContentProvider {
@@ -81,7 +144,8 @@ public class FormThuocListData extends Dialog {
 	private Text textSearchThuoc;
 	private String textSearchThuocString;
 	public Thuoc objThuoc = null;
-	public int typeThuocDlg = TYPE_DLG_CHOOSEN; 
+	public int typeThuocDlg = TYPE_DLG_CHOOSEN;
+	private Combo cbKieuThuoc; 
 	public static final int TYPE_DLG_MANAGER = 0;
 	public static final int TYPE_DLG_CHOOSEN = 1;
 	/**
@@ -126,7 +190,7 @@ public class FormThuocListData extends Dialog {
 			}
 		});
 		shell.setImage(SWTResourceManager.getImage(ThuocDlg.class, "/png/list-2x.png"));
-		shell.setSize(899, 415);
+		shell.setSize(1377, 415);
 		shell.setText("Thuoc List View");
 		shell.setLayout(new BorderLayout(0, 0));
 		
@@ -136,11 +200,16 @@ public class FormThuocListData extends Dialog {
         
 		Composite compositeHeaderThuoc = new Composite(compositeInShellThuoc, SWT.NONE);
 		compositeHeaderThuoc.setLayoutData(BorderLayout.NORTH);
-		compositeHeaderThuoc.setLayout(new GridLayout(2, false));
+		compositeHeaderThuoc.setLayout(new GridLayout(3, false));
+		
+		cbKieuThuoc = new Combo(compositeHeaderThuoc, SWT.NONE);
+		cbKieuThuoc.setItems(new String[] {"Tất cả", "Bảo Hiểm", "Viện Phí"});
+		cbKieuThuoc.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		cbKieuThuoc.select(0);
 
 		textSearchThuoc = new Text(compositeHeaderThuoc, SWT.BORDER);
 		GridData gd_textSearchThuoc = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		gd_textSearchThuoc.widthHint = 365;
+		gd_textSearchThuoc.widthHint = 189;
 		textSearchThuoc.setLayoutData(gd_textSearchThuoc);
 		textSearchThuoc.setFont(SWTResourceManager.getFont("Tahoma", 11, SWT.NORMAL));
 		textSearchThuoc.addKeyListener(new KeyAdapter() {
@@ -162,10 +231,7 @@ public class FormThuocListData extends Dialog {
 				reloadTableThuoc();
 			}
 		});
-		GridData gd_btnNewButtonThuoc = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		gd_btnNewButtonThuoc.widthHint = 87;
-		btnNewButtonSearchThuoc.setLayoutData(gd_btnNewButtonThuoc);
-		btnNewButtonSearchThuoc.setText("Search");
+		btnNewButtonSearchThuoc.setText("Tìm tên thuốc");
         
 		tableViewerThuoc = new TableViewer(compositeInShellThuoc, SWT.BORDER | SWT.FULL_SELECTION);
 		tableThuoc = tableViewerThuoc.getTable();
@@ -202,28 +268,28 @@ public class FormThuocListData extends Dialog {
 		tableThuoc.setLayoutData(BorderLayout.CENTER);
 
 		TableColumn tbTableColumnThuocMA_HOAT_CHAT = new TableColumn(tableThuoc, SWT.LEFT);
-		tbTableColumnThuocMA_HOAT_CHAT.setWidth(100);
-		tbTableColumnThuocMA_HOAT_CHAT.setText("MA_HOAT_CHAT");
+		tbTableColumnThuocMA_HOAT_CHAT.setWidth(123);
+		tbTableColumnThuocMA_HOAT_CHAT.setText("KIỂU THUỐC");
 
 		TableColumn tbTableColumnThuocMA_AX = new TableColumn(tableThuoc, SWT.LEFT);
-		tbTableColumnThuocMA_AX.setWidth(100);
-		tbTableColumnThuocMA_AX.setText("MA_AX");
+		tbTableColumnThuocMA_AX.setWidth(332);
+		tbTableColumnThuocMA_AX.setText("TÊN THUỐC");
 
 		TableColumn tbTableColumnThuocHOAT_CHAT = new TableColumn(tableThuoc, SWT.LEFT);
 		tbTableColumnThuocHOAT_CHAT.setWidth(100);
-		tbTableColumnThuocHOAT_CHAT.setText("HOAT_CHAT");
+		tbTableColumnThuocHOAT_CHAT.setText("DVT");
 
 		TableColumn tbTableColumnThuocHOATCHAT_AX = new TableColumn(tableThuoc, SWT.LEFT);
 		tbTableColumnThuocHOATCHAT_AX.setWidth(100);
-		tbTableColumnThuocHOATCHAT_AX.setText("HOATCHAT_AX");
+		tbTableColumnThuocHOATCHAT_AX.setText("GIÁ NHẬP");
 
 		TableColumn tbTableColumnThuocMA_DUONG_DUNG = new TableColumn(tableThuoc, SWT.LEFT);
 		tbTableColumnThuocMA_DUONG_DUNG.setWidth(100);
-		tbTableColumnThuocMA_DUONG_DUNG.setText("MA_DUONG_DUNG");
+		tbTableColumnThuocMA_DUONG_DUNG.setText("GIÁ BÁN");
 
 		TableColumn tbTableColumnThuocMA_DUONGDUNG_AX = new TableColumn(tableThuoc, SWT.LEFT);
-		tbTableColumnThuocMA_DUONGDUNG_AX.setWidth(100);
-		tbTableColumnThuocMA_DUONGDUNG_AX.setText("MA_DUONGDUNG_AX");
+		tbTableColumnThuocMA_DUONGDUNG_AX.setWidth(300);
+		tbTableColumnThuocMA_DUONGDUNG_AX.setText("HÀM LƯỢNG");
 
 		TableColumn tbTableColumnThuocDUONG_DUNG = new TableColumn(tableThuoc, SWT.LEFT);
 		tbTableColumnThuocDUONG_DUNG.setWidth(100);
@@ -407,13 +473,19 @@ public class FormThuocListData extends Dialog {
 	protected void reloadTableThuoc() {
 		// Do search
 		String searchString = textSearchThuoc.getText().toLowerCase().trim();
-		String sql = "select * from thuoc  ";
+		String sql = "select * from thuoc where THUOC_RANK>-1 ";
 		if(searchString.length()>0){
-            sql += " WHERE (";
+            sql += " and (";
 	        sql += " LOWER(TEN_THUOC) like '"+searchString+"%'";
 	        sql += " or LOWER(TENTHUOC_AX) like '"+searchString+"%'";
             sql += " )";
         }
+		if( cbKieuThuoc.getSelectionIndex()==1 ){
+			sql += " and TYP=1";
+		}
+		else if( cbKieuThuoc.getSelectionIndex()==2 ){
+			sql += " and TYP=2";
+		}
 		try  {
 			Connection con = DbHelper.getSql2o();
 			listDataThuoc = con.createQuery(sql).executeAndFetch(Thuoc.class);

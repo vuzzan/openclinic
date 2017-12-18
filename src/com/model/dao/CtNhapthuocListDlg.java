@@ -3,6 +3,11 @@
 */
 package com.model.dao;
 
+
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +48,8 @@ import org.eclipse.swt.layout.GridData;
 import org.sql2o.Connection;
 
 import com.DbHelper;
+import com.openclinic.utils.Utils;
+
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.wb.swt.SWTResourceManager;
@@ -146,10 +153,10 @@ public class CtNhapthuocListDlg extends Dialog {
         
 		Composite compositeHeaderCtNhapthuoc = new Composite(compositeInShellCtNhapthuoc, SWT.NONE);
 		compositeHeaderCtNhapthuoc.setLayoutData(BorderLayout.NORTH);
-		compositeHeaderCtNhapthuoc.setLayout(new GridLayout(2, false));
+		compositeHeaderCtNhapthuoc.setLayout(new GridLayout(5, false));
 
 		textSearchCtNhapthuoc = new Text(compositeHeaderCtNhapthuoc, SWT.BORDER);
-		textSearchCtNhapthuoc.setFont(SWTResourceManager.getFont("Tahoma", 11, SWT.NORMAL));
+		textSearchCtNhapthuoc.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		textSearchCtNhapthuoc.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -161,7 +168,7 @@ public class CtNhapthuocListDlg extends Dialog {
 		
 		Button btnNewButtonSearchCtNhapthuoc = new Button(compositeHeaderCtNhapthuoc, SWT.NONE);
 		btnNewButtonSearchCtNhapthuoc.setImage(SWTResourceManager.getImage(CtNhapthuocDlg.class, "/png/media-play-2x.png"));
-		btnNewButtonSearchCtNhapthuoc.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
+		btnNewButtonSearchCtNhapthuoc.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 
 		btnNewButtonSearchCtNhapthuoc.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -169,6 +176,18 @@ public class CtNhapthuocListDlg extends Dialog {
 				reloadTableCtNhapthuoc();
 			}
 		});
+		Button btnNewButtonExportExcelCtNhapthuoc = new Button(compositeHeaderCtNhapthuoc, SWT.NONE);
+		btnNewButtonExportExcelCtNhapthuoc.setText("Export Excel");
+		btnNewButtonExportExcelCtNhapthuoc.setImage(SWTResourceManager.getImage(KhamBenhListDlg.class, "/png/spreadsheet-2x.png"));
+		btnNewButtonExportExcelCtNhapthuoc.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		btnNewButtonExportExcelCtNhapthuoc.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				exportExcelTableCtNhapthuoc();
+			}
+		});
+		
+		
 		GridData gd_btnNewButtonCtNhapthuoc = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
 		gd_btnNewButtonCtNhapthuoc.widthHint = 87;
 		btnNewButtonSearchCtNhapthuoc.setLayoutData(gd_btnNewButtonCtNhapthuoc);
@@ -176,7 +195,7 @@ public class CtNhapthuocListDlg extends Dialog {
         
 		tableViewerCtNhapthuoc = new TableViewer(compositeInShellCtNhapthuoc, SWT.BORDER | SWT.FULL_SELECTION);
 		tableCtNhapthuoc = tableViewerCtNhapthuoc.getTable();
-		tableCtNhapthuoc.setFont(SWTResourceManager.getFont("Tahoma", 11, SWT.NORMAL));
+		tableCtNhapthuoc.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		tableCtNhapthuoc.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -212,6 +231,10 @@ public class CtNhapthuocListDlg extends Dialog {
 		tbTableColumnCtNhapthuocNT_ID.setWidth(100);
 		tbTableColumnCtNhapthuocNT_ID.setText("NT_ID");
 
+		TableColumn tbTableColumnCtNhapthuocSTT = new TableColumn(tableCtNhapthuoc, SWT.RIGHT);
+		tbTableColumnCtNhapthuocSTT.setWidth(100);
+		tbTableColumnCtNhapthuocSTT.setText("STT");
+
 		TableColumn tbTableColumnCtNhapthuocV_ID = new TableColumn(tableCtNhapthuoc, SWT.RIGHT);
 		tbTableColumnCtNhapthuocV_ID.setWidth(100);
 		tbTableColumnCtNhapthuocV_ID.setText("V_ID");
@@ -223,6 +246,19 @@ public class CtNhapthuocListDlg extends Dialog {
 		TableColumn tbTableColumnCtNhapthuocKHO_ID = new TableColumn(tableCtNhapthuoc, SWT.RIGHT);
 		tbTableColumnCtNhapthuocKHO_ID.setWidth(100);
 		tbTableColumnCtNhapthuocKHO_ID.setText("KHO_ID");
+
+		TableColumn tbTableColumnCtNhapthuocFROM_KHOID = new TableColumn(tableCtNhapthuoc, SWT.RIGHT);
+		tbTableColumnCtNhapthuocFROM_KHOID.setWidth(100);
+		tbTableColumnCtNhapthuocFROM_KHOID.setText("FROM_KHOID");
+
+		TableColumn tbTableColumnCtNhapthuocCTID_FROM = new TableColumn(tableCtNhapthuoc, SWT.RIGHT);
+		tbTableColumnCtNhapthuocCTID_FROM.setWidth(100);
+		tbTableColumnCtNhapthuocCTID_FROM.setText("CTID_FROM");
+
+
+		TableColumn tbTableColumnCtNhapthuocNGAY_NHAP = new TableColumn(tableCtNhapthuoc, SWT.NONE);
+		tbTableColumnCtNhapthuocNGAY_NHAP.setWidth(100);
+		tbTableColumnCtNhapthuocNGAY_NHAP.setText("NGAY_NHAP");
 
 		TableColumn tbTableColumnCtNhapthuocTHUOC_ID = new TableColumn(tableCtNhapthuoc, SWT.RIGHT);
 		tbTableColumnCtNhapthuocTHUOC_ID.setWidth(100);
@@ -236,14 +272,25 @@ public class CtNhapthuocListDlg extends Dialog {
 		tbTableColumnCtNhapthuocDONVI.setWidth(100);
 		tbTableColumnCtNhapthuocDONVI.setText("DONVI");
 
-
-		TableColumn tbTableColumnCtNhapthuocHANDUNG = new TableColumn(tableCtNhapthuoc, SWT.NONE);
+		TableColumn tbTableColumnCtNhapthuocHANDUNG = new TableColumn(tableCtNhapthuoc, SWT.LEFT);
 		tbTableColumnCtNhapthuocHANDUNG.setWidth(100);
 		tbTableColumnCtNhapthuocHANDUNG.setText("HANDUNG");
 
 		TableColumn tbTableColumnCtNhapthuocLOT_ID = new TableColumn(tableCtNhapthuoc, SWT.LEFT);
 		tbTableColumnCtNhapthuocLOT_ID.setWidth(100);
 		tbTableColumnCtNhapthuocLOT_ID.setText("LOT_ID");
+
+		TableColumn tbTableColumnCtNhapthuocHAM_LUONG = new TableColumn(tableCtNhapthuoc, SWT.LEFT);
+		tbTableColumnCtNhapthuocHAM_LUONG.setWidth(100);
+		tbTableColumnCtNhapthuocHAM_LUONG.setText("HAM_LUONG");
+
+		TableColumn tbTableColumnCtNhapthuocTT_THAU = new TableColumn(tableCtNhapthuoc, SWT.LEFT);
+		tbTableColumnCtNhapthuocTT_THAU.setWidth(100);
+		tbTableColumnCtNhapthuocTT_THAU.setText("TT_THAU");
+
+		TableColumn tbTableColumnCtNhapthuocSO_DANG_KY = new TableColumn(tableCtNhapthuoc, SWT.LEFT);
+		tbTableColumnCtNhapthuocSO_DANG_KY.setWidth(100);
+		tbTableColumnCtNhapthuocSO_DANG_KY.setText("SO_DANG_KY");
 
 		TableColumn tbTableColumnCtNhapthuocSOLUONG = new TableColumn(tableCtNhapthuoc, SWT.RIGHT);
 		tbTableColumnCtNhapthuocSOLUONG.setWidth(100);
@@ -253,10 +300,6 @@ public class CtNhapthuocListDlg extends Dialog {
 		tbTableColumnCtNhapthuocSL_TONKHO.setWidth(100);
 		tbTableColumnCtNhapthuocSL_TONKHO.setText("SL_TONKHO");
 
-		TableColumn tbTableColumnCtNhapthuocSL_OUTSTANDING = new TableColumn(tableCtNhapthuoc, SWT.RIGHT);
-		tbTableColumnCtNhapthuocSL_OUTSTANDING.setWidth(100);
-		tbTableColumnCtNhapthuocSL_OUTSTANDING.setText("SL_OUTSTANDING");
-
 		TableColumn tbTableColumnCtNhapthuocSL_DADUNG = new TableColumn(tableCtNhapthuoc, SWT.RIGHT);
 		tbTableColumnCtNhapthuocSL_DADUNG.setWidth(100);
 		tbTableColumnCtNhapthuocSL_DADUNG.setText("SL_DADUNG");
@@ -265,6 +308,10 @@ public class CtNhapthuocListDlg extends Dialog {
 		tbTableColumnCtNhapthuocDONGIA.setWidth(100);
 		tbTableColumnCtNhapthuocDONGIA.setText("DONGIA");
 
+		TableColumn tbTableColumnCtNhapthuocDONGIA_BAN = new TableColumn(tableCtNhapthuoc, SWT.RIGHT);
+		tbTableColumnCtNhapthuocDONGIA_BAN.setWidth(100);
+		tbTableColumnCtNhapthuocDONGIA_BAN.setText("DONGIA_BAN");
+
 		TableColumn tbTableColumnCtNhapthuocTHANHTIEN = new TableColumn(tableCtNhapthuoc, SWT.RIGHT);
 		tbTableColumnCtNhapthuocTHANHTIEN.setWidth(100);
 		tbTableColumnCtNhapthuocTHANHTIEN.setText("THANHTIEN");
@@ -272,6 +319,10 @@ public class CtNhapthuocListDlg extends Dialog {
 		TableColumn tbTableColumnCtNhapthuocVAT = new TableColumn(tableCtNhapthuoc, SWT.RIGHT);
 		tbTableColumnCtNhapthuocVAT.setWidth(100);
 		tbTableColumnCtNhapthuocVAT.setText("VAT");
+
+		TableColumn tbTableColumnCtNhapthuocTYP = new TableColumn(tableCtNhapthuoc, SWT.RIGHT);
+		tbTableColumnCtNhapthuocTYP.setWidth(100);
+		tbTableColumnCtNhapthuocTYP.setText("TYP");
 
 		TableColumn tbTableColumnCtNhapthuocSTS = new TableColumn(tableCtNhapthuoc, SWT.RIGHT);
 		tbTableColumnCtNhapthuocSTS.setWidth(100);
@@ -309,7 +360,17 @@ public class CtNhapthuocListDlg extends Dialog {
 			}
 		});
 		mntmDeleteCtNhapthuoc.setText("Delete");
-
+		
+		MenuItem mntmExportCtNhapthuoc = new MenuItem(menuCtNhapthuoc, SWT.NONE);
+		mntmExportCtNhapthuoc.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				exportExcelTableCtNhapthuoc();
+			}
+		});
+		mntmExportCtNhapthuoc.setImage(SWTResourceManager.getImage(CtNhapthuocDlg.class, "/png/spreadsheet-2x.png"));
+		mntmExportCtNhapthuoc.setText("Export Excel");
+		
 		tableViewerCtNhapthuoc.setLabelProvider(new TableLabelProviderCtNhapthuoc());
 		tableViewerCtNhapthuoc.setContentProvider(new ContentProviderCtNhapthuoc());
 		tableViewerCtNhapthuoc.setInput(listDataCtNhapthuoc);
@@ -326,6 +387,105 @@ public class CtNhapthuocListDlg extends Dialog {
 		if(textSearchCtNhapthuocString!=null){
 			textSearchCtNhapthuoc.setText(textSearchCtNhapthuocString);
 		}
+	}
+	protected void exportExcelTableCtNhapthuoc() {
+        if(DbHelper.checkPhanQuyen(DbHelper.READ, "ct_nhapthuoc")==false){
+			logger.info("DON'T HAVE READ RIGHT");
+			return;
+		}
+        if(listDataCtNhapthuoc!=null){
+            // Export to EXCEL
+    		
+			StringBuffer buff_ct_nhapthuoc = new StringBuffer();
+			String ct_nhapthuoc_filename = "ct_nhapthuoc_"+Utils.getDatetimeCurent().replaceAll(":", "_")+".xls";
+			String delimiter = "</td><td>";
+			// Get header...
+			// Get header...
+			buff_ct_nhapthuoc.append( "<table>");
+			buff_ct_nhapthuoc.append( "<tr class='background-color:#dfdfdf'><td>");
+
+			buff_ct_nhapthuoc.append( "NT_ID" +delimiter);
+			buff_ct_nhapthuoc.append( "STT" +delimiter);
+			buff_ct_nhapthuoc.append( "V_ID" +delimiter);
+			buff_ct_nhapthuoc.append( "TENKHO" +delimiter);
+			buff_ct_nhapthuoc.append( "KHO_ID" +delimiter);
+			buff_ct_nhapthuoc.append( "FROM_KHOID" +delimiter);
+			buff_ct_nhapthuoc.append( "CTID_FROM" +delimiter);
+			buff_ct_nhapthuoc.append( "NGAY_NHAP" +delimiter);
+			buff_ct_nhapthuoc.append( "THUOC_ID" +delimiter);
+			buff_ct_nhapthuoc.append( "TENTHUOC" +delimiter);
+			buff_ct_nhapthuoc.append( "DONVI" +delimiter);
+			buff_ct_nhapthuoc.append( "HANDUNG" +delimiter);
+			buff_ct_nhapthuoc.append( "LOT_ID" +delimiter);
+			buff_ct_nhapthuoc.append( "HAM_LUONG" +delimiter);
+			buff_ct_nhapthuoc.append( "TT_THAU" +delimiter);
+			buff_ct_nhapthuoc.append( "SO_DANG_KY" +delimiter);
+			buff_ct_nhapthuoc.append( "SOLUONG" +delimiter);
+			buff_ct_nhapthuoc.append( "SL_TONKHO" +delimiter);
+			buff_ct_nhapthuoc.append( "SL_DADUNG" +delimiter);
+			buff_ct_nhapthuoc.append( "DONGIA" +delimiter);
+			buff_ct_nhapthuoc.append( "DONGIA_BAN" +delimiter);
+			buff_ct_nhapthuoc.append( "THANHTIEN" +delimiter);
+			buff_ct_nhapthuoc.append( "VAT" +delimiter);
+			buff_ct_nhapthuoc.append( "TYP" +delimiter);
+			buff_ct_nhapthuoc.append( "STS");
+			// End of header
+			buff_ct_nhapthuoc.append( "</td></tr>");
+			buff_ct_nhapthuoc.append( "\n");
+			// Get data...
+			for( CtNhapthuoc obj:  listDataCtNhapthuoc){
+				buff_ct_nhapthuoc.append( "<tr><td>");
+				buff_ct_nhapthuoc.append( obj.NT_ID +delimiter);
+				buff_ct_nhapthuoc.append( obj.STT +delimiter);
+				buff_ct_nhapthuoc.append( obj.V_ID +delimiter);
+				buff_ct_nhapthuoc.append( obj.TENKHO +delimiter);
+				buff_ct_nhapthuoc.append( obj.KHO_ID +delimiter);
+				buff_ct_nhapthuoc.append( obj.FROM_KHOID +delimiter);
+				buff_ct_nhapthuoc.append( obj.CTID_FROM +delimiter);
+				buff_ct_nhapthuoc.append( obj.NGAY_NHAP +delimiter);
+				buff_ct_nhapthuoc.append( obj.THUOC_ID +delimiter);
+				buff_ct_nhapthuoc.append( obj.TENTHUOC +delimiter);
+				buff_ct_nhapthuoc.append( obj.DONVI +delimiter);
+				buff_ct_nhapthuoc.append( obj.HANDUNG +delimiter);
+				buff_ct_nhapthuoc.append( obj.LOT_ID +delimiter);
+				buff_ct_nhapthuoc.append( obj.HAM_LUONG +delimiter);
+				buff_ct_nhapthuoc.append( obj.TT_THAU +delimiter);
+				buff_ct_nhapthuoc.append( obj.SO_DANG_KY +delimiter);
+				buff_ct_nhapthuoc.append( obj.SOLUONG +delimiter);
+				buff_ct_nhapthuoc.append( obj.SL_TONKHO +delimiter);
+				buff_ct_nhapthuoc.append( obj.SL_DADUNG +delimiter);
+				buff_ct_nhapthuoc.append( obj.DONGIA +delimiter);
+				buff_ct_nhapthuoc.append( obj.DONGIA_BAN +delimiter);
+				buff_ct_nhapthuoc.append( obj.THANHTIEN +delimiter);
+				buff_ct_nhapthuoc.append( obj.VAT +delimiter);
+				buff_ct_nhapthuoc.append( obj.TYP +delimiter);
+				buff_ct_nhapthuoc.append( obj.STS );
+				// End of header
+				buff_ct_nhapthuoc.append( "</td></tr>");
+			}
+			//
+			buff_ct_nhapthuoc.append( "</table>");
+			Writer out = null;
+			try {
+				out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(ct_nhapthuoc_filename), "UTF-8"));
+				out.write('\uFEFF'); // BOM for UTF-*
+			    out.write(buff_ct_nhapthuoc.toString());
+			} 
+			catch(Exception ee){
+				ee.printStackTrace();
+			}
+			finally {
+			    try {
+					out.close();
+				} catch (Exception e) {
+					e.printStackTrace();
+					logger.error(e);
+				}
+			}
+			//
+            return;
+        }
+		// End of export
 	}
 	protected void reloadTableCtNhapthuoc() {
         if(DbHelper.checkPhanQuyen(DbHelper.READ, "ct_nhapthuoc")==false){
@@ -355,7 +515,11 @@ public class CtNhapthuocListDlg extends Dialog {
         sql += " or LOWER(TENKHO) like '%"+searchString+"%'";
         sql += " or LOWER(TENTHUOC) like '%"+searchString+"%'";
         sql += " or LOWER(DONVI) like '%"+searchString+"%'";
+        sql += " or LOWER(HANDUNG) like '%"+searchString+"%'";
         sql += " or LOWER(LOT_ID) like '%"+searchString+"%'";
+        sql += " or LOWER(HAM_LUONG) like '%"+searchString+"%'";
+        sql += " or LOWER(TT_THAU) like '%"+searchString+"%'";
+        sql += " or LOWER(SO_DANG_KY) like '%"+searchString+"%'";
             sql += " )";
         }
 		try  {

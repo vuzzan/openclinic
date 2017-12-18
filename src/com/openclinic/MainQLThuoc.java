@@ -44,16 +44,20 @@ import org.sql2o.Connection;
 import swing2swt.layout.BorderLayout;
 
 import com.DbHelper;
+import com.model.dao.CtNhapthuoc;
+import com.model.dao.CtNhapthuocDlg;
 import com.model.dao.KhamBenh;
 import com.model.dao.KhamBenhDlg;
+import com.model.dao.Khohang;
 import com.model.dao.NhapThuoc;
 import com.model.dao.NhapThuocDlg;
-import com.model.dao.UsersListDlg;
-import com.model.dao.VendorListDlg;
 import com.openclinic.khambenh.FormThuocChitietListDlg;
 import com.openclinic.nhapthuoc.FormNhapThuocDlg;
-import com.openclinic.users.FormUsersListDlg;
+import com.openclinic.nhapthuoc.FormXuatThuocKhoDlg;
 import com.openclinic.utils.Utils;
+
+import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Label;
 
 
 public class MainQLThuoc extends Dialog{
@@ -118,16 +122,48 @@ public class MainQLThuoc extends Dialog{
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 		}
 	}
+
+	private class TableLabelProviderCtNhapthuoc extends LabelProvider implements ITableLabelProvider {
+		public Image getColumnImage(Object element, int columnIndex) {
+			return null;
+		}
+		public String getColumnText(Object element, int columnIndex) {
+			if(element instanceof CtNhapthuoc){
+				return ((CtNhapthuoc) element).getIndex(columnIndex);
+			}
+			return "";
+		}
+	}
+	private static class ContentProviderCtNhapthuoc implements IStructuredContentProvider {
+		public Object[] getElements(Object inputElement) {
+			if(inputElement instanceof ArrayList){
+				return ((ArrayList) inputElement).toArray();
+			}
+			return new Object[0];
+		}
+		public void dispose() {
+		}
+		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+		}
+	}
+	private Table tableCtNhapthuoc;
+	private TableViewer tableViewerCtNhapthuoc;
+	private List<CtNhapthuoc> listDataCtNhapthuoc;
+	private Text textSearchCtNhapthuoc;
+	private String textSearchCtNhapthuocString;
+	public CtNhapthuoc objCtNhapthuoc = null;
+
 	private Table tableKhamBenh;
 	private TableViewer tableViewerKhamBenh;
 	private List<KhamBenh> listDataKhamBenh = new ArrayList();
-	private Text textSearchKhamBenh;
+	private static Text textSearchKhamBenh;
 	private static final void toggleAlwaysOnTop(Shell shell, boolean isOnTop){
 	    long handle = shell.handle;
 	    Point location = shell.getLocation();
 	    Point dimension = shell.getSize();
 	    OS.SetWindowPos((int) handle, isOnTop ? OS.HWND_TOPMOST : OS.HWND_NOTOPMOST,location.x, location.y, dimension.x, dimension.y, 0);
 	}
+	
 	public MainQLThuoc(Shell parent, int style) {
 		super(parent, SWT.DIALOG_TRIM | SWT.MIN | SWT.MAX);
 		// TODO Auto-generated constructor stub
@@ -183,6 +219,7 @@ public class MainQLThuoc extends Dialog{
 	private List<NhapThuoc> listDataNhapThuoc = new ArrayList();
 	private Text textSearchNhapThuoc;
 	private TabFolder tabFolder;
+	private Combo cbKhoHang;
 	/**
 	 * Open the window.
 	 */
@@ -213,36 +250,6 @@ public class MainQLThuoc extends Dialog{
 		Menu menu = new Menu(shell, SWT.BAR);
 		shell.setMenuBar(menu);
 		
-		MenuItem mntmNewItem = new MenuItem(menu, SWT.NONE);
-		mntmNewItem.setText("New Item");
-		
-		MenuItem mntmNewSubmenu = new MenuItem(menu, SWT.CASCADE);
-		mntmNewSubmenu.setText("Admin");
-		
-		Menu menu_1 = new Menu(mntmNewSubmenu);
-		mntmNewSubmenu.setMenu(menu_1);
-		
-		MenuItem mntmNhCc = new MenuItem(menu_1, SWT.NONE);
-		mntmNhCc.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				VendorListDlg dlg = new VendorListDlg(shell, 0);
-				dlg.open();
-			}
-		});
-		mntmNhCc.setText("Nhà CC");
-		
-		MenuItem mntmUser = new MenuItem(menu_1, SWT.NONE);
-		mntmUser.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				
-				FormUsersListDlg dlg = new FormUsersListDlg(shell, 0);
-				dlg.open();
-			}
-		});
-		mntmUser.setText("User");
-		
 		tabFolder = new TabFolder(shell, SWT.NONE);
 		
 		TabItem tbtmKhoThuc = new TabItem(tabFolder, 0);
@@ -267,13 +274,22 @@ public class MainQLThuoc extends Dialog{
 				if(e.keyCode==13){
 					reloadTableKhamBenh();
 				}
+				else{
+					keyPressCapThuoc(e);
+				}
 			}
 		});
 		
 		Button btnNewButtonSearchKhamBenh = new Button(compositeHeaderKhamBenh, SWT.NONE);
 		btnNewButtonSearchKhamBenh.setImage(SWTResourceManager.getImage(KhamBenhDlg.class, "/png/media-play-2x.png"));
 		btnNewButtonSearchKhamBenh.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
-
+		btnNewButtonSearchKhamBenh.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressCapThuoc(e);
+			}
+		});
+		
 		btnNewButtonSearchKhamBenh.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -291,18 +307,8 @@ public class MainQLThuoc extends Dialog{
 		tableKhamBenh.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
-				if(e.keyCode==SWT.F5){
-					reloadTableKhamBenh();
-                }
-				else if(e.keyCode==13){
-					selectTableKhamBenh();
-				}
-                else if(e.keyCode==SWT.DEL){
-					deleteTableKhamBenh();
-				}
-                else if(e.keyCode==SWT.F7){
-					newItemKhamBenh();
-				}
+				keyPressCapThuoc(e);
+				
 			}
 		});
         tableKhamBenh.addMouseListener(new MouseAdapter() {
@@ -353,7 +359,7 @@ public class MainQLThuoc extends Dialog{
         reloadTableKhamBenh();
 		
 		TabItem tbtmQunLNhp = new TabItem(tabFolder, SWT.NONE);
-		tbtmQunLNhp.setText("Quản Lý Nhập");
+		tbtmQunLNhp.setText("Quản Lý Kho");
 		Composite compositeInShellNhapThuoc = new Composite(tabFolder, SWT.NONE);
 		tbtmQunLNhp.setControl(compositeInShellNhapThuoc);
 		compositeInShellNhapThuoc.setLayout(new BorderLayout(0, 0));
@@ -363,6 +369,9 @@ public class MainQLThuoc extends Dialog{
 		compositeHeaderNhapThuoc.setLayout(new GridLayout(2, false));
 
 		textSearchNhapThuoc = new Text(compositeHeaderNhapThuoc, SWT.BORDER);
+		GridData gd_textSearchNhapThuoc = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+		gd_textSearchNhapThuoc.widthHint = 260;
+		textSearchNhapThuoc.setLayoutData(gd_textSearchNhapThuoc);
 		textSearchNhapThuoc.setFont(SWTResourceManager.getFont("Tahoma", 11, SWT.NORMAL));
 		textSearchNhapThuoc.addKeyListener(new KeyAdapter() {
 			@Override
@@ -405,6 +414,9 @@ public class MainQLThuoc extends Dialog{
 				}
                 else if(e.keyCode==SWT.F7){
 					newItemNhapThuoc();
+				}
+                else if(e.keyCode==SWT.F6){
+					newItemXuatThuoc();
 				}
 			}
 		});
@@ -455,7 +467,17 @@ public class MainQLThuoc extends Dialog{
 			}
 		});
 		mntmNewItemNhapThuoc.setImage(SWTResourceManager.getImage(NhapThuocDlg.class, "/png/arrow-circle-top-2x.png"));
-		mntmNewItemNhapThuoc.setText("New");
+		mntmNewItemNhapThuoc.setText("Tạo nhập kho");
+		
+		MenuItem mntmToMoiXuatKho = new MenuItem(menuNhapThuoc, SWT.NONE);
+		mntmToMoiXuatKho.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				newItemXuatThuoc();
+			}
+		});
+		mntmToMoiXuatKho.setText("Tạo mới xuất kho");
+		mntmToMoiXuatKho.setImage(SWTResourceManager.getImage(MainQLThuoc.class, "/png/arrow-circle-left-2x.png"));
 		
 		MenuItem mntmNewItem_1NhapThuoc = new MenuItem(menuNhapThuoc, SWT.NONE);
 		mntmNewItem_1NhapThuoc.setImage(SWTResourceManager.getImage(NhapThuocDlg.class, "/png/wrench-2x.png"));
@@ -476,7 +498,211 @@ public class MainQLThuoc extends Dialog{
 			}
 		});
 		mntmDeleteNhapThuoc.setText("Delete");
+		
+		TabItem tbtmKhoThuc_1 = new TabItem(tabFolder, SWT.NONE);
+		tbtmKhoThuc_1.setText("Kho Thuốc");
+		
+		Composite compositeKhoThuoc = new Composite(tabFolder, SWT.NONE);
+		tbtmKhoThuc_1.setControl(compositeKhoThuoc);
+		compositeKhoThuoc.setLayout(new BorderLayout(0, 0));
 
+		
+		Composite compositeInShellCtNhapthuoc = new Composite(compositeKhoThuoc, SWT.NONE);
+		compositeInShellCtNhapthuoc.setLayout(new BorderLayout(0, 0));
+		compositeInShellCtNhapthuoc.setLayoutData(BorderLayout.CENTER);
+        
+		Composite compositeHeaderCtNhapthuoc = new Composite(compositeInShellCtNhapthuoc, SWT.NONE);
+		compositeHeaderCtNhapthuoc.setLayoutData(BorderLayout.NORTH);
+		compositeHeaderCtNhapthuoc.setLayout(new GridLayout(3, false));
+		
+		cbKhoHang = new Combo(compositeHeaderCtNhapthuoc, SWT.NONE);
+		GridData gd_combo = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+		gd_combo.widthHint = 146;
+		cbKhoHang.setLayoutData(gd_combo);
+		cbKhoHang.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
+
+		textSearchCtNhapthuoc = new Text(compositeHeaderCtNhapthuoc, SWT.BORDER);
+		GridData gd_textSearchCtNhapthuoc = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+		gd_textSearchCtNhapthuoc.widthHint = 250;
+		textSearchCtNhapthuoc.setLayoutData(gd_textSearchCtNhapthuoc);
+		textSearchCtNhapthuoc.setFont(SWTResourceManager.getFont("Tahoma", 11, SWT.NORMAL));
+		textSearchCtNhapthuoc.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if(e.keyCode==13){
+					reloadTableCtNhapthuoc();
+				}
+			}
+		});
+		
+		Button btnNewButtonSearchCtNhapthuoc = new Button(compositeHeaderCtNhapthuoc, SWT.NONE);
+		GridData gd_btnNewButtonSearchCtNhapthuoc = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+		gd_btnNewButtonSearchCtNhapthuoc.widthHint = 124;
+		btnNewButtonSearchCtNhapthuoc.setLayoutData(gd_btnNewButtonSearchCtNhapthuoc);
+		btnNewButtonSearchCtNhapthuoc.setImage(SWTResourceManager.getImage(CtNhapthuocDlg.class, "/png/media-play-2x.png"));
+		btnNewButtonSearchCtNhapthuoc.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
+
+		btnNewButtonSearchCtNhapthuoc.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				reloadTableCtNhapthuoc();
+			}
+		});
+		btnNewButtonSearchCtNhapthuoc.setText("Search");
+        
+		tableViewerCtNhapthuoc = new TableViewer(compositeInShellCtNhapthuoc, SWT.BORDER | SWT.FULL_SELECTION);
+		tableCtNhapthuoc = tableViewerCtNhapthuoc.getTable();
+		tableCtNhapthuoc.setFont(SWTResourceManager.getFont("Tahoma", 11, SWT.NORMAL));
+		tableCtNhapthuoc.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if(e.keyCode==SWT.F5){
+					reloadTableCtNhapthuoc();
+                }
+//                if(e.keyCode==SWT.F4){
+//					editTableCtNhapthuoc();
+//                }
+//				else if(e.keyCode==13){
+//					selectTableCtNhapthuoc();
+//				}
+//                else if(e.keyCode==SWT.DEL){
+//					deleteTableCtNhapthuoc();
+//				}
+//                else if(e.keyCode==SWT.F7){
+//					newItemCtNhapthuoc();
+//				}
+			}
+		});
+        tableCtNhapthuoc.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseDoubleClick(MouseEvent e) {
+				//selectTableCtNhapthuoc();
+			}
+		});
+        
+		tableCtNhapthuoc.setLinesVisible(true);
+		tableCtNhapthuoc.setHeaderVisible(true);
+		tableCtNhapthuoc.setLayoutData(BorderLayout.CENTER);
+
+		TableColumn tbTableColumnCtNhapthuocNT_ID = new TableColumn(tableCtNhapthuoc, SWT.RIGHT);
+		tbTableColumnCtNhapthuocNT_ID.setWidth(100);
+		tbTableColumnCtNhapthuocNT_ID.setText("NT_ID");
+
+		TableColumn tbTableColumnCtNhapthuocV_ID = new TableColumn(tableCtNhapthuoc, SWT.RIGHT);
+		tbTableColumnCtNhapthuocV_ID.setWidth(100);
+		tbTableColumnCtNhapthuocV_ID.setText("V_ID");
+
+		TableColumn tbTableColumnCtNhapthuocTENKHO = new TableColumn(tableCtNhapthuoc, SWT.LEFT);
+		tbTableColumnCtNhapthuocTENKHO.setWidth(100);
+		tbTableColumnCtNhapthuocTENKHO.setText("TENKHO");
+
+		TableColumn tbTableColumnCtNhapthuocKHO_ID = new TableColumn(tableCtNhapthuoc, SWT.RIGHT);
+		tbTableColumnCtNhapthuocKHO_ID.setWidth(100);
+		tbTableColumnCtNhapthuocKHO_ID.setText("KHO_ID");
+
+		TableColumn tbTableColumnCtNhapthuocTHUOC_ID = new TableColumn(tableCtNhapthuoc, SWT.RIGHT);
+		tbTableColumnCtNhapthuocTHUOC_ID.setWidth(100);
+		tbTableColumnCtNhapthuocTHUOC_ID.setText("THUOC_ID");
+
+		TableColumn tbTableColumnCtNhapthuocTENTHUOC = new TableColumn(tableCtNhapthuoc, SWT.LEFT);
+		tbTableColumnCtNhapthuocTENTHUOC.setWidth(100);
+		tbTableColumnCtNhapthuocTENTHUOC.setText("TENTHUOC");
+
+		TableColumn tbTableColumnCtNhapthuocDONVI = new TableColumn(tableCtNhapthuoc, SWT.LEFT);
+		tbTableColumnCtNhapthuocDONVI.setWidth(100);
+		tbTableColumnCtNhapthuocDONVI.setText("DONVI");
+
+
+		TableColumn tbTableColumnCtNhapthuocHANDUNG = new TableColumn(tableCtNhapthuoc, SWT.NONE);
+		tbTableColumnCtNhapthuocHANDUNG.setWidth(100);
+		tbTableColumnCtNhapthuocHANDUNG.setText("HANDUNG");
+
+		TableColumn tbTableColumnCtNhapthuocLOT_ID = new TableColumn(tableCtNhapthuoc, SWT.LEFT);
+		tbTableColumnCtNhapthuocLOT_ID.setWidth(100);
+		tbTableColumnCtNhapthuocLOT_ID.setText("LOT_ID");
+
+		TableColumn tbTableColumnCtNhapthuocSOLUONG = new TableColumn(tableCtNhapthuoc, SWT.RIGHT);
+		tbTableColumnCtNhapthuocSOLUONG.setWidth(100);
+		tbTableColumnCtNhapthuocSOLUONG.setText("SOLUONG");
+
+		TableColumn tbTableColumnCtNhapthuocSL_TONKHO = new TableColumn(tableCtNhapthuoc, SWT.RIGHT);
+		tbTableColumnCtNhapthuocSL_TONKHO.setWidth(100);
+		tbTableColumnCtNhapthuocSL_TONKHO.setText("SL_TONKHO");
+
+		TableColumn tbTableColumnCtNhapthuocSL_OUTSTANDING = new TableColumn(tableCtNhapthuoc, SWT.RIGHT);
+		tbTableColumnCtNhapthuocSL_OUTSTANDING.setWidth(100);
+		tbTableColumnCtNhapthuocSL_OUTSTANDING.setText("SL_OUTSTANDING");
+
+		TableColumn tbTableColumnCtNhapthuocSL_DADUNG = new TableColumn(tableCtNhapthuoc, SWT.RIGHT);
+		tbTableColumnCtNhapthuocSL_DADUNG.setWidth(100);
+		tbTableColumnCtNhapthuocSL_DADUNG.setText("SL_DADUNG");
+
+		TableColumn tbTableColumnCtNhapthuocDONGIA = new TableColumn(tableCtNhapthuoc, SWT.RIGHT);
+		tbTableColumnCtNhapthuocDONGIA.setWidth(100);
+		tbTableColumnCtNhapthuocDONGIA.setText("DONGIA");
+
+		TableColumn tbTableColumnCtNhapthuocTHANHTIEN = new TableColumn(tableCtNhapthuoc, SWT.RIGHT);
+		tbTableColumnCtNhapthuocTHANHTIEN.setWidth(100);
+		tbTableColumnCtNhapthuocTHANHTIEN.setText("THANHTIEN");
+
+		TableColumn tbTableColumnCtNhapthuocVAT = new TableColumn(tableCtNhapthuoc, SWT.RIGHT);
+		tbTableColumnCtNhapthuocVAT.setWidth(100);
+		tbTableColumnCtNhapthuocVAT.setText("VAT");
+
+		TableColumn tbTableColumnCtNhapthuocSTS = new TableColumn(tableCtNhapthuoc, SWT.RIGHT);
+		tbTableColumnCtNhapthuocSTS.setWidth(100);
+		tbTableColumnCtNhapthuocSTS.setText("STS");
+
+        Menu menuCtNhapthuoc = new Menu(tableCtNhapthuoc);
+		tableCtNhapthuoc.setMenu(menuCtNhapthuoc);
+		
+		MenuItem mntmPhiuXutKho = new MenuItem(menuCtNhapthuoc, SWT.NONE);
+		mntmPhiuXutKho.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+			}
+		});
+		mntmPhiuXutKho.setText("Phiếu Xuất Kho");
+		
+		MenuItem mntmNewItemCtNhapthuoc = new MenuItem(menuCtNhapthuoc, SWT.NONE);
+		mntmNewItemCtNhapthuoc.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				//newItemCtNhapthuoc();
+			}
+		});
+		mntmNewItemCtNhapthuoc.setImage(SWTResourceManager.getImage(CtNhapthuocDlg.class, "/png/arrow-circle-top-2x.png"));
+		mntmNewItemCtNhapthuoc.setText("New");
+		
+		MenuItem mntmEditItemCtNhapthuoc = new MenuItem(menuCtNhapthuoc, SWT.NONE);
+		mntmEditItemCtNhapthuoc.setImage(SWTResourceManager.getImage(CtNhapthuocDlg.class, "/png/wrench-2x.png"));
+		mntmEditItemCtNhapthuoc.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				//editTableCtNhapthuoc();
+			}
+		});
+		mntmEditItemCtNhapthuoc.setText("Edit");
+		
+		MenuItem mntmDeleteCtNhapthuoc = new MenuItem(menuCtNhapthuoc, SWT.NONE);
+		mntmDeleteCtNhapthuoc.setImage(SWTResourceManager.getImage(CtNhapthuocDlg.class, "/png/circle-x-2x.png"));
+		mntmDeleteCtNhapthuoc.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				//deleteTableCtNhapthuoc();
+			}
+		});
+		mntmDeleteCtNhapthuoc.setText("Delete");
+
+		tableViewerCtNhapthuoc.setLabelProvider(new TableLabelProviderCtNhapthuoc());
+		tableViewerCtNhapthuoc.setContentProvider(new ContentProviderCtNhapthuoc());
+		tableViewerCtNhapthuoc.setInput(listDataCtNhapthuoc);
+        //
+        //
+		loadDataCtNhapthuoc();
+		//
+        reloadTableCtNhapthuoc();
+        //
 		tableViewerNhapThuoc.setLabelProvider(new TableLabelProviderNhapThuoc());
 		tableViewerNhapThuoc.setContentProvider(new ContentProviderNhapThuoc());
 		tableViewerNhapThuoc.setInput(listDataNhapThuoc);
@@ -486,8 +712,45 @@ public class MainQLThuoc extends Dialog{
         //
         reloadTableNhapThuoc();
         //
+        
+        startDlg();
 	}
 	
+	protected void newItemXuatThuoc() {
+		//
+		FormXuatThuocKhoDlg dlg = new FormXuatThuocKhoDlg(shell, 0);
+        NhapThuoc obj = new NhapThuoc();
+		dlg.setNhapThuocDlgData(obj);
+		dlg.open();
+        listDataNhapThuoc.add(obj);
+        //
+		reloadTableNhapThuoc();
+		//
+		
+	}
+	protected void keyPressCapThuoc(KeyEvent e) {
+		if(e.keyCode==SWT.F5){
+			reloadTableKhamBenh();
+        }
+		else if(e.keyCode==13){
+			selectTableKhamBenh();
+		}
+        else if(e.keyCode==SWT.DEL){
+			//deleteTableKhamBenh();
+		}
+        else if(e.keyCode==SWT.F7){
+			newItemKhamBenh();
+		}		
+	}
+	private void startDlg() {
+		// list bs
+		cbKhoHang.removeAll();
+		cbKhoHang.add("Tất cả");
+		for(Khohang obj: DbHelper.listDataKhohang){
+			cbKhoHang.add(obj.KHO_NAME);
+		}
+	}
+	//
 	protected void reloadTableNhapThuoc() {
 		// Do search
 		String searchString = textSearchNhapThuoc.getText().toLowerCase().trim();
@@ -529,10 +792,17 @@ public class MainQLThuoc extends Dialog{
 		NhapThuoc obj = (NhapThuoc)item.getData();
         logger.info(obj.toString());
         //
-		FormNhapThuocDlg dlg = new FormNhapThuocDlg(shell, 0);
-		dlg.intTypeDlgNhapThuoc = FormNhapThuocDlg.TYPE_DLG_VIEW;
-		dlg.setNhapThuocDlgData(obj);
-		dlg.open();
+        if( obj.FROM_KHOID!=null && obj.FROM_KHOID>0){
+    		FormXuatThuocKhoDlg dlg = new FormXuatThuocKhoDlg(shell, 0);
+    		dlg.setNhapThuocDlgData(obj);
+    		dlg.open();
+        }
+        else{
+    		FormNhapThuocDlg dlg = new FormNhapThuocDlg(shell, 0);
+    		dlg.intTypeDlgNhapThuoc = FormNhapThuocDlg.TYPE_DLG_VIEW;
+    		dlg.setNhapThuocDlgData(obj, cbKhoHang.getText());
+    		dlg.open();
+        }
         //
 		reloadTableNhapThuoc();
 	}
@@ -559,7 +829,8 @@ public class MainQLThuoc extends Dialog{
 		//
 		FormNhapThuocDlg dlg = new FormNhapThuocDlg(shell, 0);
         NhapThuoc obj = new NhapThuoc();
-		dlg.setNhapThuocDlgData(obj);
+		dlg.setNhapThuocDlgData(obj, cbKhoHang.getText());
+		
 		dlg.open();
         listDataNhapThuoc.add(obj);
         //
@@ -569,7 +840,10 @@ public class MainQLThuoc extends Dialog{
 	
 	protected void reloadTableKhamBenh() {
 		// Do search
-		String sql = "select * from kham_benh WHERE STS<>"+DbHelper.DELETE_STATUS+" and T_THUOC>0 ";//="+Utils.PHIEUKHAM_KHAMXONG_CHO_LAYTHUOC;
+		String sql = "select * from kham_benh WHERE STS<>"+DbHelper.DELETE_STATUS+" and T_THUOC>=0 and DATE(KB_DATE) = CURDATE()";//="+Utils.PHIEUKHAM_KHAMXONG_CHO_LAYTHUOC;
+		if(textSearchKhamBenh.getText().length()>0){
+	        sql += " and TEN_BENH_NHAN like '%"+textSearchKhamBenh.getText().trim()+"%'";
+		}
         sql += " order by STS ASC, MA_LK";
 		try  {
 			Connection con = DbHelper.getSql2o();
@@ -627,14 +901,88 @@ public class MainQLThuoc extends Dialog{
 	}
 
 	protected void newItemKhamBenh() {
-		//
-		KhamBenhDlg dlg = new KhamBenhDlg(shell, 0);
-        KhamBenh obj = new KhamBenh();
+//		if(tableKhamBenh.getSelectionCount()==0){
+//			return;
+//		}
+//		TableItem item = tableKhamBenh.getSelection()[0];
+		KhamBenh obj = new KhamBenh();
+		obj.TEN_BENH_NHAN = "Khách Lẻ";
+		obj.DIA_CHI = "TT Nam Phước";
+        //
+		FormThuocChitietListDlg dlg = new FormThuocChitietListDlg(shell, 0);
 		dlg.setKhamBenhDlgData(obj);
 		dlg.open();
-        listDataKhamBenh.add(obj);
+		//
+		listDataKhamBenh.add(obj);
         //
 		reloadTableKhamBenh();
 		//
+	}
+	
+	private void loadDataCtNhapthuoc() {
+		if(textSearchCtNhapthuocString!=null){
+			textSearchCtNhapthuoc.setText(textSearchCtNhapthuocString);
+		}
+	}
+	protected void reloadTableCtNhapthuoc() {
+//        if(DbHelper.checkPhanQuyen(DbHelper.READ, "ct_nhapthuoc")==false){
+//			logger.info("DON'T HAVE READ RIGHT");
+//			return;
+//		}
+    
+//        if(listDataCtNhapthuoc!=null){
+//            // 
+//            tableViewerCtNhapthuoc.setInput(listDataCtNhapthuoc);
+//            tableViewerCtNhapthuoc.refresh();
+//            //
+//            if(listDataCtNhapthuoc.size()==0){
+//                textSearchCtNhapthuoc.forceFocus();
+//            }
+//            else{
+//                tableCtNhapthuoc.forceFocus();
+//                tableCtNhapthuoc.setSelection(0);
+//            }
+//            return;
+//        }
+		// Do search in the first time
+		String searchString = textSearchCtNhapthuoc.getText().toLowerCase().trim();
+		String sql = "select * from ct_nhapthuoc WHERE STS<> "+DbHelper.DELETE_STATUS+" ";
+		if(searchString.length()>0){
+            sql += " and ( 0 ";
+        //sql += " or LOWER(TENKHO) like '%"+searchString+"%'";
+        sql += " or LOWER(TENTHUOC) like '%"+searchString+"%'";
+        //sql += " or LOWER(DONVI) like '%"+searchString+"%'";
+        //sql += " or LOWER(LOT_ID) like '%"+searchString+"%'";
+            sql += " )";
+        }
+		// Kho hang
+		if(cbKhoHang.getSelectionIndex()>0){
+			Khohang objKhohang = DbHelper.hashDataKhoHang.get(cbKhoHang.getText());
+			if(objKhohang!=null){
+	            sql += " and KHO_ID="+objKhohang.KHO_ID;
+
+			}
+		}
+		
+		try  {
+            logger.info(sql);
+			Connection con = DbHelper.getSql2o();
+			listDataCtNhapthuoc = con.createQuery(sql).executeAndFetch(CtNhapthuoc.class);
+	    }   
+	    catch(Exception e){
+	    	logger.error(e);
+	    	//MessageDialog.openError(compositeKhoThuoc, "Error", e.getMessage());
+	    }
+		// 
+		tableViewerCtNhapthuoc.setInput(listDataCtNhapthuoc);
+		tableViewerCtNhapthuoc.refresh();
+        //
+        if(listDataCtNhapthuoc.size()==0){
+            textSearchCtNhapthuoc.forceFocus();
+        }
+        else{
+            tableCtNhapthuoc.forceFocus();
+            tableCtNhapthuoc.setSelection(0);
+        }
 	}
 }

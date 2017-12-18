@@ -1,31 +1,30 @@
 package com.openclinic;
 
-import java.io.ObjectInputStream.GetField;
-import java.util.Hashtable;
+import java.io.File;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.SWT;
-import org.eclipse.wb.swt.SWTResourceManager;
-
-import swing2swt.layout.BorderLayout;
-
+import org.eclipse.swt.program.Program;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Monitor;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.Button;
+import org.eclipse.wb.swt.SWTResourceManager;
 import org.sql2o.Connection;
 import org.sql2o.Sql2oException;
+
+import swing2swt.layout.BorderLayout;
 
 import com.DbHelper;
 import com.model.cache.MaCskcbCache;
@@ -53,6 +52,9 @@ public class LoginDlg {
 	private static Button button;
 
 	private static Display display;
+
+	private static String CHECKURL;
+	
 	static {
 		
 	}
@@ -62,10 +64,12 @@ public class LoginDlg {
 	 */
 	public static void main(String[] args) {
 		logger.info("Start app");
+		//
 		
+		//
 		Display display = Display.getDefault();
 		shellLogin = new Shell();
-		shellLogin.setSize(436, 249);
+		shellLogin.setSize(436, 246);
 		shellLogin.setText(Main.TITLE + ": Login");
 		shellLogin.setLayout(new BorderLayout(0, 0));
 		
@@ -143,6 +147,9 @@ public class LoginDlg {
 		btnLogin.setImage(SWTResourceManager.getImage(LoginDlg.class, "/png/account-login-3x.png"));
 		btnLogin.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
 		btnLogin.setBounds(184, 120, 171, 34);
+		
+		TheBHXH theBHXH = new TheBHXH(composite_1, SWT.NONE);
+		theBHXH.setBounds(25, 190, 369, 36);
 		btnLogin.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				login();
@@ -172,32 +179,59 @@ public class LoginDlg {
 		if(isRemember==true){
 			ini.setStringProperty("CONF", "LOGIN_ID", txtId.getText(), "Login ID");
 			ini.setStringProperty("CONF", "LOGIN_PW", Encryptor.encrypt(txtPw.getText()), "Login PW");
+			ini.setStringProperty("CONF", "USER_GATE_ID", Main.USER_GATE_ID, "Login USER_GATE_ID");
+			ini.setStringProperty("CONF", "USER_GATE_PASSWORD", Main.USER_GATE_PASSWORD, "Login USER_GATE_PASSWORD");
 			ini.setIntegerProperty("CONF", "REMEMBER", 1, "Rem");
 			ini.setIntegerProperty("CONF", "MUCLUONGCOSO", Main.MAX_MUCLUONGCOSO, "Muc luong co so");
 			ini.setIntegerProperty("CONF", "GIAKHAMVIENPHI", Main.GIAKHAMVIENPHI, "Gia cong kham vien phi");
+			ini.setIntegerProperty("CONF", "TABLE_ID", Main.TABLE_ID, "Ban Kham");
 		}
 		else{
 			ini.setStringProperty("CONF", "LOGIN_ID", txtId.getText(), "Login ID");
 			ini.setStringProperty("CONF", "LOGIN_PW", "", "Login PW");
+			ini.setStringProperty("CONF", "USER_GATE_ID", Main.USER_GATE_ID, "Login USER_GATE_ID");
+			ini.setStringProperty("CONF", "USER_GATE_PASSWORD", Main.USER_GATE_PASSWORD, "Login USER_GATE_PASSWORD");
 			ini.setIntegerProperty("CONF", "REMEMBER", 0, "Rem");
 			ini.setIntegerProperty("CONF", "MUCLUONGCOSO", Main.MAX_MUCLUONGCOSO, "Muc luong co so");
 			ini.setIntegerProperty("CONF", "GIAKHAMVIENPHI", Main.GIAKHAMVIENPHI, "Gia cong kham vien phi");
+			ini.setIntegerProperty("CONF", "TABLE_ID", Main.TABLE_ID, "Ban Kham");
 		}
 		ini.save();
 	}
 	private static void startApp() {
+		System.out.println("LOAD INI FILE");
 		INIFile ini = new INIFile("openclinic.ini");
+		CHECKURL = ini.getStringProperty("DOWNLOAD", "CHECKURL");
+		System.out.println("CHECK URL="+CHECKURL);
 		String serverIP = ini.getStringProperty("CONF", "SERVER");
-		Integer MUCLUONGCOSO = ini.getIntegerProperty("CONF", "MUCLUONGCOSO");
-		if(MUCLUONGCOSO==null){
+		Integer tempInteger = ini.getIntegerProperty("CONF", "MUCLUONGCOSO");
+		if(tempInteger==null){
 			Main.MAX_MUCLUONGCOSO = 1150000;
 		}
 		else{
-			Main.MAX_MUCLUONGCOSO = MUCLUONGCOSO.intValue();
+			Main.MAX_MUCLUONGCOSO = tempInteger.intValue();
 		}
-		Integer GIAKHAMVIENPHI= ini.getIntegerProperty("CONF", "GIAKHAMVIENPHI");
-		if(GIAKHAMVIENPHI==null){
+		tempInteger= ini.getIntegerProperty("CONF", "GIAKHAMVIENPHI");
+		if(tempInteger==null){
 			Main.GIAKHAMVIENPHI = 30000;
+		}
+		Main.GIAKHAMVIENPHI = tempInteger.intValue();
+		//
+		tempInteger= ini.getIntegerProperty("CONF", "TABLE_ID");
+		if(tempInteger==null){
+			Main.TABLE_ID = 0;
+		}
+		else{
+			Main.TABLE_ID = tempInteger;
+		}
+		//
+		Main.USER_GATE_ID = ini.getStringProperty("CONF", "USER_GATE_ID");
+		if(Main.USER_GATE_ID==null || Main.USER_GATE_ID.length()==0){
+			Main.USER_GATE_ID = "49172_BV";
+		}
+		Main.USER_GATE_PASSWORD = ini.getStringProperty("CONF", "USER_GATE_PASSWORD");
+		if(Main.USER_GATE_PASSWORD==null|| Main.USER_GATE_PASSWORD.length()==0){
+			Main.USER_GATE_PASSWORD = "ViNhanDan";
 		}
 		Main.DB_USER = ini.getStringProperty("CONF", "USERNAME");
 		Main.DB_PASS = ini.getStringProperty("CONF", "PASSWORD");
@@ -275,7 +309,7 @@ public class LoginDlg {
 		Utils.mstArrayTinhTrangPhieuKhamBenhColor.add(6,
 				SWTResourceManager.getColor(SWT.COLOR_GRAY));
 
-		
+		//
 		DbHelper.startConnection();
 		loadCacheDB(DbHelper.getSql2o());
 		//
@@ -652,6 +686,31 @@ public class LoginDlg {
 	
 	private static void loadCacheDB(Connection con) {
 		logger.info("START Connection");
+		if(Main.isCheckVersion==true){
+			long fileSize = DbHelper.objBHYTThread.getFileSize(CHECKURL);
+			System.out.println("fileSizeRemote ="+fileSize);
+			long fileSize2 = 0; 
+			try {
+	            File file = new File("openclinic.jar");
+	            fileSize2 = file.length();
+	            System.out.println("openclinic.jar="+fileSize2);
+	        } 
+			catch (Exception e) {
+				e.printStackTrace();
+	        }
+			if(fileSize!=-1 && fileSize!=fileSize2){
+				//
+				logger.info("UPDATE NEW SOFTWARE " + fileSize +"@"+fileSize2);
+				MessageDialog.openInformation(shellLogin, "Có phiên bản mới", "Phiên bản "+Main.TITLE+" đã cũ!.\nCó phiên bản mới, phần mềm tự cập nhật...");
+				Program.launch("update.exe");
+				System.exit(1);
+				//
+			}
+			//
+			DbHelper.objBHYTThread.login(Main.USER_GATE_ID, Main.USER_GATE_PASSWORD);
+		}
+		//
+		//
 		// LOAD ALL MABENH
 		String sql = "SELECT * FROM mabenh ORDER BY MABENH_RANK DESC";
 //		logger.info("Get cache" + sql);
@@ -671,7 +730,7 @@ public class LoginDlg {
 			MaCskcbCache.putMaCskcb(obj);
 		}
 		
-		sql = "SELECT * FROM MST_LIEUDUNG ORDER BY RANK DESC";
+		sql = "SELECT * FROM mst_lieudung ORDER BY RANK DESC";
 		logger.info("Get LIEU DUNG " + sql);
 		DbHelper.listDataMstLieuDung = con.createQuery(sql).executeAndFetch(MstLieudung.class);
 		for (MstLieudung obj : DbHelper.listDataMstLieuDung) {
@@ -691,12 +750,18 @@ public class LoginDlg {
 			DbHelper.hashDataKhoHang.put(obj.KHO_NAME, obj);
 		}
 
-		sql = "SELECT * from dichvu where MANHOM_9324='13' order by MA_DVKT ASC";
+		sql = "SELECT * from dichvu where (MANHOM_9324='13' || MANHOM_9324='14') order by MA_DVKT ASC";
 		List<Dichvu> listDichvu = con.createQuery(sql).executeAndFetch(Dichvu.class);
 		for (Dichvu obj : listDichvu) {
 			//cbKhoa.add(obj.MA_DVKT +"-"+obj.TEN_DVKT+"("+obj.DON_GIA2+")");
 			DbHelper.listCongKham.add(obj);
-			DbHelper.hashCongKham.put(obj.MA_DVKT +"-"+obj.TEN_DVKT+"("+obj.DON_GIA2+")", obj);
+			//if(Utils.getInt(obj.MANHOM_9324)==13){
+				DbHelper.hashCongKham.put(obj.DV_ID +"-"+obj.MA_DVKT +"-"+obj.TEN_DVKT+"("+obj.DON_GIA2+")", obj);
+			//}
+			//else{
+				// CAP CUU
+				//DbHelper.hashCongKham.put(obj.MA_DVKT, obj);
+			//}
 		}
 		
 		sql = "SELECT * FROM khoa_phong ORDER BY KP_MAKHOA";
@@ -715,20 +780,63 @@ public class LoginDlg {
 //		for (Phanquyen obj : listPhanquyen) {
 //			DbHelper.hashDataPhanquyen.put(obj.TABLE_NAME, obj);
 //		}
-		sql = "SELECT * FROM users where LOAI='BS' order by U_NAME";
+		sql = "SELECT * FROM users where LOAI='BS' order by U_ID";
 		//logger.info("Get cache" + sql);
 		DbHelper.listUsers = con.createQuery(sql).executeAndFetch(Users.class);
 		for (Users obj : DbHelper.listUsers) {
-			DbHelper.hashDataUsers.put(obj.U_NAME, obj);
+			DbHelper.hashDataUsers.put(obj.U_ID+"-"+obj.TEN_NHANVIEN, obj);
 			DbHelper.hashDataUsersMaCCHN.put(obj.MACCHN, obj);
 		}
+		sql = "SELECT * FROM users where LOAI='acct' or LOAI='nv' order by U_ID";
+		//logger.info("Get cache" + sql);
+		DbHelper.listUsersNhanVien = con.createQuery(sql).executeAndFetch(Users.class);
+		for (Users obj : DbHelper.listUsersNhanVien) {
+			DbHelper.hashDataUsersNhanVien.put(obj.U_ID+"-"+obj.TEN_NHANVIEN, obj);
+		}
 		
+		DbHelper.hashLoaiDichVu.put("", "Dịch Vụ Kỹ Thuật");
 		DbHelper.hashLoaiDichVu.put("1", "Xét nghiệm");
 		DbHelper.hashLoaiDichVu.put("2", "Chẩn đoán hình ảnh");
 		DbHelper.hashLoaiDichVu.put("3", "Thăm dò chức năng");
 		DbHelper.hashLoaiDichVu.put("8", "Thủ thuật, phẫu thuật");
 		DbHelper.hashLoaiDichVu.put("14", "Giường điều trị ngoại trú");
 		DbHelper.hashLoaiDichVu.put("13", "Khám bệnh");
+		DbHelper.hashLoaiDichVu.put("100", "DV Viện Phí");
+		
+		DbHelper.hashcheckThe.put(0,"Thông tin thẻ chính xác");
+		DbHelper.hashcheckThe.put(1,"Thẻ hết giá trị sử dụng/Thẻ do BHXH Bộ Quốc Phòng quản lý, đề nghị kiểm tra thẻ và thông tin giấy tờ tùy thân");
+		DbHelper.hashcheckThe.put(2,"Thẻ do BHXH Bộ Công An quản lý, đề nghị kiểm tra thẻ và thông tin giấy tờ tùy thân");
+		DbHelper.hashcheckThe.put(10,"Thẻ hết giá trị sử dụng");
+		DbHelper.hashcheckThe.put(51,"Mã thẻ không đúng");
+		DbHelper.hashcheckThe.put(52,"Mã tỉnh cấp thẻ(kí tự thứ 4, 5 của mã thẻ) không đúng");
+		DbHelper.hashcheckThe.put(53,"Mã quyền lợi thẻ(kí tự thứ 3 của mã thẻ) không đúng");
+		DbHelper.hashcheckThe.put(50,"Khong thay thong tin the bhyt");
+		DbHelper.hashcheckThe.put(3,"Hết hạn thẻ khi chưa ra viện");
+		DbHelper.hashcheckThe.put(4,"Thẻ có giá trị khi đang nằm viện");
+		DbHelper.hashcheckThe.put(401,"Thử lại lần nữa...");
+		DbHelper.hashcheckThe.put(5,"Khong thay thong tin the bhyt");
+		DbHelper.hashcheckThe.put(6,"Thẻ sai họ tên");
+		DbHelper.hashcheckThe.put(60,"Thẻ sai họ tên");
+		DbHelper.hashcheckThe.put(61,"Thẻ sai họ tên(đúng kí tự đầu)");
+		DbHelper.hashcheckThe.put(70,"Thẻ sai ngày sinh");
+		DbHelper.hashcheckThe.put(7,"Thẻ sai ngày sinh");
+		DbHelper.hashcheckThe.put(80,"Thẻ sai giới tính");
+		DbHelper.hashcheckThe.put(8,"Thẻ sai giới tính");
+		DbHelper.hashcheckThe.put(90,"Thẻ sai nơi đăng ký KCB ban đầu");
+		DbHelper.hashcheckThe.put(9,"Thẻ sai nơi đăng ký KCB ban đầu");
+		DbHelper.hashcheckThe.put(100,"Lỗi khi lấy dữ liệu sổ thẻ");
+		DbHelper.hashcheckThe.put(101,"Lỗi server");
+		DbHelper.hashcheckThe.put(110,"Thẻ đã thu hồi");
+		DbHelper.hashcheckThe.put(120,"Thẻ đã báo giảm");
+		DbHelper.hashcheckThe.put(121,"Thẻ đã báo giảm. Giảm chuyển ngoại tỉnh");
+		DbHelper.hashcheckThe.put(122,"Thẻ đã báo giảm. Giảm chuyển nội tỉnh");
+		DbHelper.hashcheckThe.put(123,"Thẻ đã báo giảm. Thu hồi do tăng lại cùng đơn vị");
+		DbHelper.hashcheckThe.put(124,"Thẻ đã báo giảm. Ngừng tham gia");
+		DbHelper.hashcheckThe.put(130,"Trẻ em không xuất trình thẻ");
+		//
+		
+
+		//
 //		List<Row> listKhoaphong = DbHelper.getSql2o().open().createQuery(sql)
 //				.executeAndFetchTable().rows();
 //		for (Row obj : listKhoaphong) {
@@ -739,4 +847,6 @@ public class LoginDlg {
 		// LOAD ALL MABENH
 		//
 	}
+	
+	
 }

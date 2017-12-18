@@ -41,7 +41,14 @@ public class ReportDAO {
 		return listdv;
 	}
 	
+	
 	public ArrayList<ThuocChitiet> getThuoc(){
 		return thuoc;
 	}
+//	public ArrayList<SumReportDAO> getDV_All(){
+//		return listdv_all;
+//	}
+//	public ArrayList<ThuocChitiet> getThuoc_All(){
+//		return thuoc_all;
+//	}
 }

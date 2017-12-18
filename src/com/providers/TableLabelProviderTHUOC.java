@@ -38,16 +38,19 @@ public class TableLabelProviderTHUOC extends LabelProvider implements ITableLabe
 				return ""+(obj.SO_LUONG==null?"1":obj.SO_LUONG.intValue());
 			}
 			else if(columnIndex==6){
-				return ""+(obj.STS==null?"1":Utils.getTinhTrangThuoc(obj.STS));
+				return ""+(obj.STS==null?"1":Utils.getTinhTrangThuoc(obj.STS))+obj.STS;
 			}
 			else if(columnIndex==7){
 				return ""+(obj.THANH_TIEN==null?"0":obj.THANH_TIEN.intValue());
 			}
 			else if(columnIndex==8){
-				return ""+(obj.TT_BH==null?"0":obj.TT_BH.intValue());
+				return ""+(obj.TT_BHTT==null?"0":obj.TT_BHTT.intValue());
 			}
 			else if(columnIndex==9){
 				return ""+(obj.LIEU_DUNG);
+			}
+			else if(columnIndex==10){
+				return ""+(obj.THANHTOAN==1?"Xong":"Chưa");
 			}
 			else{
 				return "";
@@ -67,6 +70,12 @@ public class TableLabelProviderTHUOC extends LabelProvider implements ITableLabe
 			ThuocChitiet obj = (ThuocChitiet)element;
 			if(obj.STS<0){
 				return SWTResourceManager.getColor(SWT.COLOR_GRAY);
+			}
+			else if(obj.THANHTOAN==0){
+				return SWTResourceManager.getColor(SWT.COLOR_GRAY);
+			}
+			else if(obj.THANHTOAN==1){
+				return SWTResourceManager.getColor(SWT.COLOR_DARK_GREEN);
 			}
 			else{
 				return SWTResourceManager.getColor(SWT.COLOR_GREEN);

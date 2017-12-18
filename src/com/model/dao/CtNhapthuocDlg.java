@@ -31,21 +31,29 @@ public class CtNhapthuocDlg extends Dialog {
 	protected Object result;
 	protected Shell shell;
     private Text txtNT_ID;
+    private Text txtSTT;
     private Text txtV_ID;
     private Text txtTENKHO;
     private Text txtKHO_ID;
+    private Text txtFROM_KHOID;
+    private Text txtCTID_FROM;
+    private Text txtNGAY_NHAP;
     private Text txtTHUOC_ID;
     private Text txtTENTHUOC;
     private Text txtDONVI;
     private Text txtHANDUNG;
     private Text txtLOT_ID;
+    private Text txtHAM_LUONG;
+    private Text txtTT_THAU;
+    private Text txtSO_DANG_KY;
     private Text txtSOLUONG;
     private Text txtSL_TONKHO;
-    private Text txtSL_OUTSTANDING;
     private Text txtSL_DADUNG;
     private Text txtDONGIA;
+    private Text txtDONGIA_BAN;
     private Text txtTHANHTIEN;
     private Text txtVAT;
+    private Text txtTYP;
     private Text txtSTS;
 
     public CtNhapthuoc objCtNhapthuoc;
@@ -122,6 +130,21 @@ public class CtNhapthuocDlg extends Dialog {
 				keyPressCtNhapthuocDlg(e);
 			}
 		});
+		Label lbltxtSTT = new Label(shell, SWT.NONE);
+        lbltxtSTT.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtSTT.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtSTT.setText("STT :");
+		
+		txtSTT = new Text(shell, SWT.BORDER);
+        txtSTT.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtSTT.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtSTT.setText("STT");
+        txtSTT.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressCtNhapthuocDlg(e);
+			}
+		});
 		Label lbltxtV_ID = new Label(shell, SWT.NONE);
         lbltxtV_ID.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		lbltxtV_ID.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
@@ -162,6 +185,51 @@ public class CtNhapthuocDlg extends Dialog {
 		txtKHO_ID.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtKHO_ID.setText("KHO_ID");
         txtKHO_ID.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressCtNhapthuocDlg(e);
+			}
+		});
+		Label lbltxtFROM_KHOID = new Label(shell, SWT.NONE);
+        lbltxtFROM_KHOID.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtFROM_KHOID.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtFROM_KHOID.setText("FROM_KHOID :");
+		
+		txtFROM_KHOID = new Text(shell, SWT.BORDER);
+        txtFROM_KHOID.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtFROM_KHOID.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtFROM_KHOID.setText("FROM_KHOID");
+        txtFROM_KHOID.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressCtNhapthuocDlg(e);
+			}
+		});
+		Label lbltxtCTID_FROM = new Label(shell, SWT.NONE);
+        lbltxtCTID_FROM.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtCTID_FROM.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtCTID_FROM.setText("CTID_FROM :");
+		
+		txtCTID_FROM = new Text(shell, SWT.BORDER);
+        txtCTID_FROM.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtCTID_FROM.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtCTID_FROM.setText("CTID_FROM");
+        txtCTID_FROM.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressCtNhapthuocDlg(e);
+			}
+		});
+		Label lbltxtNGAY_NHAP = new Label(shell, SWT.NONE);
+        lbltxtNGAY_NHAP.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtNGAY_NHAP.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtNGAY_NHAP.setText("NGAY_NHAP :");
+		
+		txtNGAY_NHAP = new Text(shell, SWT.BORDER);
+        txtNGAY_NHAP.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtNGAY_NHAP.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtNGAY_NHAP.setText("NGAY_NHAP");
+        txtNGAY_NHAP.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				keyPressCtNhapthuocDlg(e);
@@ -242,6 +310,51 @@ public class CtNhapthuocDlg extends Dialog {
 				keyPressCtNhapthuocDlg(e);
 			}
 		});
+		Label lbltxtHAM_LUONG = new Label(shell, SWT.NONE);
+        lbltxtHAM_LUONG.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtHAM_LUONG.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtHAM_LUONG.setText("HAM_LUONG :");
+		
+		txtHAM_LUONG = new Text(shell, SWT.BORDER);
+        txtHAM_LUONG.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtHAM_LUONG.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtHAM_LUONG.setText("HAM_LUONG");
+        txtHAM_LUONG.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressCtNhapthuocDlg(e);
+			}
+		});
+		Label lbltxtTT_THAU = new Label(shell, SWT.NONE);
+        lbltxtTT_THAU.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtTT_THAU.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtTT_THAU.setText("TT_THAU :");
+		
+		txtTT_THAU = new Text(shell, SWT.BORDER);
+        txtTT_THAU.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtTT_THAU.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtTT_THAU.setText("TT_THAU");
+        txtTT_THAU.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressCtNhapthuocDlg(e);
+			}
+		});
+		Label lbltxtSO_DANG_KY = new Label(shell, SWT.NONE);
+        lbltxtSO_DANG_KY.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtSO_DANG_KY.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtSO_DANG_KY.setText("SO_DANG_KY :");
+		
+		txtSO_DANG_KY = new Text(shell, SWT.BORDER);
+        txtSO_DANG_KY.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtSO_DANG_KY.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtSO_DANG_KY.setText("SO_DANG_KY");
+        txtSO_DANG_KY.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressCtNhapthuocDlg(e);
+			}
+		});
 		Label lbltxtSOLUONG = new Label(shell, SWT.NONE);
         lbltxtSOLUONG.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		lbltxtSOLUONG.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
@@ -267,21 +380,6 @@ public class CtNhapthuocDlg extends Dialog {
 		txtSL_TONKHO.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtSL_TONKHO.setText("SL_TONKHO");
         txtSL_TONKHO.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				keyPressCtNhapthuocDlg(e);
-			}
-		});
-		Label lbltxtSL_OUTSTANDING = new Label(shell, SWT.NONE);
-        lbltxtSL_OUTSTANDING.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
-		lbltxtSL_OUTSTANDING.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-		lbltxtSL_OUTSTANDING.setText("SL_OUTSTANDING :");
-		
-		txtSL_OUTSTANDING = new Text(shell, SWT.BORDER);
-        txtSL_OUTSTANDING.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
-		txtSL_OUTSTANDING.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        txtSL_OUTSTANDING.setText("SL_OUTSTANDING");
-        txtSL_OUTSTANDING.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				keyPressCtNhapthuocDlg(e);
@@ -317,6 +415,21 @@ public class CtNhapthuocDlg extends Dialog {
 				keyPressCtNhapthuocDlg(e);
 			}
 		});
+		Label lbltxtDONGIA_BAN = new Label(shell, SWT.NONE);
+        lbltxtDONGIA_BAN.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtDONGIA_BAN.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtDONGIA_BAN.setText("DONGIA_BAN :");
+		
+		txtDONGIA_BAN = new Text(shell, SWT.BORDER);
+        txtDONGIA_BAN.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtDONGIA_BAN.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtDONGIA_BAN.setText("DONGIA_BAN");
+        txtDONGIA_BAN.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressCtNhapthuocDlg(e);
+			}
+		});
 		Label lbltxtTHANHTIEN = new Label(shell, SWT.NONE);
         lbltxtTHANHTIEN.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		lbltxtTHANHTIEN.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
@@ -342,6 +455,21 @@ public class CtNhapthuocDlg extends Dialog {
 		txtVAT.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtVAT.setText("VAT");
         txtVAT.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressCtNhapthuocDlg(e);
+			}
+		});
+		Label lbltxtTYP = new Label(shell, SWT.NONE);
+        lbltxtTYP.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtTYP.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtTYP.setText("TYP :");
+		
+		txtTYP = new Text(shell, SWT.BORDER);
+        txtTYP.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtTYP.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtTYP.setText("TYP");
+        txtTYP.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				keyPressCtNhapthuocDlg(e);
@@ -390,35 +518,51 @@ public class CtNhapthuocDlg extends Dialog {
         // Integer    = true
             objCtNhapthuoc.NT_ID = Utils.getInt( txtNT_ID.getText() );
             // Integer    = true
+            objCtNhapthuoc.STT = Utils.getInt( txtSTT.getText() );
+            // Integer    = true
             objCtNhapthuoc.V_ID = Utils.getInt( txtV_ID.getText() );
             // String     = false
             objCtNhapthuoc.TENKHO = txtTENKHO.getText();
             // Integer    = true
             objCtNhapthuoc.KHO_ID = Utils.getInt( txtKHO_ID.getText() );
             // Integer    = true
+            objCtNhapthuoc.FROM_KHOID = Utils.getInt( txtFROM_KHOID.getText() );
+            // Integer    = true
+            objCtNhapthuoc.CTID_FROM = Utils.getInt( txtCTID_FROM.getText() );
+            // Date       = false
+            // objCtNhapthuoc.NGAY_NHAP = txtNGAY_NHAP.getText();
+            // Integer    = true
             objCtNhapthuoc.THUOC_ID = Utils.getInt( txtTHUOC_ID.getText() );
             // String     = false
             objCtNhapthuoc.TENTHUOC = txtTENTHUOC.getText();
             // String     = false
             objCtNhapthuoc.DONVI = txtDONVI.getText();
-            // Date       = false
-            // objCtNhapthuoc.HANDUNG = txtHANDUNG.getText();
+            // String     = false
+            objCtNhapthuoc.HANDUNG = txtHANDUNG.getText();
             // String     = false
             objCtNhapthuoc.LOT_ID = txtLOT_ID.getText();
+            // String     = false
+            objCtNhapthuoc.HAM_LUONG = txtHAM_LUONG.getText();
+            // String     = false
+            objCtNhapthuoc.TT_THAU = txtTT_THAU.getText();
+            // String     = false
+            objCtNhapthuoc.SO_DANG_KY = txtSO_DANG_KY.getText();
             // Integer    = true
             objCtNhapthuoc.SOLUONG = Utils.getInt( txtSOLUONG.getText() );
             // Integer    = true
             objCtNhapthuoc.SL_TONKHO = Utils.getInt( txtSL_TONKHO.getText() );
             // Integer    = true
-            objCtNhapthuoc.SL_OUTSTANDING = Utils.getInt( txtSL_OUTSTANDING.getText() );
-            // Integer    = true
             objCtNhapthuoc.SL_DADUNG = Utils.getInt( txtSL_DADUNG.getText() );
             // Integer    = true
             objCtNhapthuoc.DONGIA = Utils.getInt( txtDONGIA.getText() );
             // Integer    = true
+            objCtNhapthuoc.DONGIA_BAN = Utils.getInt( txtDONGIA_BAN.getText() );
+            // Integer    = true
             objCtNhapthuoc.THANHTIEN = Utils.getInt( txtTHANHTIEN.getText() );
             // Integer    = true
             objCtNhapthuoc.VAT = Utils.getInt( txtVAT.getText() );
+            // Integer    = true
+            objCtNhapthuoc.TYP = Utils.getInt( txtTYP.getText() );
             // Integer    = true
             objCtNhapthuoc.STS = Utils.getInt( txtSTS.getText() );
             }
@@ -455,6 +599,10 @@ public class CtNhapthuocDlg extends Dialog {
                 txtNT_ID.setText("");
             else
                 txtNT_ID.setText(""+objCtNhapthuoc.NT_ID.toString());
+            if(objCtNhapthuoc.STT==null)
+                txtSTT.setText("");
+            else
+                txtSTT.setText(""+objCtNhapthuoc.STT.toString());
             if(objCtNhapthuoc.V_ID==null)
                 txtV_ID.setText("");
             else
@@ -467,6 +615,18 @@ public class CtNhapthuocDlg extends Dialog {
                 txtKHO_ID.setText("");
             else
                 txtKHO_ID.setText(""+objCtNhapthuoc.KHO_ID.toString());
+            if(objCtNhapthuoc.FROM_KHOID==null)
+                txtFROM_KHOID.setText("");
+            else
+                txtFROM_KHOID.setText(""+objCtNhapthuoc.FROM_KHOID.toString());
+            if(objCtNhapthuoc.CTID_FROM==null)
+                txtCTID_FROM.setText("");
+            else
+                txtCTID_FROM.setText(""+objCtNhapthuoc.CTID_FROM.toString());
+            if(objCtNhapthuoc.NGAY_NHAP==null)
+                txtNGAY_NHAP.setText("");
+            else
+                txtNGAY_NHAP.setText(""+objCtNhapthuoc.NGAY_NHAP.toString());
             if(objCtNhapthuoc.THUOC_ID==null)
                 txtTHUOC_ID.setText("");
             else
@@ -487,6 +647,18 @@ public class CtNhapthuocDlg extends Dialog {
                 txtLOT_ID.setText("");
             else
                 txtLOT_ID.setText(""+objCtNhapthuoc.LOT_ID.toString());
+            if(objCtNhapthuoc.HAM_LUONG==null)
+                txtHAM_LUONG.setText("");
+            else
+                txtHAM_LUONG.setText(""+objCtNhapthuoc.HAM_LUONG.toString());
+            if(objCtNhapthuoc.TT_THAU==null)
+                txtTT_THAU.setText("");
+            else
+                txtTT_THAU.setText(""+objCtNhapthuoc.TT_THAU.toString());
+            if(objCtNhapthuoc.SO_DANG_KY==null)
+                txtSO_DANG_KY.setText("");
+            else
+                txtSO_DANG_KY.setText(""+objCtNhapthuoc.SO_DANG_KY.toString());
             if(objCtNhapthuoc.SOLUONG==null)
                 txtSOLUONG.setText("");
             else
@@ -495,10 +667,6 @@ public class CtNhapthuocDlg extends Dialog {
                 txtSL_TONKHO.setText("");
             else
                 txtSL_TONKHO.setText(""+objCtNhapthuoc.SL_TONKHO.toString());
-            if(objCtNhapthuoc.SL_OUTSTANDING==null)
-                txtSL_OUTSTANDING.setText("");
-            else
-                txtSL_OUTSTANDING.setText(""+objCtNhapthuoc.SL_OUTSTANDING.toString());
             if(objCtNhapthuoc.SL_DADUNG==null)
                 txtSL_DADUNG.setText("");
             else
@@ -507,6 +675,10 @@ public class CtNhapthuocDlg extends Dialog {
                 txtDONGIA.setText("");
             else
                 txtDONGIA.setText(""+objCtNhapthuoc.DONGIA.toString());
+            if(objCtNhapthuoc.DONGIA_BAN==null)
+                txtDONGIA_BAN.setText("");
+            else
+                txtDONGIA_BAN.setText(""+objCtNhapthuoc.DONGIA_BAN.toString());
             if(objCtNhapthuoc.THANHTIEN==null)
                 txtTHANHTIEN.setText("");
             else
@@ -515,6 +687,10 @@ public class CtNhapthuocDlg extends Dialog {
                 txtVAT.setText("");
             else
                 txtVAT.setText(""+objCtNhapthuoc.VAT.toString());
+            if(objCtNhapthuoc.TYP==null)
+                txtTYP.setText("");
+            else
+                txtTYP.setText(""+objCtNhapthuoc.TYP.toString());
             if(objCtNhapthuoc.STS==null)
                 txtSTS.setText("");
             else

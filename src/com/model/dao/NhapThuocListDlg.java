@@ -3,6 +3,11 @@
 */
 package com.model.dao;
 
+
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +48,8 @@ import org.eclipse.swt.layout.GridData;
 import org.sql2o.Connection;
 
 import com.DbHelper;
+import com.openclinic.utils.Utils;
+
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.wb.swt.SWTResourceManager;
@@ -146,10 +153,10 @@ public class NhapThuocListDlg extends Dialog {
         
 		Composite compositeHeaderNhapThuoc = new Composite(compositeInShellNhapThuoc, SWT.NONE);
 		compositeHeaderNhapThuoc.setLayoutData(BorderLayout.NORTH);
-		compositeHeaderNhapThuoc.setLayout(new GridLayout(2, false));
+		compositeHeaderNhapThuoc.setLayout(new GridLayout(5, false));
 
 		textSearchNhapThuoc = new Text(compositeHeaderNhapThuoc, SWT.BORDER);
-		textSearchNhapThuoc.setFont(SWTResourceManager.getFont("Tahoma", 11, SWT.NORMAL));
+		textSearchNhapThuoc.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		textSearchNhapThuoc.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -161,7 +168,7 @@ public class NhapThuocListDlg extends Dialog {
 		
 		Button btnNewButtonSearchNhapThuoc = new Button(compositeHeaderNhapThuoc, SWT.NONE);
 		btnNewButtonSearchNhapThuoc.setImage(SWTResourceManager.getImage(NhapThuocDlg.class, "/png/media-play-2x.png"));
-		btnNewButtonSearchNhapThuoc.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
+		btnNewButtonSearchNhapThuoc.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 
 		btnNewButtonSearchNhapThuoc.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -169,6 +176,18 @@ public class NhapThuocListDlg extends Dialog {
 				reloadTableNhapThuoc();
 			}
 		});
+		Button btnNewButtonExportExcelNhapThuoc = new Button(compositeHeaderNhapThuoc, SWT.NONE);
+		btnNewButtonExportExcelNhapThuoc.setText("Export Excel");
+		btnNewButtonExportExcelNhapThuoc.setImage(SWTResourceManager.getImage(KhamBenhListDlg.class, "/png/spreadsheet-2x.png"));
+		btnNewButtonExportExcelNhapThuoc.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		btnNewButtonExportExcelNhapThuoc.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				exportExcelTableNhapThuoc();
+			}
+		});
+		
+		
 		GridData gd_btnNewButtonNhapThuoc = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
 		gd_btnNewButtonNhapThuoc.widthHint = 87;
 		btnNewButtonSearchNhapThuoc.setLayoutData(gd_btnNewButtonNhapThuoc);
@@ -176,7 +195,7 @@ public class NhapThuocListDlg extends Dialog {
         
 		tableViewerNhapThuoc = new TableViewer(compositeInShellNhapThuoc, SWT.BORDER | SWT.FULL_SELECTION);
 		tableNhapThuoc = tableViewerNhapThuoc.getTable();
-		tableNhapThuoc.setFont(SWTResourceManager.getFont("Tahoma", 11, SWT.NORMAL));
+		tableNhapThuoc.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		tableNhapThuoc.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -216,6 +235,14 @@ public class NhapThuocListDlg extends Dialog {
 		tbTableColumnNhapThuocKHO_ID.setWidth(100);
 		tbTableColumnNhapThuocKHO_ID.setText("KHO_ID");
 
+		TableColumn tbTableColumnNhapThuocTENKHO = new TableColumn(tableNhapThuoc, SWT.LEFT);
+		tbTableColumnNhapThuocTENKHO.setWidth(100);
+		tbTableColumnNhapThuocTENKHO.setText("TENKHO");
+
+		TableColumn tbTableColumnNhapThuocFROM_KHOID = new TableColumn(tableNhapThuoc, SWT.RIGHT);
+		tbTableColumnNhapThuocFROM_KHOID.setWidth(100);
+		tbTableColumnNhapThuocFROM_KHOID.setText("FROM_KHOID");
+
 		TableColumn tbTableColumnNhapThuocVENDOR_NAME = new TableColumn(tableNhapThuoc, SWT.LEFT);
 		tbTableColumnNhapThuocVENDOR_NAME.setWidth(100);
 		tbTableColumnNhapThuocVENDOR_NAME.setText("VENDOR_NAME");
@@ -233,10 +260,6 @@ public class NhapThuocListDlg extends Dialog {
 		TableColumn tbTableColumnNhapThuocNGAY_HD = new TableColumn(tableNhapThuoc, SWT.NONE);
 		tbTableColumnNhapThuocNGAY_HD.setWidth(100);
 		tbTableColumnNhapThuocNGAY_HD.setText("NGAY_HD");
-
-		TableColumn tbTableColumnNhapThuocTENKHO = new TableColumn(tableNhapThuoc, SWT.LEFT);
-		tbTableColumnNhapThuocTENKHO.setWidth(100);
-		tbTableColumnNhapThuocTENKHO.setText("TENKHO");
 
 		TableColumn tbTableColumnNhapThuocSO_HOA_DON = new TableColumn(tableNhapThuoc, SWT.LEFT);
 		tbTableColumnNhapThuocSO_HOA_DON.setWidth(100);
@@ -294,7 +317,17 @@ public class NhapThuocListDlg extends Dialog {
 			}
 		});
 		mntmDeleteNhapThuoc.setText("Delete");
-
+		
+		MenuItem mntmExportNhapThuoc = new MenuItem(menuNhapThuoc, SWT.NONE);
+		mntmExportNhapThuoc.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				exportExcelTableNhapThuoc();
+			}
+		});
+		mntmExportNhapThuoc.setImage(SWTResourceManager.getImage(NhapThuocDlg.class, "/png/spreadsheet-2x.png"));
+		mntmExportNhapThuoc.setText("Export Excel");
+		
 		tableViewerNhapThuoc.setLabelProvider(new TableLabelProviderNhapThuoc());
 		tableViewerNhapThuoc.setContentProvider(new ContentProviderNhapThuoc());
 		tableViewerNhapThuoc.setInput(listDataNhapThuoc);
@@ -311,6 +344,83 @@ public class NhapThuocListDlg extends Dialog {
 		if(textSearchNhapThuocString!=null){
 			textSearchNhapThuoc.setText(textSearchNhapThuocString);
 		}
+	}
+	protected void exportExcelTableNhapThuoc() {
+        if(DbHelper.checkPhanQuyen(DbHelper.READ, "nhap_thuoc")==false){
+			logger.info("DON'T HAVE READ RIGHT");
+			return;
+		}
+        if(listDataNhapThuoc!=null){
+            // Export to EXCEL
+    		
+			StringBuffer buff_nhap_thuoc = new StringBuffer();
+			String nhap_thuoc_filename = "nhap_thuoc_"+Utils.getDatetimeCurent().replaceAll(":", "_")+".xls";
+			String delimiter = "</td><td>";
+			// Get header...
+			// Get header...
+			buff_nhap_thuoc.append( "<table>");
+			buff_nhap_thuoc.append( "<tr class='background-color:#dfdfdf'><td>");
+
+			buff_nhap_thuoc.append( "V_ID" +delimiter);
+			buff_nhap_thuoc.append( "KHO_ID" +delimiter);
+			buff_nhap_thuoc.append( "TENKHO" +delimiter);
+			buff_nhap_thuoc.append( "FROM_KHOID" +delimiter);
+			buff_nhap_thuoc.append( "VENDOR_NAME" +delimiter);
+			buff_nhap_thuoc.append( "VENDOR_ADDR" +delimiter);
+			buff_nhap_thuoc.append( "NGAY_NHAP" +delimiter);
+			buff_nhap_thuoc.append( "NGAY_HD" +delimiter);
+			buff_nhap_thuoc.append( "SO_HOA_DON" +delimiter);
+			buff_nhap_thuoc.append( "KH_HOA_DON" +delimiter);
+			buff_nhap_thuoc.append( "TONGCONG" +delimiter);
+			buff_nhap_thuoc.append( "TONGCONG_VAT" +delimiter);
+			buff_nhap_thuoc.append( "VAT" +delimiter);
+			buff_nhap_thuoc.append( "STS");
+			// End of header
+			buff_nhap_thuoc.append( "</td></tr>");
+			buff_nhap_thuoc.append( "\n");
+			// Get data...
+			for( NhapThuoc obj:  listDataNhapThuoc){
+				buff_nhap_thuoc.append( "<tr><td>");
+				buff_nhap_thuoc.append( obj.V_ID +delimiter);
+				buff_nhap_thuoc.append( obj.KHO_ID +delimiter);
+				buff_nhap_thuoc.append( obj.TENKHO +delimiter);
+				buff_nhap_thuoc.append( obj.FROM_KHOID +delimiter);
+				buff_nhap_thuoc.append( obj.VENDOR_NAME +delimiter);
+				buff_nhap_thuoc.append( obj.VENDOR_ADDR +delimiter);
+				buff_nhap_thuoc.append( obj.NGAY_NHAP +delimiter);
+				buff_nhap_thuoc.append( obj.NGAY_HD +delimiter);
+				buff_nhap_thuoc.append( obj.SO_HOA_DON +delimiter);
+				buff_nhap_thuoc.append( obj.KH_HOA_DON +delimiter);
+				buff_nhap_thuoc.append( obj.TONGCONG +delimiter);
+				buff_nhap_thuoc.append( obj.TONGCONG_VAT +delimiter);
+				buff_nhap_thuoc.append( obj.VAT +delimiter);
+				buff_nhap_thuoc.append( obj.STS );
+				// End of header
+				buff_nhap_thuoc.append( "</td></tr>");
+			}
+			//
+			buff_nhap_thuoc.append( "</table>");
+			Writer out = null;
+			try {
+				out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(nhap_thuoc_filename), "UTF-8"));
+				out.write('\uFEFF'); // BOM for UTF-*
+			    out.write(buff_nhap_thuoc.toString());
+			} 
+			catch(Exception ee){
+				ee.printStackTrace();
+			}
+			finally {
+			    try {
+					out.close();
+				} catch (Exception e) {
+					e.printStackTrace();
+					logger.error(e);
+				}
+			}
+			//
+            return;
+        }
+		// End of export
 	}
 	protected void reloadTableNhapThuoc() {
         if(DbHelper.checkPhanQuyen(DbHelper.READ, "nhap_thuoc")==false){
@@ -337,9 +447,9 @@ public class NhapThuocListDlg extends Dialog {
 		String sql = "select * from nhap_thuoc WHERE STS<> "+DbHelper.DELETE_STATUS+" ";
 		if(searchString.length()>0){
             sql += " and ( 0 ";
+        sql += " or LOWER(TENKHO) like '%"+searchString+"%'";
         sql += " or LOWER(VENDOR_NAME) like '%"+searchString+"%'";
         sql += " or LOWER(VENDOR_ADDR) like '%"+searchString+"%'";
-        sql += " or LOWER(TENKHO) like '%"+searchString+"%'";
         sql += " or LOWER(SO_HOA_DON) like '%"+searchString+"%'";
         sql += " or LOWER(KH_HOA_DON) like '%"+searchString+"%'";
             sql += " )";

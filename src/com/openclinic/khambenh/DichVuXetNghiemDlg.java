@@ -189,9 +189,9 @@ public class DichVuXetNghiemDlg extends Dialog {
 			objDVChiTiet.NGAY_YL = Utils.getDatetime(new Date(), "yyyyMMddHHmm"); 
 			objDVChiTiet.NGAY_KQ = Utils.getDatetime(new Date(), "yyyyMMddHHmm"); 
 			objDVChiTiet.THANH_TIEN = objDv.DON_GIA2;
-			objDVChiTiet.TYLE_TT = 100;
-			objDVChiTiet.TT_BH = 0;
-			objDVChiTiet.TT_NB = 0;
+			objDVChiTiet.MUC_HUONG = 100;
+			objDVChiTiet.TT_BHTT = 0;
+			objDVChiTiet.TT_BNTT = 0;
 			//
 			objDVChiTiet.MA_BAC_SI = "";
 			objDVChiTiet.MA_KHOA = "";

@@ -22,9 +22,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
-import org.eclipse.jface.viewers.IStructuredContentProvider;
-import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
@@ -43,7 +40,6 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.win32.OS;
 import org.eclipse.swt.layout.FormAttachment;
@@ -55,6 +51,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
@@ -78,6 +75,7 @@ import org.sql2o.data.Row;
 
 import swing2swt.layout.BorderLayout;
 
+import com.CheckTheObj;
 import com.DbHelper;
 import com.model.cache.MaCskcbCache;
 import com.model.cache.MstXahuyenCache;
@@ -110,104 +108,6 @@ import com.providers.TableLabelProviderCLS;
 import com.providers.TableLabelProviderTHUOC;
 
 public class FormKhamBenhDlg extends Dialog {
-	private class TableLabelProvider extends LabelProvider implements
-			ITableLabelProvider {
-		public Image getColumnImage(Object element, int columnIndex) {
-			return null;
-		}
-
-		public String getColumnText(Object element, int columnIndex) {
-			if (element instanceof Dichvu) {
-				Dichvu obj = (Dichvu) element;
-				if (columnIndex == 0) {
-					return obj.MA_DVKT;
-				} else if (columnIndex == 1) {
-					return obj.TEN_DVKT;
-				} else if (columnIndex == 2) {
-					return ""
-							+ java.text.NumberFormat.getInstance(
-									java.util.Locale.ITALY).format(obj.DON_GIA);
-				} else if (columnIndex == 3) {
-					return ""
-							+ java.text.NumberFormat.getInstance(
-									java.util.Locale.ITALY)
-									.format(obj.DON_GIA2);
-				} else if (columnIndex == 4) {
-					return obj.MANHOM_9324;
-				} else if (columnIndex == 5) {
-					return obj.QUYET_DINH;
-				}
-			}
-			return "";
-		}
-	}
-
-	private static class ContentProvider implements IStructuredContentProvider {
-		public Object[] getElements(Object inputElement) {
-			if (inputElement instanceof List) {
-				return ((List) inputElement).toArray();
-			}
-			return new Object[0];
-		}
-
-		public void dispose() {
-		}
-
-		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-		}
-	}
-
-	private class TableLabelProviderCtNhapthuoc extends LabelProvider implements
-			ITableLabelProvider {
-		public Image getColumnImage(Object element, int columnIndex) {
-			return null;
-		}
-
-		public String getColumnText(Object element, int columnIndex) {
-			if (element instanceof CtNhapthuoc) {
-				// return ((CtNhapthuoc) element).getIndex(columnIndex);
-				CtNhapthuoc obj = (CtNhapthuoc) element;
-				if (columnIndex == 0) {
-					return obj.TENKHO;
-				} else if (columnIndex == 1) {
-					return obj.TENTHUOC;
-				} else if (columnIndex == 2) {
-					return obj.DONVI;
-				} else if (columnIndex == 3) {
-					return Utils.getDatetimeDefault(obj.HANDUNG);
-				} else if (columnIndex == 4) {
-					return Utils.getMoneyDefault(obj.DONGIA);
-				} else if (columnIndex == 5) {
-					return "" + obj.SL_TONKHO;
-				} else if (columnIndex == 6) {
-					return "" + obj.SL_OUTSTANDING;
-				} else if (columnIndex == 7) {
-					return "" + obj.SL_DADUNG;
-				} else if (columnIndex == 8) {
-					return obj.SOLUONG + "";
-				} else if (columnIndex == 6) {
-				}
-			}
-			return "";
-		}
-	}
-
-	private static class ContentProviderCtNhapthuoc implements
-			IStructuredContentProvider {
-		public Object[] getElements(Object inputElement) {
-			if (inputElement instanceof ArrayList) {
-				return ((ArrayList) inputElement).toArray();
-			}
-			return new Object[0];
-		}
-
-		public void dispose() {
-		}
-
-		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-		}
-	}
-
 	static Logger logger = LogManager
 			.getLogger(FormKhamBenhDlg.class.getName());
 
@@ -348,8 +248,41 @@ public class FormKhamBenhDlg extends Dialog {
 
 	private Combo cbKhoThuoc;
 
-	protected Khohang objKhoHang;
+	protected Khohang objKhoHang = DbHelper.hashDataKhoHang.get("Kho bảo hiểm");
 
+	private Label txtNgaySinhTheoThang;
+
+	protected boolean isBarcode;
+
+	protected CheckTheObj objCheck = null;
+
+	private org.eclipse.swt.widgets.List listKhamBenh;
+
+	protected boolean isCapCuu;
+
+	private static DateTime dateTime0;
+
+	private static DateTime dateTime1;
+
+	private static Combo comboKieuThanhToan;
+
+	private static Combo comboNhanVien;
+
+	private static Combo comboTinhTrangThanhToan;
+
+	private static Label lbTONG_BN;
+	private static long tongBN = 0;
+	private static long tongChi = 0;	
+	private static Button btnCheckButtonNgayXem;
+	private static Button btnCheckButtonTatCaPhieu;
+	private static Button btnCheckButtonTatCaNV;
+	private static Button btnCheckButtonTatCaTHANHTOAN;
+	
+	private static boolean btnCheckButtonNgayXemDta = false;
+	private static boolean  btnCheckButtonTatCaPhieuDta= false;
+	private static boolean  btnCheckButtonTatCaNVDta= false;
+	private static boolean  btnCheckButtonTatCaTHANHTOANDta= false;
+	
 	/**
 	 * Create the dialog.
 	 * 
@@ -403,19 +336,20 @@ public class FormKhamBenhDlg extends Dialog {
 		int x = bounds.x + (bounds.width - rect.width) / 2;
 		int y = bounds.y + (bounds.height - rect.height) / 2;
 		shellKhamBenh.setLocation(x, y);
-
+		//
+		comboNhanVien.removeAll();
+		comboNhanVien.add("Tất cả");
+		//comboNhanVien.add("NV Login");
+		for (Users obj : DbHelper.listUsersNhanVien) {
+			comboNhanVien.add(obj.U_ID + "-"+obj.TEN_NHANVIEN);
+			//
+		}
+		comboNhanVien.select(0);
+		//
 		// End move to center
 		logger.info("LOAD KIEU_THANH_TOAN = " + KIEU_THANH_TOAN);
-		doSearchBenhNhan(1);
-		cbListBacSiCLS.add("");
-		cbListBacsiThuoc.add("");
-		for (Users obj : DbHelper.listUsers) {
-			cbListBacSiCLS.add(obj.U_NAME);
-			cbListBacsiThuoc.add(obj.U_NAME);
-		}
-		cbListBacSiCLS.select(0);
-		cbListBacsiThuoc.select(0);
-
+		doSearchBenhNhan();
+		
 		startDialog();
 		//
 		timerThread = new TimerThread();
@@ -431,7 +365,45 @@ public class FormKhamBenhDlg extends Dialog {
 		return result;
 	}
 
-	protected void muaPhieuXetNghiem() {
+	protected void doSavePhieuXetNghiem() {
+		boolean isError = false;
+		String errorText = "Có lỗi: \n";
+		if (txtHoten.getText().trim().length() == 0) {
+			tabFolder.setSelection(0);
+			txtHoten.forceFocus();
+			txtHoten.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
+			errorText = "- Nhập họ tên: \n";
+			isError = true;
+		} else {
+			txtHoten.setBackground(SWTResourceManager
+					.getColor(SWT.COLOR_YELLOW));
+		}
+		if (txtDiachi.getText().trim().length() == 0) {
+			tabFolder.setSelection(0);
+			txtDiachi.forceFocus();
+			txtDiachi.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
+			errorText = "- Nhập địa chỉ: \n";
+			isError = true;
+		} else {
+			txtDiachi.setBackground(SWTResourceManager
+					.getColor(SWT.COLOR_YELLOW));
+		}
+
+		if (listCLSData == null || listCLSData.size() == 0) {
+			objPhieuKhamBenh = new KhamBenh();
+			objPhieuKhamBenh.BN_ID = objBenhNhan.BN_ID;
+			objPhieuKhamBenh.KIEU_TT = KIEU_THANH_TOAN;
+			//
+			tabFolder.setSelection(1);
+			tableSelectedCLS.forceFocus();
+			errorText = "- Nhập ít nhất 1 CLS: \n";
+			isError = true;
+		}
+		if (isError) {
+			MessageDialog.openError(shellKhamBenh, "Có lỗi", errorText);
+			return;
+		}
+		
 		if (objPhieuKhamBenh == null) {
 			setCHI_XET_NGHIEM(1);
 			KIEU_THANH_TOAN = Utils.THANHTOAN_MUA_CLS;
@@ -443,9 +415,7 @@ public class FormKhamBenhDlg extends Dialog {
 		}
 		if (objCongKham != null) {
 			//
-			if (MessageDialog
-					.openConfirm(shellKhamBenh, "Lưu ý",
-							"Phiếu đã lưu dưới dạng Viện Phí, có chắc chắn muốn chuyển thành MuaCLS??") == true) {
+			if (MessageDialog.openConfirm(shellKhamBenh, "Lưu ý", "Phiếu đã lưu dưới dạng Viện Phí, có chắc chắn muốn chuyển thành MuaCLS??") == true) {
 				// remove cong kham
 				objCongKham.deleteRow();
 				objCongKham = null;
@@ -457,39 +427,22 @@ public class FormKhamBenhDlg extends Dialog {
 			}
 			//
 		}
-		// for (DvChitiet obj : listCLSData) {
-		// if (obj.MA_BAC_SI == null || obj.MA_BAC_SI.length() == 0) {
-		// MessageDialog.openError(shellKhamBenh, "Có lỗi",
-		// "Cần chỉ định BS cho CLS");
-		// tabFolder.setSelection(1);
-		// setFocusTabFolder();
-		// return;
-		// }
-		// }
 		if (savePhieuXetNghiem() == false) {
-			printPhieuXetNghiem();
-			doSearchBenhNhan(1);
+			//
+			doSearchBenhNhan();
 			refreshPhieuKham();
 		}
 	}
 
 	protected void doSaveFormKhamBenh() {
+
 		if (objPhieuKhamBenh == null) {
 			setCHI_XET_NGHIEM(0);
 		}
 		if (CHI_XET_NGHIEM == 1) {
-			// for (DvChitiet obj : listCLSData) {
-			// if (obj.MA_BAC_SI == null || obj.MA_BAC_SI.length() == 0) {
-			// MessageDialog.openError(shellKhamBenh, "Có lỗi",
-			// "Cần chỉ định BS cho CLS");
-			// tabFolder.setSelection(1);
-			// setFocusTabFolder();
-			// return;
-			// }
-			// }
 		}
 		if (saveFormKhamBenh() == false) {
-			doSearchBenhNhan(1);
+			doSearchBenhNhan();
 			refreshPhieuKham();
 		}
 	}
@@ -524,7 +477,7 @@ public class FormKhamBenhDlg extends Dialog {
 		// System.out.println("LOAD objDVChiTiet="+objDVChiTiet.hashCode());
 		objDVChiTiet.MA_KHOA = DbHelper.getMAKHOA(cbKhoa.getText());
 		//
-		updateGiaTien();
+		updateTinhTien();
 		//
 		tableViewerSelectedCLS.refresh();
 		//
@@ -541,7 +494,7 @@ public class FormKhamBenhDlg extends Dialog {
 			// System.out.println("LOAD CLS");
 			Connection con = DbHelper.getSql2o();
 			String sql = "select * from dv_chitiet where MA_LK="
-					+ objPhieuKhamBenh.MA_LK + " and MA_NHOM<>13";
+					+ objPhieuKhamBenh.MA_LK + " and (MA_NHOM<>13 and MA_NHOM<>14)";
 			// System.out.println(sql);
 			List<DvChitiet> list = con.createQuery(sql).executeAndFetch(
 					DvChitiet.class);
@@ -601,10 +554,6 @@ public class FormKhamBenhDlg extends Dialog {
 		objDVChiTiet.MA_DICH_VU = "";
 		objDVChiTiet.TEN_DICH_VU = "";
 		//
-		// DichVuXetNghiemDlg dlg = new DichVuXetNghiemDlg(shellKhamBenh, 0);
-		// dlg.objDVChiTiet = objDVChiTiet;
-		// dlg.objDVChiTiet.DV_ID = listCLSData.size()+1;
-		// dlg.open();
 		ListCLSDlg dlg = new ListCLSDlg(shellKhamBenh, 0);
 		dlg.objDVChiTiet = objDVChiTiet;
 		dlg.objDVChiTiet.DV_ID = listCLSData.size() + 1;
@@ -618,7 +567,7 @@ public class FormKhamBenhDlg extends Dialog {
 			hashDichVuChiTiet.put(objDVChiTiet.MA_DICH_VU, objDVChiTiet);
 		}
 		//
-		updateGiaTien();
+		updateTinhTien();
 		// ======================================================
 		//
 		// ======================================================
@@ -700,8 +649,7 @@ public class FormKhamBenhDlg extends Dialog {
 			String str[] = cbTenBenhPhu.getText().split("-");
 			String sql = "select * from benh_nhan where MA_THE='" + mathe + "'";
 			// System.out.println(sql);
-			List<BenhNhan> listBenhNhan = con.createQuery(sql).executeAndFetch(
-					BenhNhan.class);
+			List<BenhNhan> listBenhNhan = con.createQuery(sql).executeAndFetch(BenhNhan.class);
 			// con.close();
 			if (listBenhNhan != null && listBenhNhan.size() == 1) {
 				//
@@ -790,8 +738,10 @@ public class FormKhamBenhDlg extends Dialog {
 		objBenhNhan.setNGAY_SINH(txtNgaySinh.getDate());
 		if (btnGIOITINH.getSelection() == true) {
 			objBenhNhan.setGIOI_TINH(2);
+			btnGIOITINH.setSelection(true);
 		} else {
 			objBenhNhan.setGIOI_TINH(1);
+			btnGIOITINH.setSelection(false);
 		}
 		objBenhNhan.setDIA_CHI(txtDiachi.getText());
 		//
@@ -800,20 +750,22 @@ public class FormKhamBenhDlg extends Dialog {
 			objPhieuKhamBenh.BN_ID = objBenhNhan.BN_ID;
 			objPhieuKhamBenh.KIEU_TT = KIEU_THANH_TOAN;
 		}
+		objPhieuKhamBenh.TABLE_ID = Main.TABLE_ID;
+		objPhieuKhamBenh.NV_ID = DbHelper.currentSessionUserId.U_ID;
+		objPhieuKhamBenh.NV_NAME  = DbHelper.currentSessionUserId.U_NAME;
 		//
 		//
 	}
 
 	private boolean savePhieuXetNghiem() {
+		//
 		boolean isError = false;
-		setCHI_XET_NGHIEM(1);
-		KIEU_THANH_TOAN = Utils.THANHTOAN_MUA_CLS;
-		selectVienPhi();
-
+		String errorText = "Có lỗi: \n";
 		if (txtHoten.getText().trim().length() == 0) {
 			tabFolder.setSelection(0);
 			txtHoten.forceFocus();
 			txtHoten.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
+			errorText = "- Nhập họ tên: \n";
 			isError = true;
 		} else {
 			txtHoten.setBackground(SWTResourceManager
@@ -823,6 +775,7 @@ public class FormKhamBenhDlg extends Dialog {
 			tabFolder.setSelection(0);
 			txtDiachi.forceFocus();
 			txtDiachi.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
+			errorText = "- Nhập địa chỉ: \n";
 			isError = true;
 		} else {
 			txtDiachi.setBackground(SWTResourceManager
@@ -836,12 +789,20 @@ public class FormKhamBenhDlg extends Dialog {
 			//
 			tabFolder.setSelection(1);
 			tableSelectedCLS.forceFocus();
+			errorText = "- Nhập ít nhất 1 CLS: \n";
 			isError = true;
-
 		}
 		if (isError) {
+			MessageDialog.openError(shellKhamBenh, "Có lỗi", errorText);
 			return isError;
 		}
+		
+		setCHI_XET_NGHIEM(1);
+		KIEU_THANH_TOAN = Utils.THANHTOAN_MUA_CLS;
+		
+		selectVienPhi();
+
+		
 		//
 		updateForm();
 		//
@@ -876,7 +837,7 @@ public class FormKhamBenhDlg extends Dialog {
 				logger.info("BEGIN SAVE PHIEU KHAM " + IS_UPDATE + " MALK="
 						+ objPhieuKhamBenh.MA_LK);
 				//
-				updateGiaTien();
+				updateTinhTien();
 				//
 				//
 				logger.info("=========BEGIN UPDATE KHAM BENH === listThuocData.size()="
@@ -892,6 +853,30 @@ public class FormKhamBenhDlg extends Dialog {
 				}
 				objPhieuKhamBenh.CHANDOAN_BD = txtBenhBanDau.getText();
 				objPhieuKhamBenh.KIEU_TT = Utils.THANHTOAN_MUA_CLS;
+				// Check is Thanh toan
+				boolean isThanhToan = true;
+				
+				for (DvChitiet obj : listCLSData) {
+					if(obj.THANHTOAN==0){
+						isThanhToan = false;
+						break;
+					}
+				}
+				for (ThuocChitiet obj : listThuocData) {
+					if(obj.THANHTOAN==0){
+						isThanhToan = false;
+						break;
+					}
+				}
+				if(isThanhToan==false){
+					objPhieuKhamBenh.NGAY_TTOAN = "";
+				}
+				else{
+					objPhieuKhamBenh.NGAY_TTOAN = Utils.getDatetime(new Date(), "yyyyMMddHHmm");
+				}
+				//
+				updateBenhNhan2PhieuKham(objBenhNhan, objPhieuKhamBenh);
+				//
 				objPhieuKhamBenh.insert();
 				//
 				//
@@ -901,6 +886,7 @@ public class FormKhamBenhDlg extends Dialog {
 					if (obj.STS == -1) {
 						obj.STS = 0;
 					}
+					
 					obj.insert();
 				}
 				//
@@ -909,12 +895,43 @@ public class FormKhamBenhDlg extends Dialog {
 		return isError;
 	}
 
+	private void updateBenhNhan2PhieuKham(BenhNhan objBenhNhan0, KhamBenh objPhieuKhamBenh0) 
+	{
+		if(objBenhNhan0==null || objPhieuKhamBenh0==null){
+			return;
+		}
+		objPhieuKhamBenh0.NGAY_SINH = objBenhNhan0.NGAY_SINH;
+		objPhieuKhamBenh0.GIOI_TINH = objBenhNhan0.GIOI_TINH;
+		objPhieuKhamBenh0.DIA_CHI = objBenhNhan0.DIA_CHI;
+		objPhieuKhamBenh0.MA_THE = objBenhNhan0.MA_THE;
+		objPhieuKhamBenh0.MA_DKBD = objBenhNhan0.MA_DKBD;
+		objPhieuKhamBenh0.GT_THE_TU = objBenhNhan0.GT_THE_TU;
+		objPhieuKhamBenh0.GT_THE_DEN = objBenhNhan0.GT_THE_DEN;
+		objPhieuKhamBenh0.NGAY_CAP = objBenhNhan0.NGAY_CAP;
+		objPhieuKhamBenh0.MA_QUAN_LY = objBenhNhan0.MA_QUAN_LY;
+		objPhieuKhamBenh0.TEN_CHA_ME = objBenhNhan0.TEN_CHA_ME;
+		objPhieuKhamBenh0.MA_DT_SONG = objBenhNhan0.MA_DT_SONG;
+		objPhieuKhamBenh0.THOIDIEM_NAMNAM = objBenhNhan0.THOIDIEM_NAMNAM;
+		objPhieuKhamBenh0.CHUOI_KIEM_TRA = objBenhNhan0.CHUOI_KIEM_TRA;
+	}
+
 	protected boolean saveFormKhamBenh() {
-		// waitingDlgShow();
-		//
-		boolean isError = false;
 		if (KIEU_THANH_TOAN == Utils.THANHTOAN_BHYT
 				|| KIEU_THANH_TOAN == Utils.THANHTOAN_BHYT_2) {
+			if(objBenhNhan.GATE_INFO==null ){
+				if(objCheck==null || (objCheck.checkCode!=0)){
+					MessageDialog.openError(shellKhamBenh, "Có lổi", "Bấm check mã thẻ trước khi lưu");
+					return false;
+				}
+			}
+		}
+
+		//
+		boolean isError = false;
+		String errorText = "Có lỗi: \n";
+		if (KIEU_THANH_TOAN == Utils.THANHTOAN_BHYT
+				|| KIEU_THANH_TOAN == Utils.THANHTOAN_BHYT_2) {
+			
 			if (txtMathe.txtMathe == null
 					|| (txtMathe.txtMathe != null && txtMathe.txtMathe.trim()
 							.length() == 0)
@@ -922,32 +939,33 @@ public class FormKhamBenhDlg extends Dialog {
 							.length() != 15)) {
 				tabFolder.setSelection(0);
 				// System.out.println("SAVE TXTMATHE = " + txtMathe.txtMathe);
-				MessageDialog.openError(shellKhamBenh, "Có lỗi",
-						"Mã thẻ không hợp lệ");
+				//MessageDialog.openError(shellKhamBenh, "Có lỗi", "Mã thẻ không hợp lệ");
 				txtMathe.setColor(SWTResourceManager.getColor(SWT.COLOR_RED));
 				txtMathe.forceFocus();
+				errorText += "- Mã thẻ không hợp lệ. Thử bấm check thẻ\n";
 				isError = true;
 			} else {
-				System.out.println("SAVE TXTMATHE2 = " + txtMathe.txtMathe);
+				//System.out.println("SAVE TXTMATHE2 = " + txtMathe.txtMathe);
 				txtMathe.setColor(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
 			}
-
+			
 			if (cbNoiDKKB.getText().trim().length() == 0) {
 				tabFolder.setSelection(0);
 				cbNoiDKKB.forceFocus();
 				cbNoiDKKB.setBackground(SWTResourceManager
 						.getColor(SWT.COLOR_RED));
+				errorText += "- Nơi đăng ký khám chữa bệnh\n";
 				isError = true;
 			} else {
-				cbNoiDKKB.setBackground(SWTResourceManager
-						.getColor(SWT.COLOR_YELLOW));
+				cbNoiDKKB.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
 			}
 
-			if (Utils.differenceInDay(txtTuNgay.getDate2(),
-					txtDenNgay.getDate2()) <= 0) {
+			if (Utils.differenceInDay(txtTuNgay.getDate2(), txtDenNgay.getDate2()) <= 0) {
 				tabFolder.setSelection(0);
 				txtTuNgay.setColor(SWTResourceManager.getColor(SWT.COLOR_RED));
 				txtDenNgay.setColor(SWTResourceManager.getColor(SWT.COLOR_RED));
+				//MessageDialog.openError(shellKhamBenh, "Có lỗi", "Thẻ hết hạn");
+				errorText += "- Thẻ hết hạn\n";
 				isError = true;
 			} else {
 				txtTuNgay.setColor(SWTResourceManager
@@ -957,30 +975,28 @@ public class FormKhamBenhDlg extends Dialog {
 			}
 
 			if (Utils.differenceInDay(Calendar.getInstance(),
-					txtDenNgay.getDate2()) <= 0) {
+					txtDenNgay.getDate2()) < 0) {
 				tabFolder.setSelection(0);
 				txtDenNgay.setColor(SWTResourceManager.getColor(SWT.COLOR_RED));
+				errorText += "- Ngày trên thẻ không đúng\n";
 				isError = true;
 			} else {
 				txtDenNgay.setColor(SWTResourceManager
 						.getColor(SWT.COLOR_YELLOW));
 			}
 			// Check Nam/Kham
-			double monthDiff = Utils.differenceInMonths(Calendar.getInstance(),
-					txtNgaySinh.getDate2());
+			double monthDiff = Utils.differenceInMonths(Calendar.getInstance(), txtNgaySinh.getDate2());
 			if (monthDiff <= 6 * 12) {
 				// Tre em
-				if (cbKhoa.getText().indexOf("03.1899") > -1) {
-					// ok
-					// kham nhi
-				} else {
-					//
-					MessageDialog.openWarning(shellKhamBenh, "Có lỗi",
-							"Chọn khám nhi cho trẻ em < 6 tuổi. " + monthDiff);
-					cbKhoa.select(0);
-					cbKhoa.forceFocus();
+				if( Utils.getDouble( txtCanNang.getText() ) <=0  ){
+					txtCanNang.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
+					txtCanNang.setEditable(true);
+					txtCanNang.forceFocus();
+					errorText += "- Nhập cân nặng với trẻ em\n";
 					isError = true;
-					//
+				}
+				else{
+					txtCanNang.setBackground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
 				}
 			}
 			// Check kham phu khoa
@@ -994,32 +1010,49 @@ public class FormKhamBenhDlg extends Dialog {
 							"Chọn khám phụ sản cho Nam Giới..");
 					cbKhoa.select(0);
 					cbKhoa.forceFocus();
+					errorText += "- Chọn khám phụ sản cho NAM GIOI\n";
 					isError = true;
 					// objBenhNhan.setGIOI_TINH(1);
 				}
 			}
+			// Check ICD 
+			if(listThuocData.size()>0){
+				if(cbMaBenh.getText().trim().length()==0){
+					errorText += "- Phải có Mã bệnh chính\n";
+					cbMaBenh.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
+					tabFolder.setSelection(0);
+					cbMaBenh.forceFocus();
+					isError = true;
+				}
+				else{
+					cbMaBenh.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+				}
+			}
 			// Load latest kham của mã thẻ đó
-			if (objPhieuKhamBenh == null
-					|| (objPhieuKhamBenh != null && objPhieuKhamBenh.MA_LK == 0)) {
-				BenhNhan objTemp = BenhNhan.load(txtMathe.getMaThe());
-				if (objTemp != null) {
-					// Load latest khambenh of this
-					List<KhamBenh> listTempKhamBenh = KhamBenh
-							.loadLatest(objTemp.BN_ID);
-					if (listTempKhamBenh != null && listTempKhamBenh.size() > 0) {
-						KhamBenh tmpKhamBenh = listTempKhamBenh.get(0);
-						if (tmpKhamBenh.NGAY_VAO != null) {
-							Date NGAY_VAO = Utils.getDateTimeByDate(
-									tmpKhamBenh.NGAY_VAO, "yyyyMMddHHmm");
-							if (Utils.differenceInDay(NGAY_VAO, Calendar
-									.getInstance().getTime()) < 1) {
-								MessageDialog.openWarning(shellKhamBenh,
-										"Có lỗi", "Bệnh nhân với mã thẻ "
-												+ objTemp.MA_THE
-												+ " đã khám trong ngày rồi..");
-								txtMathe.setColor(SWTResourceManager
-										.getColor(SWT.COLOR_RED));
-								isError = true;
+			if(txtMathe.strMathe!=null || txtMathe.strMathe.length()>10){
+				if (objPhieuKhamBenh == null || objPhieuKhamBenh.MA_LK==null
+						|| (objPhieuKhamBenh != null && objPhieuKhamBenh.MA_LK == 0)) {
+					BenhNhan objTemp = BenhNhan.load(txtMathe.strMathe);
+					if (objTemp != null) {
+						// Load latest khambenh of this
+						List<KhamBenh> listTempKhamBenh = KhamBenh.loadLatest(objTemp.BN_ID);
+						if (listTempKhamBenh != null && listTempKhamBenh.size() > 0) {
+							KhamBenh tmpKhamBenh = listTempKhamBenh.get(0);
+							if (tmpKhamBenh.NGAY_VAO != null) {
+								Date NGAY_VAO = Utils.getDateTimeByDate(
+										tmpKhamBenh.NGAY_VAO, "yyyyMMddHHmm");
+								if (Utils.differenceInDay(NGAY_VAO, Calendar
+										.getInstance().getTime()) < 1) {
+									txtMathe.setColor(SWTResourceManager
+											.getColor(SWT.COLOR_RED));
+									errorText += "- Bệnh nhân với mã thẻ "
+													+ objTemp.MA_THE
+													+ " đã khám trong ngày rồi..\n";
+									isError = true;
+								} else {
+									txtMathe.setColor(SWTResourceManager
+											.getColor(SWT.COLOR_YELLOW));
+								}
 							} else {
 								txtMathe.setColor(SWTResourceManager
 										.getColor(SWT.COLOR_YELLOW));
@@ -1028,43 +1061,42 @@ public class FormKhamBenhDlg extends Dialog {
 							txtMathe.setColor(SWTResourceManager
 									.getColor(SWT.COLOR_YELLOW));
 						}
-					} else {
-						txtMathe.setColor(SWTResourceManager
-								.getColor(SWT.COLOR_YELLOW));
 					}
 				}
+				//
+			} else {
+				txtMathe.setColor(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
+				cbNoiDKKB.setBackground(SWTResourceManager
+						.getColor(SWT.COLOR_YELLOW));
+				txtDenNgay.setColor(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
 			}
-			//
-		} else {
-			txtMathe.setColor(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
-			cbNoiDKKB.setBackground(SWTResourceManager
-					.getColor(SWT.COLOR_YELLOW));
-			txtDenNgay.setColor(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
 		}
 		//
-		if (txtCanNang.getEditable() == true) {
-			if (Utils.getDouble(txtCanNang.getText()) == 0.0) {
-				tabFolder.setSelection(0);
-				System.out.println("SAVE CAN NANG");
-				txtCanNang.forceFocus();
-				txtCanNang.setBackground(SWTResourceManager
-						.getColor(SWT.COLOR_RED));
-				isError = true;
-			} else {
-				System.out.println("SAVE CAN NANG1");
-				txtCanNang.setBackground(SWTResourceManager
-						.getColor(SWT.COLOR_YELLOW));
-			}
-		} else {
-			System.out.println("SAVE CAN NANG2");
-			txtCanNang.setBackground(SWTResourceManager
-					.getColor(SWT.COLOR_YELLOW));
-		}
+//		if (txtCanNang.getEditable() == true) {
+//			if (Utils.getDouble(txtCanNang.getText()) == 0.0) {
+//				tabFolder.setSelection(0);
+//				//System.out.println("SAVE CAN NANG");
+//				txtCanNang.forceFocus();
+//				txtCanNang.setBackground(SWTResourceManager
+//						.getColor(SWT.COLOR_RED));
+//				errorText += "- Cân nặng sai...\n";
+//				isError = true;
+//			} else {
+//				System.out.println("SAVE CAN NANG1");
+//				txtCanNang.setBackground(SWTResourceManager
+//						.getColor(SWT.COLOR_YELLOW));
+//			}
+//		} else {
+//			System.out.println("SAVE CAN NANG2");
+//			txtCanNang.setBackground(SWTResourceManager
+//					.getColor(SWT.COLOR_YELLOW));
+//		}
 
 		if (txtHoten.getText().trim().length() == 0) {
 			tabFolder.setSelection(0);
 			txtHoten.forceFocus();
 			txtHoten.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
+			errorText += "- Nhập họ tên...\n";
 			isError = true;
 		} else {
 			txtHoten.setBackground(SWTResourceManager
@@ -1075,6 +1107,7 @@ public class FormKhamBenhDlg extends Dialog {
 			tabFolder.setSelection(0);
 			txtDiachi.forceFocus();
 			txtDiachi.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
+			errorText += "- Nhập địa chỉ...\n";
 			isError = true;
 		} else {
 			txtDiachi.setBackground(SWTResourceManager
@@ -1082,17 +1115,22 @@ public class FormKhamBenhDlg extends Dialog {
 		}
 
 		if (CHI_XET_NGHIEM == 0) {
-			if (cbKhoa.getText().trim().length() == 0) {
-				tabFolder.setSelection(0);
-				cbKhoa.forceFocus();
-				cbKhoa.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
-				isError = true;
-			} else {
-				cbKhoa.setBackground(SWTResourceManager
-						.getColor(SWT.COLOR_YELLOW));
+			if( cbCapCuu.getSelectionIndex()==0){
+				if (cbKhoa.getText().trim().length() == 0) {
+					tabFolder.setSelection(0);
+					cbKhoa.forceFocus();
+					cbKhoa.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
+					errorText += "- Nhập khoa phòng...\n";
+					isError = true;
+				} else {
+					cbKhoa.setBackground(SWTResourceManager
+							.getColor(SWT.COLOR_YELLOW));
+				}
 			}
+			//
 		}
 		if (isError) {
+			MessageDialog.openError(shellKhamBenh, "Có lỗi", errorText);
 			// waitingDlgHide();
 			return isError;
 		}
@@ -1103,11 +1141,12 @@ public class FormKhamBenhDlg extends Dialog {
 			// Do save
 			try {
 				logger.info("===BEGIN UPDATE THONG TIN LUOT KHAM BENH === ");
+				objBenhNhan.MA_DKBD = objBenhNhan.MA_DKBD.replaceAll("-", "");
+				objBenhNhan.setGATE_INFO(objCheck==null?"":objCheck.jsonText);
 				objBenhNhan.insert();
 			} catch (Exception e) {
-				// logger.info("BEGIN LOAD BN");
+				e.printStackTrace();
 				objBenhNhan = BenhNhan.load(objBenhNhan.MA_THE);
-				// e.printStackTrace();
 				//
 			}
 			if (objBenhNhan.BN_ID != null) {
@@ -1119,29 +1158,17 @@ public class FormKhamBenhDlg extends Dialog {
 				objPhieuKhamBenh.BN_ID = objBenhNhan.BN_ID;
 				objPhieuKhamBenh.TEN_BENH_NHAN = objBenhNhan.HO_TEN;
 				//
+				System.out.println("==========================objPhieuKhamBenh.KIEU_TT = "
+						+ objPhieuKhamBenh.KIEU_TT + " KIEUTT="
+						+ KIEU_THANH_TOAN);
 				objPhieuKhamBenh.KIEU_TT = KIEU_THANH_TOAN;
-				// if (btnRadio1.getSelection() == true){
-				// objPhieuKhamBenh.KIEU_TT = Utils.THANHTOAN_BHYT;
-				// }
-				// else if (btnRadio2.getSelection() == true){
-				// objPhieuKhamBenh.KIEU_TT = Utils.THANHTOAN_BHYT_2;
-				// }
-				// else if (btnRadio3.getSelection() == true
-				// || btnRadio5.getSelection() == true) {
-				// objPhieuKhamBenh.KIEU_TT = Utils.THANHTOAN_VIENPHI;
-				// } else {
-				// objPhieuKhamBenh.KIEU_TT = Utils.THANHTOAN_TAI_KHAM;
-				// }
 				System.out.println("objPhieuKhamBenh.KIEU_TT = "
 						+ objPhieuKhamBenh.KIEU_TT + " KIEUTT="
 						+ KIEU_THANH_TOAN);
 				//
 				objPhieuKhamBenh.BN_ID = objBenhNhan.BN_ID;
 				//
-				// logger.info("BEGIN SAVE PHIEU KHAM " + IS_UPDATE + " MALK="+
-				// objPhieuKhamBenh.MA_LK);
-				//
-				updateGiaTien();
+				updateTinhTien();
 				//
 				objPhieuKhamBenh.STT = 0;
 				//
@@ -1149,30 +1176,81 @@ public class FormKhamBenhDlg extends Dialog {
 						+ listThuocData.size() + " sts=" + objPhieuKhamBenh.STS);
 				if (listThuocData.size() > 0) {
 					// DA CHO THUOC, UPDATE STATUS OF PHIEU KHAM BENH
-					objPhieuKhamBenh.STS = Utils.updateStatusPhieuKham(
-							objPhieuKhamBenh.STS,
-							Utils.PHIEUKHAM_KHAMXONG_CHO_LAYTHUOC);
+					objPhieuKhamBenh.STS = Utils.updateStatusPhieuKham( objPhieuKhamBenh.STS, Utils.PHIEUKHAM_KHAMXONG_CHO_LAYTHUOC);
 					//
-					logger.info("=========STS KHAM BENH === "
-							+ objPhieuKhamBenh.STS);
+					logger.info("=========STS KHAM BENH === " + objPhieuKhamBenh.STS);
 				}
 				objPhieuKhamBenh.CHANDOAN_BD = txtBenhBanDau.getText();
+				// Check is Thanh toan
+				boolean isThanhToan = true;
+				String maBacSi = "";
+				if(objCongKham==null || (objCongKham!=null && objCongKham.THANHTOAN==0)){
+					isThanhToan = false;
+					logger.info("=========CHECK THANHTOAN CONG KHAM FAIL=== " );
+				}
+				for (DvChitiet obj : listCLSData) {
+					if(obj.THANHTOAN==0){
+						isThanhToan = false;
+						logger.info("=========CHECK THANHTOAN CLS FAIL=== " + obj.toString());
+						break;
+					}
+					if( DbHelper.hashDataUsers.get( cbListBacSiCLS.getText() )!=null ){
+						maBacSi = DbHelper.hashDataUsers.get( cbListBacSiCLS.getText() ).MACCHN;
+					}
+				}
+				for (ThuocChitiet obj : listThuocData) {
+					if(obj.THANHTOAN==0){
+						isThanhToan = false;
+						logger.info("=========CHECK THANHTOAN THUOC FAIL=== " + obj.toString());
+						break;
+					}
+					if( DbHelper.hashDataUsers.get( cbListBacsiThuoc.getText() )!=null ){
+						maBacSi = DbHelper.hashDataUsers.get( cbListBacsiThuoc.getText() ).MACCHN;
+					}
+				}
+				//
+				if(objCongKham!=null){
+					objCongKham.MA_BAC_SI = maBacSi;
+				}
+				//
+				if(isThanhToan==false){
+					objPhieuKhamBenh.NGAY_TTOAN = "";
+				}
+				else{
+					objPhieuKhamBenh.NGAY_TTOAN = Utils.getDatetime(new Date(), "yyyyMMddHHmm");
+				}
+				objPhieuKhamBenh.MA_CSKCB = objPhieuKhamBenh.MA_CSKCB.replaceAll("-", "");
+				updateBenhNhan2PhieuKham(objBenhNhan, objPhieuKhamBenh);
 				objPhieuKhamBenh.insert();
-				logger.info("=========END UPDATE KHAM BENH === "
-						+ objPhieuKhamBenh.MA_LK);
+				logger.info("=========END UPDATE KHAM BENH === " + objPhieuKhamBenh.MA_LK);
 				// ============================================================
 				// Save cong kham
 				// if(KIEU_THANH_TOAN!=Utils.THANHTOAN_VIENPHI_FREE ){
 				// ============================================================
 				if (CHI_XET_NGHIEM == 0) {
-					if (objCongKham == null) {
-						updateCongKham();
+					if( isCapCuu==true && (KIEU_THANH_TOAN!=Utils.THANHTOAN_BHYT_2 && KIEU_THANH_TOAN!=Utils.THANHTOAN_BHYT)){
+						//
+						MessageDialog.openInformation(shellKhamBenh, "", "Không save cong kham");
 					}
-					objCongKham.BN_ID = objBenhNhan.BN_ID;
-					objCongKham.MA_LK = objPhieuKhamBenh.MA_LK;
-					logger.info("=============BEGIN UPDATE CONG KHAM BENH === ");
-					objCongKham.insert();
-					logger.info("=============END UPDATE CONG KHAM BENH === ");
+					else{
+	
+						if (objCongKham == null) {
+							updateCongKham();
+						}
+						objCongKham.BN_ID = objBenhNhan.BN_ID;
+						objCongKham.MA_LK = objPhieuKhamBenh.MA_LK;
+						// Nghia: Da thanh toan roi, nhung van update lai CONG KHAM  
+						Users bacsy = DbHelper.hashDataUsers.get(cbListBacSiForm.getText());
+						if(bacsy!=null && bacsy.MACCHN!=objCongKham.MA_BAC_SI){
+							objCongKham.MA_BAC_SI = bacsy.MACCHN;
+							logger.info("UPDATE CONGKHAM: "+ objCongKham.toString());
+						}
+						//
+						
+						logger.info("=============BEGIN UPDATE CONG KHAM BENH === ");
+						objCongKham.insert();
+						logger.info("=============END UPDATE CONG KHAM BENH === ");
+					}
 				}
 				//
 				logger.info("=============BEGIN UPDATE DICH VU CHI TIET === ");
@@ -1211,21 +1289,17 @@ public class FormKhamBenhDlg extends Dialog {
 								.load(obj.CT_ID);
 						logger.info("==================    LOHANG_ID="
 								+ obj.CT_ID + " TON KHO="
-								+ objCtNhapthuoc.SL_TONKHO + " SL_OUTSTANDING="
-								+ objCtNhapthuoc.SL_OUTSTANDING);
-						// OURSTANDING
-						// objCtNhapthuoc.SL_OUTSTANDING =
-						// objCtNhapthuoc.SL_OUTSTANDING + obj.SO_LUONG;
-						// objCtNhapthuoc.SL_TONKHO = objCtNhapthuoc.SOLUONG -
-						// objCtNhapthuoc.SL_OUTSTANDING;
+								+ objCtNhapthuoc.SL_TONKHO + " CTID_FROM="
+								+ objCtNhapthuoc.CTID_FROM);
+
 						// Tru truc tiep
 						objCtNhapthuoc.SL_TONKHO = objCtNhapthuoc.SOLUONG
 								- obj.SO_LUONG;
 						//
 						logger.info("==================    LOHANG_ID="
 								+ obj.CT_ID + " TON KHO="
-								+ objCtNhapthuoc.SL_TONKHO + " SL_OUTSTANDING="
-								+ objCtNhapthuoc.SL_OUTSTANDING);
+								+ objCtNhapthuoc.SL_TONKHO + " CTID_FROM="
+								+ objCtNhapthuoc.CTID_FROM);
 						//
 						objCtNhapthuoc.update();
 						//
@@ -1243,6 +1317,34 @@ public class FormKhamBenhDlg extends Dialog {
 		//
 	}
 
+	protected BenhNhan getBenhNhanDlg() {
+		BenhNhan obj = new BenhNhan();
+		obj.setMA_THE(txtMathe.strMathe);
+		if(btnGIOITINH.getSelection()==false){
+			obj.GIOI_TINH = 1;
+		}
+		else{
+			obj.GIOI_TINH = 2;
+		}
+		obj.setHO_TEN(txtHoten.getText());
+		if(txtNgaySinh.isNgaySinh0101==true){
+			obj.setNGAY_SINH(txtNgaySinh.getDateByYear	());
+		}
+		else{
+			obj.setNGAY_SINH(txtNgaySinh.getDate());
+		}
+		obj.setMA_DKBD(cbNoiDKKB.getText());
+		obj.setGT_THE_TU(txtTuNgay.getDate());
+		obj.setGT_THE_DEN(txtDenNgay.getDate());
+		obj.setNGAY_CAP(txtNgayCap.getDate());
+		obj.setTEN_CHA_ME(txtTenChaMe.getText());
+		obj.setMA_DT_SONG(Utils.getInt(txtDichVuCao.getText()));
+		obj.setTHOIDIEM_NAMNAM(txtThoiDiem5Nam.getDate());
+		obj.setCHUOI_KIEM_TRA(txtChuoiKiemTra.getText());
+		obj.setMA_QUAN_LY(txtMaQuanLy.getText());
+		logger.info("CHECK THe "+ obj);
+		return obj;
+	}
 	protected void updateDlg() {
 		if (objBenhNhan != null && objBenhNhan.HO_TEN != null) {
 			// Read by barcode
@@ -1250,6 +1352,9 @@ public class FormKhamBenhDlg extends Dialog {
 			txtMathe.setText(objBenhNhan.MA_THE);
 			txtHoten.setText(objBenhNhan.HO_TEN);
 			txtNgaySinh.setText(objBenhNhan.NGAY_SINH);
+			//
+			txtNgaySinhTheoThang.setText( ""+txtNgaySinh.toMonthDay() );
+			//
 			info += objBenhNhan.HO_TEN + ". Tuổi: " + txtNgaySinh.getTuoi()
 					+ "(" + objBenhNhan.NGAY_SINH + ").";
 			if (objBenhNhan.GIOI_TINH.intValue() == 1) {
@@ -1308,6 +1413,7 @@ public class FormKhamBenhDlg extends Dialog {
 			// System.out.println("objPhieuKhamBenh MA_LK="+
 			// objPhieuKhamBenh.MA_LK);
 			//
+			txtCanNang.setText(""+objPhieuKhamBenh.CAN_NANG);
 			lblStatusPhieu.setText(Utils
 					.getTinhTrangPhieuKham(objPhieuKhamBenh.STS.intValue()));
 			lblStatusPhieu
@@ -1333,12 +1439,25 @@ public class FormKhamBenhDlg extends Dialog {
 		//
 		if (objCongKham != null) {
 			System.out.println("CONG KHAM -----" + objCongKham.toString());
-
+			
 			if (objCongKham.TEN_DICH_VU == null) {
 				cbKhoa.select(0);
 			} else {
-				// cbKhoa.setText(objCongKham.MA_DICH_VU + "-" +
-				// objCongKham.TEN_DICH_VU + "(" + objCongKham.DON_GIA2 + ")");
+				if(cbCapCuu.getSelectionIndex()==0){
+					
+				}
+				else{
+					//cbKhoa.select(cbKhoa.getItemCount()-1);
+					
+				}
+				//cbKhoa.setText(objCongKham.MA_DICH_VU + "-" +objCongKham.TEN_DICH_VU + "(" + objCongKham.DON_GIA2 + ")");
+			}
+			//
+			Users objBacSi = DbHelper.hashDataUsersMaCCHN.get(objCongKham.MA_BAC_SI);
+			if(objBacSi!=null){
+				cbListBacSiForm.setText(objBacSi.U_ID+"-"+objBacSi.TEN_NHANVIEN);
+				cbListBacSiCLS.setText(objBacSi.U_ID+"-"+objBacSi.TEN_NHANVIEN);
+				cbListBacsiThuoc.setText(objBacSi.U_ID+"-"+objBacSi.TEN_NHANVIEN);
 			}
 			//
 		} else {
@@ -1405,11 +1524,13 @@ public class FormKhamBenhDlg extends Dialog {
 			public void keyPressed(KeyEvent e) {
 				if (e.keyCode == SWT.ARROW_DOWN || e.keyCode == SWT.ARROW_UP) {
 					//
-				} else if (e.keyCode == 13) {
+				}
+				else if (e.keyCode == 13) {
 					//
 					txtHoten.forceFocus();
 					//
-				} else {
+				} 
+				else {
 					txtSearchPhieuKham.selectAll();
 					txtSearchPhieuKham.forceFocus();
 				}
@@ -1430,7 +1551,7 @@ public class FormKhamBenhDlg extends Dialog {
 		tableColumn_6.setText("Tình trạng");
 
 		TableColumn tableColumn_9 = new TableColumn(tablePhieuKham, SWT.NONE);
-		tableColumn_9.setWidth(128);
+		tableColumn_9.setWidth(95);
 		tableColumn_9.setText("Thời gian vào");
 
 		TableColumn tableColumn_10 = new TableColumn(tablePhieuKham, SWT.NONE);
@@ -1438,7 +1559,7 @@ public class FormKhamBenhDlg extends Dialog {
 		tableColumn_10.setText("Họ tên");
 
 		TableColumn tableColumn_11 = new TableColumn(tablePhieuKham, SWT.NONE);
-		tableColumn_11.setWidth(176);
+		tableColumn_11.setWidth(121);
 		tableColumn_11.setText("Mã Thẻ");
 
 		TableColumn tableColumn_12 = new TableColumn(tablePhieuKham, SWT.NONE);
@@ -1447,12 +1568,12 @@ public class FormKhamBenhDlg extends Dialog {
 				.setToolTipText("Status của người bệnh, (Đang cận LS, xong cận LS nào đó hay chưa )");
 		tableColumn_12.setText("TYP");
 
-		TableColumn tableColumn_13 = new TableColumn(tablePhieuKham, SWT.NONE);
-		tableColumn_13.setWidth(65);
-		tableColumn_13.setText("SL CLS");
+		TableColumn tblclmnBntng = new TableColumn(tablePhieuKham, SWT.NONE);
+		tblclmnBntng.setWidth(102);
+		tblclmnBntng.setText("BN/TỔNG");
 
 		TableColumn tableColumn_14 = new TableColumn(tablePhieuKham, SWT.NONE);
-		tableColumn_14.setWidth(67);
+		tableColumn_14.setWidth(49);
 		tableColumn_14.setText("TToán");
 
 		TableColumn tableColumn_15 = new TableColumn(tablePhieuKham, SWT.NONE);
@@ -1488,7 +1609,7 @@ public class FormKhamBenhDlg extends Dialog {
 				if (element2 instanceof Row) {
 					Row kunde = (Row) element2;
 					// System.out.println( kunde.toString() );
-					return kunde.getString("HO_TEN").toUpperCase()
+					return kunde.getString("TEN_BENH_NHAN").toUpperCase()
 							.contains(suchbegriff.toUpperCase())
 							|| kunde.getString("MA_THE").toUpperCase()
 									.contains(suchbegriff.toUpperCase())
@@ -1516,41 +1637,157 @@ public class FormKhamBenhDlg extends Dialog {
 		compositeHeaderSearch.setLayoutData(BorderLayout.SOUTH);
 		compositeHeaderSearch.setLayout(new GridLayout(2, false));
 
-		txtSearchPhieuKham = new Text(compositeHeaderSearch, SWT.BORDER);
-		GridData gd_txtSearchPhieuKham = new GridData(SWT.LEFT, SWT.CENTER,
-				false, false, 1, 1);
-		gd_txtSearchPhieuKham.widthHint = 133;
-		txtSearchPhieuKham.setLayoutData(gd_txtSearchPhieuKham);
-		txtSearchPhieuKham.setBackground(SWTResourceManager
-				.getColor(SWT.COLOR_GREEN));
-		txtSearchPhieuKham.setFont(SWTResourceManager.getFont("Tahoma", 14,
-				SWT.NORMAL));
-
 		txtInfo = new Text(compositeHeaderSearch, SWT.NONE);
+		GridData gd_txtInfo = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+		gd_txtInfo.widthHint = 537;
+		txtInfo.setLayoutData(gd_txtInfo);
 		txtInfo.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
 		txtInfo.setBackground(SWTResourceManager
 				.getColor(SWT.COLOR_WIDGET_BACKGROUND));
-		txtInfo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false,
-				1, 1));
-		new Label(compositeHeaderSearch, SWT.NONE);
-
-		txtTongCong = new Text(compositeHeaderSearch, SWT.NONE);
-		txtTongCong.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false,
-				false, 1, 1));
-		txtTongCong.setEditable(false);
-		txtTongCong.setBackground(SWTResourceManager
-				.getColor(SWT.COLOR_WIDGET_BACKGROUND));
-		txtTongCong.setFont(SWTResourceManager
-				.getFont("Tahoma", 13, SWT.NORMAL));
-		txtSearchPhieuKham.addKeyListener(new KeyAdapter() {
+		
+				txtTongCong = new Text(compositeHeaderSearch, SWT.NONE);
+				txtTongCong.addMouseListener(new MouseAdapter() {
+					@Override
+					public void mouseDown(MouseEvent e) {
+						maytinhtien();
+					}
+				});
+				GridData gd_txtTongCong = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+				gd_txtTongCong.widthHint = 451;
+				txtTongCong.setLayoutData(gd_txtTongCong);
+				txtTongCong.setEditable(false);
+				txtTongCong.setBackground(SWTResourceManager
+						.getColor(SWT.COLOR_WIDGET_BACKGROUND));
+				txtTongCong.setFont(SWTResourceManager
+						.getFont("Tahoma", 13, SWT.NORMAL));
+		
+		Composite composite = new Composite(compositeListPhieuKham, SWT.NONE);
+		composite.setLayoutData(BorderLayout.NORTH);
+		composite.setLayout(new GridLayout(12, false));
+		
+				txtSearchPhieuKham = new Text(composite, SWT.BORDER);
+				GridData gd_txtSearchPhieuKham = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+				gd_txtSearchPhieuKham.widthHint = 170;
+				txtSearchPhieuKham.setLayoutData(gd_txtSearchPhieuKham);
+				txtSearchPhieuKham.setToolTipText("Bấm Control để tìm phiếu PHUC HOI CHUC NANG. Enter binh thuong de tim phieu kham benh trong ngay.");
+				txtSearchPhieuKham.setBackground(SWTResourceManager
+						.getColor(SWT.COLOR_GREEN));
+				txtSearchPhieuKham.setFont(SWTResourceManager.getFont("Tahoma", 14,
+						SWT.NORMAL));
+				txtSearchPhieuKham.addKeyListener(new KeyAdapter() {
+					@Override
+					public void keyReleased(KeyEvent e) {
+						if(e.keyCode==13){
+							doSearchBenhNhan();
+							tableViewerPhieuKham.refresh();
+						}
+						if (e.keyCode == 13 || e.keyCode == SWT.ARROW_DOWN) {
+							tablePhieuKham.forceFocus();
+						}
+					}
+				});
+		
+		dateTime0 = new DateTime(composite, SWT.BORDER);
+		
+		dateTime1 = new DateTime(composite, SWT.BORDER);
+		
+		comboKieuThanhToan = new Combo(composite, SWT.NONE);
+		comboKieuThanhToan.setItems(new String[] {"Tất cả", "Bảo hiểm", "Viện Phí"});
+		comboKieuThanhToan.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		comboKieuThanhToan.select(0);
+		
+		comboNhanVien = new Combo(composite, SWT.NONE);
+		//comboNhanVien.setItems(new String[] {"Tất cả", "NV Login"});
+		comboNhanVien.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		
+		comboTinhTrangThanhToan = new Combo(composite, SWT.NONE);
+		comboTinhTrangThanhToan.setItems(new String[] {"Tất cả", "Chưa Thanh Toán", "Đã Thanh Toán"});
+		comboTinhTrangThanhToan.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		comboTinhTrangThanhToan.select(0);
+		
+		btnCheckButtonNgayXem = new Button(composite, SWT.CHECK);
+		btnCheckButtonNgayXem.addSelectionListener(new SelectionAdapter() {
 			@Override
-			public void keyReleased(KeyEvent e) {
-				tableViewerPhieuKham.refresh();
-				if (e.keyCode == 13 || e.keyCode == SWT.ARROW_DOWN) {
-					tablePhieuKham.forceFocus();
+			public void widgetSelected(SelectionEvent e) {
+				if( btnCheckButtonNgayXem.getSelection()==true){
+					btnCheckButtonNgayXem.setText("30 ngày trước");
 				}
+				else{
+					btnCheckButtonNgayXem.setText("Trong ngày");
+				}
+				btnCheckButtonNgayXemDta = btnCheckButtonNgayXem.getSelection();
+				doSearchBenhNhan();
 			}
 		});
+		btnCheckButtonNgayXem.setText("Trong ngày");
+		btnCheckButtonNgayXem.setSelection(btnCheckButtonNgayXemDta);
+		
+		btnCheckButtonTatCaPhieu = new Button(composite, SWT.CHECK);
+		btnCheckButtonTatCaPhieu.setText("Tất cả phiếu");
+		btnCheckButtonTatCaPhieu.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if( btnCheckButtonTatCaPhieu.getSelection()==true){
+					btnCheckButtonTatCaPhieu.setText("Phiếu PHCN");
+				}
+				else{
+					btnCheckButtonTatCaPhieu.setText("Tất cả phiếu");
+				}
+				btnCheckButtonTatCaPhieuDta = btnCheckButtonTatCaPhieu.getSelection();
+				doSearchBenhNhan();
+			}
+		});
+		btnCheckButtonTatCaPhieuDta = false;
+		btnCheckButtonTatCaPhieu.setSelection(btnCheckButtonTatCaPhieuDta);
+		
+		btnCheckButtonTatCaNV = new Button(composite, SWT.CHECK);
+		btnCheckButtonTatCaNV.setText("Tất cả NV");
+		btnCheckButtonTatCaNV.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if( btnCheckButtonTatCaNV.getSelection()==true){
+					btnCheckButtonTatCaNV.setText("Chỉ "+DbHelper.currentSessionUserId.U_NAME);
+				}
+				else{
+					btnCheckButtonTatCaNV.setText("Tất cả NV");
+				}
+				btnCheckButtonTatCaNVDta = btnCheckButtonTatCaNV.getSelection();
+				doSearchBenhNhan();
+			}
+		});
+		btnCheckButtonTatCaNVDta = true;
+		btnCheckButtonTatCaNV.setSelection(btnCheckButtonTatCaNVDta);
+
+		btnCheckButtonTatCaTHANHTOAN = new Button(composite, SWT.CHECK);
+		btnCheckButtonTatCaTHANHTOAN.setText("Chưa TTOÁN");
+		btnCheckButtonTatCaTHANHTOAN.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if( btnCheckButtonTatCaTHANHTOAN.getSelection()==true){
+					btnCheckButtonTatCaTHANHTOAN.setText("Tất cả TTOÁN");
+				}
+				else{
+					btnCheckButtonTatCaTHANHTOAN.setText("Chưa TTOÁN");
+				}
+				btnCheckButtonTatCaTHANHTOANDta = btnCheckButtonTatCaTHANHTOAN.getSelection();
+				doSearchBenhNhan();
+			}
+		});
+		btnCheckButtonTatCaTHANHTOANDta = true;
+		btnCheckButtonTatCaTHANHTOAN.setSelection(btnCheckButtonTatCaTHANHTOANDta);
+		
+		lbTONG_BN = new Label(composite, SWT.RIGHT);
+		lbTONG_BN.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		GridData gd_lbTONG_BN = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+		gd_lbTONG_BN.widthHint = 105;
+		lbTONG_BN.setLayoutData(gd_lbTONG_BN);
+		lbTONG_BN.setText("New Label");
+		
+		Button btnThongBao = new Button(composite, SWT.NONE);
+		GridData gd_btnThongBao = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+		gd_btnThongBao.widthHint = 36;
+		btnThongBao.setLayoutData(gd_btnThongBao);
+
 		compositePhieuKham.setLayoutData(fd_compositePhieuKham);
 		compositePhieuKham.setLayout(new BorderLayout(0, 0));
 
@@ -1634,23 +1871,49 @@ public class FormKhamBenhDlg extends Dialog {
 		txtHoten.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
-				// if (e.keyCode == 13 || (e.character == '$')) {
-				if (txtHoten.getText().length() > 150) {
-					extractData(txtHoten.getText() + "$");
-					tabFolder.setSelection(0);
-					txtHoten.forceFocus();
-					e.doit = false;
-					return;
-				}
-				if (e.keyCode == 13) {
-					checkTheoTenBenhNhan();
-					if (txtNgaySinh.getTuoi() <= 6) {
-						cbKhoa.select(0);
+				if (e.keyCode == 13 || (e.character == '$')) {
+					if (txtHoten.getText().length() > 150) {
+						extractData(txtHoten.getText() + "$");
+						//tabFolder.setSelection(0);
+						txtHoten.forceFocus();
+						e.doit = false;
+						isBarcode = true;
+						return;
 					}
-					cbKhoa.forceFocus();
-				} else {
-					keyPress(e);
+					else{
+						checkTheoTenBenhNhan();
+						if (txtNgaySinh.getTuoi() <= 6) {
+							if( cbCapCuu.getSelectionIndex()==0){
+								cbKhoa.select(0);
+							}
+						}
+						cbKhoa.forceFocus();
+						isBarcode = false;
+
+					}
 				}
+				else {
+					///System.out.println("txtHoten= " + txtHoten.getText());
+					if( isBarcode==false ){
+						keyPress(e);
+					}
+					//
+				}
+//				if (e.keyCode == 13) {
+//					checkTheoTenBenhNhan();
+//					if (txtNgaySinh.getTuoi() <= 6) {
+//						cbKhoa.select(0);
+//					}
+//					cbKhoa.forceFocus();
+//					isBarcode = false;
+//				} 
+//				else {
+//					///System.out.println("txtHoten= " + txtHoten.getText());
+//					if( isBarcode==false ){
+//						keyPress(e);
+//					}
+//					//
+//				}
 			}
 		});
 		txtHoten.addFocusListener(new FocusAdapter() {
@@ -1669,7 +1932,6 @@ public class FormKhamBenhDlg extends Dialog {
 			}
 		});
 		txtHoten.setFont(SWTResourceManager.getFont("Tahoma", 16, SWT.NORMAL));
-		txtHoten.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
 
 		txtNgaySinh = new DatePicker(grpBhyt, SWT.NONE);
 		txtNgaySinh.setBounds(113, 56, 127, 28);
@@ -1785,7 +2047,6 @@ public class FormKhamBenhDlg extends Dialog {
 				keyPress(e);
 			}
 		});
-		txtDiachi.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
 		txtDiachi.setFont(SWTResourceManager.getFont("Tahoma", 16, SWT.NORMAL));
 
 		Label lbDiaChi = new Label(grpBhyt, SWT.NONE);
@@ -1861,8 +2122,7 @@ public class FormKhamBenhDlg extends Dialog {
 						}
 						cbTenCSKCB.select(0);
 						cbTenCSKCB.forceFocus();
-						OS.SendMessage(cbTenCSKCB.handle, OS.CB_SHOWDROPDOWN,
-								1, 0);
+						OS.SendMessage(cbTenCSKCB.handle, OS.CB_SHOWDROPDOWN, 1, 0);
 						// con.close();
 					} catch (Exception ee) {
 						ee.printStackTrace();
@@ -1875,7 +2135,6 @@ public class FormKhamBenhDlg extends Dialog {
 			}
 		});
 		cbNoiDKKB.setFont(SWTResourceManager.getFont("Tahoma", 16, SWT.NORMAL));
-		cbNoiDKKB.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
 		cbNoiDKKB.setText("49172");
 
 		txtTuNgay = new DatePicker(grpBhyt, SWT.NONE);
@@ -1884,17 +2143,31 @@ public class FormKhamBenhDlg extends Dialog {
 
 		txtDenNgay = new DatePicker(grpBhyt, SWT.NONE);
 		txtDenNgay.setToolTipText("Đến ngày 1");
-		txtDenNgay.setBounds(354, 201, 145, 28);
+		txtDenNgay.setBounds(325, 201, 145, 28);
 
 		cbCapCuu = new Combo(grpBhyt, SWT.NONE);
+		cbCapCuu.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				loadCongKhamData();
+				int index = cbCapCuu.getSelectionIndex();
+				if(index>0){
+					updateCongKham();
+					isCapCuu = true;
+				}
+				else{
+					isCapCuu = false;
+				}
+			}
+		});
 		cbCapCuu.setItems(new String[] { "Không", "1. Tai nạn giao thông",
 				"2. Tai nạn lao động", "3. Tai nạn dưới nước", "4. Bỏng",
 				"5. Bạo lực, xung đột", "6. Tự tử", "7. Ngộ độc các loại",
 				"8. Khác" });
-		cbCapCuu.setForeground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
-		cbCapCuu.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
+		cbCapCuu.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
+		cbCapCuu.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		cbCapCuu.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.BOLD));
-		cbCapCuu.setBounds(505, 201, 111, 27);
+		cbCapCuu.setBounds(476, 201, 140, 27);
 		cbCapCuu.select(0);
 		cbCapCuu.addKeyListener(new KeyAdapter() {
 			@Override
@@ -1923,7 +2196,7 @@ public class FormKhamBenhDlg extends Dialog {
 		lblNikkcb.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
 
 		txtTenCSKCB = new Label(grpBhyt, SWT.NONE);
-		txtTenCSKCB.setBounds(208, 166, 386, 28);
+		txtTenCSKCB.setBounds(208, 166, 408, 28);
 		txtTenCSKCB.setFont(SWTResourceManager
 				.getFont("Tahoma", 12, SWT.NORMAL));
 
@@ -1934,9 +2207,9 @@ public class FormKhamBenhDlg extends Dialog {
 		lblTNgy.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
 
 		Label lblnNgy = new Label(grpBhyt, SWT.NONE);
-		lblnNgy.setBounds(259, 201, 76, 23);
+		lblnNgy.setBounds(268, 201, 40, 23);
 		lblnNgy.setForeground(SWTResourceManager.getColor(SWT.COLOR_RED));
-		lblnNgy.setText("Đến Ngày");
+		lblnNgy.setText("Đến");
 		lblnNgy.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
 
 		cbMaHuyen = new Combo(grpBhyt, SWT.NONE);
@@ -1989,6 +2262,7 @@ public class FormKhamBenhDlg extends Dialog {
 				.getFont("Tahoma", 12, SWT.NORMAL));
 
 		txtDichVuCao = new Text(grpBhyt, SWT.NONE);
+		txtDichVuCao.setEnabled(false);
 		txtDichVuCao.setBounds(113, 234, 46, 28);
 		txtDichVuCao.addFocusListener(new FocusAdapter() {
 			@Override
@@ -2007,8 +2281,10 @@ public class FormKhamBenhDlg extends Dialog {
 			}
 		});
 		txtThoiDiem5Nam = new DatePicker(grpBhyt, SWT.NONE);
+		txtThoiDiem5Nam.setEnabled(false);
+		txtThoiDiem5Nam.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		txtThoiDiem5Nam.setBounds(243, 234, 127, 28);
-		txtThoiDiem5Nam.setColor(SWTResourceManager.getColor(SWT.COLOR_GRAY));
+		txtThoiDiem5Nam.setColor(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		txtThoiDiem5Nam.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -2038,13 +2314,14 @@ public class FormKhamBenhDlg extends Dialog {
 				.getFont("Tahoma", 16, SWT.NORMAL));
 
 		Label lblNgyCp = new Label(grpBhyt, SWT.NONE);
-		lblNgyCp.setBounds(386, 230, 97, 23);
+		lblNgyCp.setBounds(386, 230, 82, 23);
 		lblNgyCp.setText("Ngày cấp");
 		lblNgyCp.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
 
 		txtNgayCap = new DatePicker(grpBhyt, SWT.NONE);
-		txtNgayCap.setBounds(489, 230, 127, 28);
-		txtNgayCap.setColor(SWTResourceManager.getColor(SWT.COLOR_GRAY));
+		txtNgayCap.setEnabled(false);
+		txtNgayCap.setBounds(486, 230, 130, 28);
+		txtNgayCap.setColor(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		txtNgayCap.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -2108,15 +2385,6 @@ public class FormKhamBenhDlg extends Dialog {
 		lblKg.setForeground(SWTResourceManager.getColor(SWT.COLOR_RED));
 		lblKg.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
 
-		cbListBacSiForm = new Combo(grpBhyt, SWT.NONE);
-		cbListBacSiForm.setBounds(446, 300, 171, 33);
-		cbListBacSiForm.setToolTipText("List DS bac si theo khoa phong");
-		cbListBacSiForm.setFont(SWTResourceManager.getFont("Tahoma", 16,
-				SWT.NORMAL));
-		cbListBacSiForm.setBackground(SWTResourceManager
-				.getColor(SWT.COLOR_YELLOW));
-		cbListBacSiForm.setText("");
-
 		cbKhoa = new Combo(grpBhyt, SWT.NONE);
 		cbKhoa.setBounds(113, 300, 328, 33);
 		cbKhoa.addTraverseListener(new TraverseListener() {
@@ -2151,10 +2419,17 @@ public class FormKhamBenhDlg extends Dialog {
 		});
 		cbKhoa.setToolTipText("Bấm ENTER để tìm bệnh");
 		cbKhoa.setFont(SWTResourceManager.getFont("Tahoma", 16, SWT.NORMAL));
-		cbKhoa.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
 		cbKhoa.setText("");
 
+		cbListBacSiForm = new Combo(grpBhyt, SWT.NONE);
+		cbListBacSiForm.setBounds(446, 300, 171, 33);
+		cbListBacSiForm.setToolTipText("List DS bac si theo khoa phong");
+		cbListBacSiForm.setFont(SWTResourceManager.getFont("Tahoma", 16,
+				SWT.NORMAL));
+		cbListBacSiForm.setText("");
+		
 		btnHuyPhieu = new Button(grpBhyt, SWT.NONE);
+		btnHuyPhieu.setEnabled(false);
 		btnHuyPhieu.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -2174,7 +2449,11 @@ public class FormKhamBenhDlg extends Dialog {
 				"/png/delete-3x.png"));
 		btnHuyPhieu.setFont(SWTResourceManager
 				.getFont("Tahoma", 12, SWT.NORMAL));
-		btnHuyPhieu.setBounds(699, 300, 230, 34);
+		btnHuyPhieu.setBounds(652, 300, 230, 34);
+		
+		listKhamBenh = new org.eclipse.swt.widgets.List(grpBhyt, SWT.BORDER);
+		//listKhamBenh.setEnabled(false);
+		listKhamBenh.setBounds(652, 22, 277, 256);
 
 		cbListBacSiForm.addKeyListener(new KeyAdapter() {
 			@Override
@@ -2187,7 +2466,7 @@ public class FormKhamBenhDlg extends Dialog {
 		group.setBounds(0, 10, 939, 54);
 
 		lblStatusPhieu = new Label(group, SWT.NONE);
-		lblStatusPhieu.setBounds(788, 21, 141, 23);
+		lblStatusPhieu.setBounds(572, 21, 357, 23);
 		lblStatusPhieu.setText("Tình trạng phiếu");
 		lblStatusPhieu.setFont(SWTResourceManager.getFont("Tahoma", 12,
 				SWT.NORMAL));
@@ -2256,8 +2535,14 @@ public class FormKhamBenhDlg extends Dialog {
 			public void widgetSelected(SelectionEvent e) {
 				if (btnRadio1.getSelection() == true) {
 					KIEU_THANH_TOAN = Utils.THANHTOAN_BHYT;
+					logger.info("DOI KIEU_THANH_TOAN="+KIEU_THANH_TOAN);
+					//update cong kham
+					if( objCongKham!=null){
+						objCongKham.DON_GIA2 = objCongKham.DON_GIA;
+					}
+					//
 					selectBHYT();
-					updateGiaTien();
+					updateTinhTien();
 				}
 			}
 		});
@@ -2266,46 +2551,18 @@ public class FormKhamBenhDlg extends Dialog {
 		btnRadio1.setSelection(true);
 		btnRadio1.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.BOLD));
 		btnRadio1.setText("BH29");
-
-		btnTHANHTOAN = new Button(group, SWT.CHECK);
-		btnTHANHTOAN.setBounds(638, 21, 144, 23);
-		btnTHANHTOAN.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				if (DbHelper.currentSessionUserId.LOAI.toUpperCase().equals(
-						"ACCT") != true) {
-					String message = "Không có chỉ định thu chi. Chỉ nhân viên kế toán, thu ngân";
-					MessageDialog.openError(shellKhamBenh, "Có lỗi", message);
-					logger.info(message);
-				} else {
-					logger.info("Thay đổi tình trạng thanh toán"
-							+ DbHelper.currentSessionUserId.LOAI.toUpperCase());
-				}
-				//
-				if (objPhieuKhamBenh != null) {
-					System.out.println("objPhieuKhamBenh.NGAY_TTOAN="
-							+ objPhieuKhamBenh.NGAY_TTOAN);
-					if (objPhieuKhamBenh.NGAY_TTOAN.length() < 6) {
-						btnTHANHTOAN.setSelection(false);
-					} else {
-						btnTHANHTOAN.setSelection(true);
-					}
-				} else {
-					btnTHANHTOAN.setSelection(false);
-				}
-				//
-			}
-		});
-		btnTHANHTOAN.setImage(SWTResourceManager.getImage(
-				FormKhamBenhDlg.class, "/png/spreadsheet-3x.png"));
-		btnTHANHTOAN.setText("ĐÃ THANH TOÁN");
 		btnRadio2.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (btnRadio2.getSelection() == true) {
 					KIEU_THANH_TOAN = Utils.THANHTOAN_BHYT_2;
+					logger.info("DOI KIEUTHANH TOAN "+KIEU_THANH_TOAN);
+					//update cong kham
+					if( objCongKham!=null){
+						objCongKham.DON_GIA2 = objCongKham.DON_GIA+10000;
+					}
 					selectBHYT();
-					updateGiaTien();
+					updateTinhTien();
 				}
 			}
 		});
@@ -2314,8 +2571,9 @@ public class FormKhamBenhDlg extends Dialog {
 			public void widgetSelected(SelectionEvent e) {
 				if (btnRadio3.getSelection() == true) {
 					KIEU_THANH_TOAN = Utils.THANHTOAN_VIENPHI;
+					logger.info("DOI KIEUTHANH TOAN "+KIEU_THANH_TOAN);
 					selectVienPhi();
-					updateGiaTien();
+					updateTinhTien();
 				}
 			}
 		});
@@ -2325,7 +2583,7 @@ public class FormKhamBenhDlg extends Dialog {
 				if (btnRadio5.getSelection() == true) {
 					KIEU_THANH_TOAN = Utils.THANHTOAN_VIENPHI_FREE;
 					selectVienPhi();
-					updateGiaTien();
+					updateTinhTien();
 				}
 			}
 		});
@@ -2335,7 +2593,7 @@ public class FormKhamBenhDlg extends Dialog {
 				if (btnRadio4.getSelection() == true) {
 					KIEU_THANH_TOAN = Utils.THANHTOAN_TAI_KHAM;
 					selectTaiKham();
-					updateGiaTien();
+					updateTinhTien();
 				}
 			}
 		});
@@ -2354,6 +2612,7 @@ public class FormKhamBenhDlg extends Dialog {
 		cbListBacSiCLS = new Combo(compositeTab1, SWT.NONE);
 		cbListBacSiCLS.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
+				cbListBacSiForm.setText(cbListBacSiCLS.getText());
 				cbListBacsiThuoc.setText(cbListBacSiCLS.getText());
 			}
 		});
@@ -2364,10 +2623,8 @@ public class FormKhamBenhDlg extends Dialog {
 					if (((e.stateMask & SWT.CTRL) == SWT.CTRL)) {
 						// Update BS cho CLS. UPDATE ALL
 						for (DvChitiet obj : listCLSData) {
-							if (DbHelper.hashDataUsers.get(cbListBacSiCLS
-									.getText()) != null) {
-								obj.MA_BAC_SI = DbHelper.hashDataUsers
-										.get(cbListBacSiCLS.getText()).MACCHN;
+							if (DbHelper.hashDataUsers.get(cbListBacSiCLS.getText()) != null) {
+								obj.MA_BAC_SI = DbHelper.hashDataUsers.get(cbListBacSiCLS.getText()).MACCHN;
 							}
 						}
 						tableViewerSelectedCLS.refresh();
@@ -2398,8 +2655,7 @@ public class FormKhamBenhDlg extends Dialog {
 				keyPress(e);
 			}
 		});
-		cbListBacSiCLS.setBackground(SWTResourceManager
-				.getColor(SWT.COLOR_GREEN));
+		cbListBacSiCLS.setBackground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
 		cbListBacSiCLS.setFont(SWTResourceManager.getFont("Tahoma", 14,
 				SWT.NORMAL));
 		cbListBacSiCLS.setBounds(0, 12, 160, 31);
@@ -2494,7 +2750,7 @@ public class FormKhamBenhDlg extends Dialog {
 			}
 		});
 		btnVp.setBounds(814, 27, 47, 16);
-		btnVp.setText("VP");
+		btnVp.setText("Tự CT (Ctrl+Enter)");
 		btnVp.setSelection(true);
 
 		tableViewerCLS = new TableViewer(compositeTab1, SWT.BORDER
@@ -2649,13 +2905,13 @@ public class FormKhamBenhDlg extends Dialog {
 		tblclmnTng.setText("Tổng");
 
 		TableColumn tblclmnBh = new TableColumn(tableSelectedCLS, SWT.NONE);
-		tblclmnBh.setWidth(100);
+		tblclmnBh.setWidth(78);
 		tblclmnBh
 				.setToolTipText("Status của người bệnh, (Đang cận LS, xong cận LS nào đó hay chưa )");
 		tblclmnBh.setText("BH");
 
 		TableColumn tblclmnNb = new TableColumn(tableSelectedCLS, SWT.NONE);
-		tblclmnNb.setWidth(100);
+		tblclmnNb.setWidth(69);
 		tblclmnNb
 				.setToolTipText("Status của người bệnh, (Đang cận LS, xong cận LS nào đó hay chưa )");
 		tblclmnNb.setText("NB");
@@ -2667,6 +2923,10 @@ public class FormKhamBenhDlg extends Dialog {
 		TableColumn tblclmnKiuTt = new TableColumn(tableSelectedCLS, SWT.NONE);
 		tblclmnKiuTt.setWidth(50);
 		tblclmnKiuTt.setText("Kiểu TT");
+		
+		TableColumn tblclmnTht = new TableColumn(tableSelectedCLS, SWT.NONE);
+		tblclmnTht.setWidth(46);
+		tblclmnTht.setText("ThT");
 		// Tab THUOC BEGIN
 		TabItem tabItemThuoc = new TabItem(tabFolder, SWT.NONE);
 		tabItemThuoc.setToolTipText("Ctrl+3");
@@ -2678,289 +2938,28 @@ public class FormKhamBenhDlg extends Dialog {
 		tabItemThuoc.setControl(compositeThuoc);
 		compositeThuoc.setLayout(null);
 
-		Composite compositeTHUOCCenter = new Composite(compositeThuoc, SWT.NONE);
-		compositeTHUOCCenter.setBounds(0, 113, 1012, 280);
-		compositeTHUOCCenter.setLayout(null);
-
-		tableViewerCtNhapthuoc = new TableViewer(compositeTHUOCCenter,
-				SWT.BORDER | SWT.FULL_SELECTION);
-		tableCtNhapthuoc = tableViewerCtNhapthuoc.getTable();
-		tableCtNhapthuoc.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.keyCode == SWT.ARROW_UP) {
-					if (tableCtNhapthuoc.getSelectionIndex() == 0) {
-						//
-						txtSearchCtNhapthuoc.selectAll();
-						txtSearchCtNhapthuoc.forceFocus();
-						//
-					}
-				} else if (e.keyCode == 13) {
-					// Move to lieu dung
-					// txtLieuDung.selectAll();
-					// txtLieuDung.forceFocus();
-					// Move to soluong
-					txtThuocSoLuongChiDinh.selectAll();
-					txtThuocSoLuongChiDinh.forceFocus();
-				}
-			}
-		});
-		tableCtNhapthuoc.setBounds(0, 52, 1012, 98);
-		tableCtNhapthuoc.setBackground(SWTResourceManager
-				.getColor(SWT.COLOR_GREEN));
-		tableCtNhapthuoc.setLinesVisible(true);
-		tableCtNhapthuoc.setHeaderVisible(true);
-
-		TableColumn tableColumn_26 = new TableColumn(tableCtNhapthuoc, SWT.LEFT);
-		tableColumn_26.setWidth(131);
-		tableColumn_26.setText("KHO");
-
-		TableColumn tableColumn_27 = new TableColumn(tableCtNhapthuoc, SWT.LEFT);
-		tableColumn_27.setWidth(233);
-		tableColumn_27.setText("TÊN THUỐC");
-
-		TableColumn tableColumn_28 = new TableColumn(tableCtNhapthuoc, SWT.LEFT);
-		tableColumn_28.setWidth(80);
-		tableColumn_28.setText("ĐV TÍNH");
-
-		TableColumn tableColumn_29 = new TableColumn(tableCtNhapthuoc, SWT.NONE);
-		tableColumn_29.setWidth(108);
-		tableColumn_29.setText("HẠN DÙNG");
-
-		TableColumn tableColumn_30 = new TableColumn(tableCtNhapthuoc,
-				SWT.RIGHT);
-		tableColumn_30.setWidth(73);
-		tableColumn_30.setText("ĐƠN GIÁ");
-
-		TableColumn tableColumn_31 = new TableColumn(tableCtNhapthuoc,
-				SWT.RIGHT);
-		tableColumn_31.setWidth(90);
-		tableColumn_31.setToolTipText("Tồn kho, chỉ cấp số lượng < số này");
-		tableColumn_31.setText("TỒN KHO");
-
-		TableColumn tableColumn_32 = new TableColumn(tableCtNhapthuoc,
-				SWT.RIGHT);
-		tableColumn_32.setWidth(76);
-		tableColumn_32.setToolTipText("SL thuốc BS đã cho, đang đợi xuất kho");
-		tableColumn_32.setText("SẼ CẤP");
-
-		TableColumn tableColumn_33 = new TableColumn(tableCtNhapthuoc,
-				SWT.RIGHT);
-		tableColumn_33.setWidth(76);
-		tableColumn_33.setToolTipText("SL thuốc đã cấp cho người bệnh");
-		tableColumn_33.setText("ĐÃ CẤP");
-
-		TableColumn tableColumn_34 = new TableColumn(tableCtNhapthuoc,
-				SWT.RIGHT);
-		tableColumn_34.setWidth(85);
-		tableColumn_34.setToolTipText("SL nhập ban đầu");
-		tableColumn_34.setText("SL NHẬP");
-
-		tableViewerTHUOC = new TableViewer(compositeTHUOCCenter, SWT.BORDER
-				| SWT.FULL_SELECTION);
-		tableTHUOC = tableViewerTHUOC.getTable();
-		tableTHUOC.setBounds(0, 156, 1012, 124);
-		tableTHUOC.addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusGained(FocusEvent e) {
-				tableTHUOC.setSelection(0);
-			}
-		});
-		tableTHUOC.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseDoubleClick(MouseEvent e) {
-				doViewThuoc();
-			}
-		});
-		tableTHUOC.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-			}
-		});
-		tableTHUOC.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				keyPressThuoc(e);
-			}
-		});
-		tableTHUOC.setLinesVisible(true);
-		tableTHUOC.setHeaderVisible(true);
-
-		TableColumn tableColumn_1 = new TableColumn(tableTHUOC, SWT.NONE);
-		tableColumn_1.setWidth(45);
-		tableColumn_1.setText("STT");
-
-		TableColumn tblclmnTnThuc = new TableColumn(tableTHUOC, SWT.NONE);
-		tblclmnTnThuc.setWidth(200);
-		tblclmnTnThuc.setText("Tên thuốc");
-
-		TableColumn tblclmnHotCht = new TableColumn(tableTHUOC, SWT.NONE);
-		tblclmnHotCht.setWidth(106);
-		tblclmnHotCht.setText("Hoạt chất");
-
-		TableColumn tblclmnngGi = new TableColumn(tableTHUOC, SWT.NONE);
-		tblclmnngGi.setWidth(121);
-		tblclmnngGi.setText("Đóng gói");
-
-		TableColumn tblclmnMThuc = new TableColumn(tableTHUOC, SWT.NONE);
-		tblclmnMThuc.setWidth(125);
-		tblclmnMThuc.setText("Hàm Lượng");
-
-		TableColumn tableColumn_7 = new TableColumn(tableTHUOC, SWT.NONE);
-		tableColumn_7.setWidth(42);
-		tableColumn_7.setText("SL");
-
-		TableColumn tableColumn_8 = new TableColumn(tableTHUOC, SWT.NONE);
-		tableColumn_8.setWidth(88);
-		tableColumn_8
-				.setToolTipText("Status của người bệnh, (Đang cận LS, xong cận LS nào đó hay chưa )");
-		tableColumn_8.setText("Tình trạng");
-
-		Menu menu = new Menu(tableTHUOC);
-		tableTHUOC.setMenu(menu);
-
-		MenuItem mntmChnhThuc = new MenuItem(menu, SWT.NONE);
-		mntmChnhThuc.setText("Chỉ định thuốc");
-
-		TableColumn tblclmnTt = new TableColumn(tableTHUOC, SWT.NONE);
-		tblclmnTt.setWidth(40);
-		tblclmnTt
-				.setToolTipText("Status của người bệnh, (Đang cận LS, xong cận LS nào đó hay chưa )");
-		tblclmnTt.setText("TT");
-
-		TableColumn tableColumn_5 = new TableColumn(tableTHUOC, SWT.NONE);
-		tableColumn_5.setWidth(40);
-		tableColumn_5
-				.setToolTipText("Status của người bệnh, (Đang cận LS, xong cận LS nào đó hay chưa )");
-		tableColumn_5.setText("TT");
-
-		TableColumn tblclmnNewColumn = new TableColumn(tableTHUOC, SWT.NONE);
-		tblclmnNewColumn.setWidth(192);
-		tblclmnNewColumn.setText("Liều Dùng");
-
-		txtSearchCtNhapthuoc = new Text(compositeTHUOCCenter, SWT.BORDER);
-		txtSearchCtNhapthuoc.setBounds(133, 13, 225, 33);
-		txtSearchCtNhapthuoc.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.keyCode == 13) {
-					reloadTableChitietNhapthuoc();
-				}
-			}
-		});
-		txtSearchCtNhapthuoc.setFont(SWTResourceManager.getFont("Tahoma", 12,
-				SWT.NORMAL));
-		txtSearchCtNhapthuoc.setBackground(SWTResourceManager
-				.getColor(SWT.COLOR_GREEN));
-
-//		txtLieuDung = new Text(compositeTHUOCCenter, SWT.BORDER);
-//		txtLieuDung.setLocation(427, 13);
-//		txtLieuDung.setSize(422, 33);
-//		txtLieuDung.addKeyListener(new KeyAdapter() {
-//			@Override
-//			public void keyPressed(KeyEvent e) {
-//				if (e.keyCode == 13 || e.keyCode == SWT.ARROW_DOWN) {
-//					// Do list all benh ban dau
-//					txtLieuDung.setVisible(false);
-//					loadListLieuDung();
-//					cbLieuDung.setVisible(true);
-//					// cbLieuDung.setText(txtLieuDung.getText());
-//					cbLieuDung.forceFocus();
-//					//
-//				} else if (e.keyCode == SWT.ARROW_LEFT) {
-//					if (txtLieuDung.getCaretPosition() == 0) {
-//						txtSearchCtNhapthuoc.forceFocus();
-//					}
-//				} else if (e.keyCode == SWT.ARROW_RIGHT) {
-//					if (txtLieuDung.getCaretPosition() == txtLieuDung.getText()
-//							.length()) {
-//						txtThuocSoLuongChiDinh.forceFocus();
-//					}
-//				} else {
-//					keyPress(e);
-//				}
-//			}
-//		});
-//		txtLieuDung.setFont(SWTResourceManager
-//				.getFont("Tahoma", 12, SWT.NORMAL));
-//		txtLieuDung.setBackground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
-//		txtLieuDung.setVisible(true);
-
-		txtThuocSoLuongChiDinh = new Text(compositeTHUOCCenter, SWT.BORDER
-				| SWT.RIGHT);
-		txtThuocSoLuongChiDinh.setBounds(364, 13, 57, 33);
-
-		txtThuocSoLuongChiDinh.setText("0");
-		txtThuocSoLuongChiDinh.setFont(SWTResourceManager.getFont("Tahoma", 12,
-				SWT.NORMAL));
-		txtThuocSoLuongChiDinh.setBackground(SWTResourceManager
-				.getColor(SWT.COLOR_GREEN));
-		cbLieuDung = new Combo(compositeTHUOCCenter, SWT.NONE);
-		cbLieuDung.setBounds(427, 10, 432, 31);
-		cbLieuDung.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.keyCode == 13) {
-					// Do list all benh ban dau
-					//txtLieuDung.setVisible(true);
-					//cbLieuDung.setVisible(false);
-					//String temp = cbLieuDung.getText();
-					//temp = Utils.doCapitalizeFirstLetterInString(temp);
-					//txtLieuDung.setText(temp);
-					txtThuocSoLuongChiDinh.selectAll();
-					txtThuocSoLuongChiDinh.forceFocus();
-					// Add thuoc
-					if (selectSoluongThuocAndAdd() == true) {
-						// Move to add thuoc
-						txtSearchCtNhapthuoc.selectAll();
-						txtSearchCtNhapthuoc.forceFocus();
-					} //
-				} else {
-					keyPress(e);
-				}
-			}
-		});
-		cbLieuDung
-				.setFont(SWTResourceManager.getFont("Tahoma", 14, SWT.NORMAL));
-		cbLieuDung.setVisible(true);
-
-		cbKhoThuoc = new Combo(compositeTHUOCCenter, SWT.NONE);
-		cbKhoThuoc.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				String khoname = cbKhoThuoc.getText().trim();
-				objKhoHang = DbHelper.hashDataKhoHang.get(khoname);
-				reloadTableChitietNhapthuoc();
-			}
-		});
-		cbKhoThuoc
-				.setFont(SWTResourceManager.getFont("Tahoma", 13, SWT.NORMAL));
-		cbKhoThuoc.setBounds(0, 13, 127, 28);
-		//
 		
-		//
-		txtThuocSoLuongChiDinh.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.keyCode == 13) {
-					// Move to lieu dung
-					cbLieuDung.forceFocus();
-					//
-				}
-			}
-		});
-		tableViewerTHUOC.setLabelProvider(new TableLabelProviderTHUOC());
-		tableViewerTHUOC.setContentProvider(new ContentProviderTHUOC());
-		tableViewerTHUOC.setInput(listThuocData);
+		Composite compositeIDCBenh = new Composite(compositeThuoc, SWT.NONE);
+		compositeIDCBenh.setBounds(0, 0, 1012, 107);
+		compositeIDCBenh.setLayout(null);
 
-		Composite composite = new Composite(compositeThuoc, SWT.NONE);
-		composite.setBounds(0, 0, 1012, 107);
-		composite.setLayout(null);
-
-		Group grpMBnhTn = new Group(composite, SWT.NONE);
+		Group grpMBnhTn = new Group(compositeIDCBenh, SWT.NONE);
 		grpMBnhTn.setBounds(10, 0, 910, 107);
 
 		cbMaBenh = new Combo(grpMBnhTn, SWT.NONE);
+		cbMaBenh.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent e) {
+				Mabenh obj = DbHelper.hashDataMabenh.get(cbMaBenh.getText().trim());
+				if(obj!=null){
+					txtTenBenh.setText(obj.MABENH_NAME);
+				}
+				else{
+					MessageDialog.openError(shellKhamBenh, "Có lỗi", "Tên Bệnh phải có");
+					cbMaBenh.forceFocus();
+				}
+			}
+		});
 		cbMaBenh.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
 		cbMaBenh.addKeyListener(new KeyAdapter() {
 			@Override
@@ -3051,8 +3050,7 @@ public class FormKhamBenhDlg extends Dialog {
 						//
 						Connection con = DbHelper.getSql2o();
 						String str[] = cbTenBenh.getText().split("-");
-						String sql = "update mabenh set MABENH_RANK=MABENH_RANK+1 where MABENH_ID='"
-								+ str[0].trim() + "'";
+						String sql = "update mabenh set MABENH_RANK=MABENH_RANK+1 where MABENH_ID='"+ str[0].trim() + "'";
 						// System.out.println(sql);
 						con.createQuery(sql).executeUpdate();
 						cbTenBenh.setVisible(false);
@@ -3062,7 +3060,9 @@ public class FormKhamBenhDlg extends Dialog {
 						cbMaBenh.forceFocus();
 						txtTenBenh.setText(TEN_BENH);
 						//
-						doLoadThuocLastest(MA_BENH);
+						if(MA_BENH.length()>0){
+							//doLoadThuocLastest(MA_BENH);
+						}
 						// con.close();
 					} catch (Exception ex) {
 						logger.error(ex);
@@ -3197,13 +3197,282 @@ public class FormKhamBenhDlg extends Dialog {
 
 		cbListBacsiThuoc = new Combo(grpMBnhTn, SWT.NONE);
 		cbListBacsiThuoc.setBounds(130, 76, 161, 21);
+		cbListBacsiThuoc.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				cbListBacSiForm.setText(cbListBacsiThuoc.getText());
+			}
+		});
 
+		Composite compositeTHUOCCenter = new Composite(compositeThuoc, SWT.NONE);
+		compositeTHUOCCenter.setBounds(0, 113, 1012, 280);
+		compositeTHUOCCenter.setLayout(null);
+
+		cbKhoThuoc = new Combo(compositeTHUOCCenter, SWT.NONE);
+		cbKhoThuoc.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				String khoname = cbKhoThuoc.getText().trim();
+				objKhoHang = DbHelper.hashDataKhoHang.get(khoname);
+				reloadTableChitietNhapthuoc();
+			}
+		});
+		cbKhoThuoc
+				.setFont(SWTResourceManager.getFont("Tahoma", 13, SWT.NORMAL));
+		cbKhoThuoc.setBounds(0, 13, 127, 28);
+		cbKhoThuoc.setText("Kho bảo hiểm");
+
+		txtSearchCtNhapthuoc = new Text(compositeTHUOCCenter, SWT.BORDER);
+		txtSearchCtNhapthuoc.setBounds(133, 13, 225, 33);
+		txtSearchCtNhapthuoc.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.keyCode == 13) {
+					reloadTableChitietNhapthuoc();
+				}
+			}
+		});
+		txtSearchCtNhapthuoc.setFont(SWTResourceManager.getFont("Tahoma", 12,
+				SWT.NORMAL));
+		txtSearchCtNhapthuoc.setBackground(SWTResourceManager
+				.getColor(SWT.COLOR_GREEN));
+
+		txtThuocSoLuongChiDinh = new Text(compositeTHUOCCenter, SWT.BORDER
+				| SWT.RIGHT);
+		txtThuocSoLuongChiDinh.setBounds(364, 13, 57, 33);
+
+		txtThuocSoLuongChiDinh.setText("0");
+		txtThuocSoLuongChiDinh.setFont(SWTResourceManager.getFont("Tahoma", 12,
+				SWT.NORMAL));
+		txtThuocSoLuongChiDinh.setBackground(SWTResourceManager
+				.getColor(SWT.COLOR_GREEN));
+		cbLieuDung = new Combo(compositeTHUOCCenter, SWT.NONE);
+		cbLieuDung.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusGained(FocusEvent e) {
+				OS.SendMessage(cbLieuDung.handle, OS.CB_SHOWDROPDOWN, 1, 0);
+
+			}
+		});
+		cbLieuDung.setBounds(427, 10, 384, 31);
+		cbLieuDung.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.keyCode == 13) {
+					// Do list all benh ban dau
+					txtThuocSoLuongChiDinh.selectAll();
+					txtThuocSoLuongChiDinh.forceFocus();
+					// Add thuoc
+					if (selectSoluongThuocAndAdd() == true) {
+						// Move to add thuoc
+						txtSearchCtNhapthuoc.selectAll();
+						txtSearchCtNhapthuoc.forceFocus();
+					} 
+					//
+				}
+				else
+				{
+					keyPress(e);
+				}
+			}
+		});
+		cbLieuDung.setFont(SWTResourceManager.getFont("Tahoma", 14, SWT.NORMAL));
+		cbLieuDung.setVisible(true);
+		cbLieuDung.select(0);
+
+		//
+		
+		tableViewerCtNhapthuoc = new TableViewer(compositeTHUOCCenter,SWT.BORDER | SWT.FULL_SELECTION);
+		tableCtNhapthuoc = tableViewerCtNhapthuoc.getTable();
+		tableCtNhapthuoc.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.keyCode == SWT.ARROW_UP) {
+					if (tableCtNhapthuoc.getSelectionIndex() == 0) {
+						//
+						txtSearchCtNhapthuoc.selectAll();
+						txtSearchCtNhapthuoc.forceFocus();
+						//
+					}
+				} else if (e.keyCode == 13) {
+					// Move to lieu dung
+					// txtLieuDung.selectAll();
+					// txtLieuDung.forceFocus();
+					// Move to soluong
+					txtThuocSoLuongChiDinh.selectAll();
+					txtThuocSoLuongChiDinh.forceFocus();
+				}
+			}
+		});
+		tableCtNhapthuoc.setBounds(0, 52, 1012, 98);
+		tableCtNhapthuoc.setBackground(SWTResourceManager
+				.getColor(SWT.COLOR_GREEN));
+		tableCtNhapthuoc.setLinesVisible(true);
+		tableCtNhapthuoc.setHeaderVisible(true);
+
+		TableColumn tableColumn_26 = new TableColumn(tableCtNhapthuoc, SWT.LEFT);
+		tableColumn_26.setWidth(96);
+		tableColumn_26.setText("KHO");
+
+		TableColumn tableColumn_27 = new TableColumn(tableCtNhapthuoc, SWT.LEFT);
+		tableColumn_27.setWidth(182);
+		tableColumn_27.setText("TÊN THUỐC");
+		
+		TableColumn tableColumn_2 = new TableColumn(tableCtNhapthuoc, SWT.NONE);
+		tableColumn_2.setWidth(72);
+		tableColumn_2.setText("Hàm Lượng");
+
+		TableColumn tableColumn_28 = new TableColumn(tableCtNhapthuoc, SWT.LEFT);
+		tableColumn_28.setWidth(80);
+		tableColumn_28.setText("ĐV TÍNH");
+
+		TableColumn tableColumn_29 = new TableColumn(tableCtNhapthuoc, SWT.NONE);
+		tableColumn_29.setWidth(108);
+		tableColumn_29.setText("HẠN DÙNG");
+
+		TableColumn tableColumn_30 = new TableColumn(tableCtNhapthuoc,
+				SWT.RIGHT);
+		tableColumn_30.setWidth(73);
+		tableColumn_30.setText("ĐƠN GIÁ");
+
+		TableColumn tableColumn_31 = new TableColumn(tableCtNhapthuoc,
+				SWT.RIGHT);
+		tableColumn_31.setWidth(90);
+		tableColumn_31.setToolTipText("Tồn kho, chỉ cấp số lượng < số này");
+		tableColumn_31.setText("TỒN KHO");
+
+		TableColumn tableColumn_32 = new TableColumn(tableCtNhapthuoc,
+				SWT.RIGHT);
+		tableColumn_32.setWidth(76);
+		tableColumn_32.setToolTipText("SL thuốc BS đã cho, đang đợi xuất kho");
+		tableColumn_32.setText("SẼ CẤP");
+
+		TableColumn tableColumn_33 = new TableColumn(tableCtNhapthuoc,
+				SWT.RIGHT);
+		tableColumn_33.setWidth(76);
+		tableColumn_33.setToolTipText("SL thuốc đã cấp cho người bệnh");
+		tableColumn_33.setText("ĐÃ CẤP");
+
+		TableColumn tableColumn_34 = new TableColumn(tableCtNhapthuoc,
+				SWT.RIGHT);
+		tableColumn_34.setWidth(85);
+		tableColumn_34.setToolTipText("SL nhập ban đầu");
+		tableColumn_34.setText("SL NHẬP");
+
+		tableViewerTHUOC = new TableViewer(compositeTHUOCCenter, SWT.BORDER
+				| SWT.FULL_SELECTION);
+		tableTHUOC = tableViewerTHUOC.getTable();
+		tableTHUOC.setBounds(0, 156, 1012, 124);
+		tableTHUOC.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusGained(FocusEvent e) {
+				tableTHUOC.setSelection(0);
+			}
+		});
+		tableTHUOC.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseDoubleClick(MouseEvent e) {
+				doViewThuoc();
+			}
+		});
+		tableTHUOC.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+			}
+		});
+		tableTHUOC.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressThuoc(e);
+			}
+		});
+		tableTHUOC.setLinesVisible(true);
+		tableTHUOC.setHeaderVisible(true);
+
+		TableColumn tableColumn_1 = new TableColumn(tableTHUOC, SWT.NONE);
+		tableColumn_1.setWidth(45);
+		tableColumn_1.setText("STT");
+
+		TableColumn tblclmnTnThuc = new TableColumn(tableTHUOC, SWT.NONE);
+		tblclmnTnThuc.setWidth(200);
+		tblclmnTnThuc.setText("Tên thuốc");
+
+		TableColumn tblclmnHotCht = new TableColumn(tableTHUOC, SWT.NONE);
+		tblclmnHotCht.setWidth(106);
+		tblclmnHotCht.setText("Hoạt chất");
+
+		TableColumn tblclmnngGi = new TableColumn(tableTHUOC, SWT.NONE);
+		tblclmnngGi.setWidth(121);
+		tblclmnngGi.setText("Đóng gói");
+
+		TableColumn tblclmnMThuc = new TableColumn(tableTHUOC, SWT.NONE);
+		tblclmnMThuc.setWidth(103);
+		tblclmnMThuc.setText("Hàm Lượng");
+
+		TableColumn tableColumn_7 = new TableColumn(tableTHUOC, SWT.NONE);
+		tableColumn_7.setWidth(42);
+		tableColumn_7.setText("SL");
+
+		TableColumn tableColumn_8 = new TableColumn(tableTHUOC, SWT.NONE);
+		tableColumn_8.setWidth(70);
+		tableColumn_8
+				.setToolTipText("Status của người bệnh, (Đang cận LS, xong cận LS nào đó hay chưa )");
+		tableColumn_8.setText("Tình trạng");
+
+		Menu menu = new Menu(tableTHUOC);
+		tableTHUOC.setMenu(menu);
+
+		MenuItem mntmChnhThuc = new MenuItem(menu, SWT.NONE);
+		mntmChnhThuc.setText("Chỉ định thuốc");
+
+		TableColumn tblclmnTt = new TableColumn(tableTHUOC, SWT.NONE);
+		tblclmnTt.setWidth(40);
+		tblclmnTt
+				.setToolTipText("Status của người bệnh, (Đang cận LS, xong cận LS nào đó hay chưa )");
+		tblclmnTt.setText("TT");
+
+		TableColumn tableColumn_5 = new TableColumn(tableTHUOC, SWT.NONE);
+		tableColumn_5.setWidth(40);
+		tableColumn_5
+				.setToolTipText("Status của người bệnh, (Đang cận LS, xong cận LS nào đó hay chưa )");
+		tableColumn_5.setText("TT");
+
+		TableColumn tblclmnNewColumn = new TableColumn(tableTHUOC, SWT.NONE);
+		tblclmnNewColumn.setWidth(183);
+		tblclmnNewColumn.setText("Liều Dùng");
+		
+		TableColumn tblclmnTht_1 = new TableColumn(tableTHUOC, SWT.NONE);
+		tblclmnTht_1.setWidth(48);
+		tblclmnTht_1.setText("ThT");
+
+		
+		txtNgaySinhTheoThang = new Label(compositeTHUOCCenter, SWT.NONE);
+		txtNgaySinhTheoThang.setBounds(830, 13, 172, 33);
+		//
+		
+		//
+		txtThuocSoLuongChiDinh.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.keyCode == 13) {
+					// Move to lieu dung
+					cbLieuDung.forceFocus();
+					//
+				}
+			}
+		});
+		tableViewerTHUOC.setLabelProvider(new TableLabelProviderTHUOC());
+		tableViewerTHUOC.setContentProvider(new ContentProviderTHUOC());
+		tableViewerTHUOC.setColumnProperties(CellModifierThuoc.columnPropeties);
+		tableViewerTHUOC.setCellModifier(new CellModifierThuoc(tableViewerTHUOC));
+		tableViewerTHUOC.setInput(listThuocData);
+
+		// Nghialuong3
 		Composite compositeGroupButtonEnd = new Composite(compositePhieuKham,
 				SWT.NONE);
 		compositeGroupButtonEnd.setLayoutData(BorderLayout.SOUTH);
 		compositeGroupButtonEnd.setFont(SWTResourceManager.getFont("Tahoma",
 				12, SWT.NORMAL));
-		compositeGroupButtonEnd.setLayout(new GridLayout(4, false));
+		compositeGroupButtonEnd.setLayout(new GridLayout(7, false));
 
 		btnNewPhieu = new Button(compositeGroupButtonEnd, SWT.NONE);
 		btnNewPhieu.setToolTipText("Tạo mới, bấm ESC");
@@ -3231,6 +3500,75 @@ public class FormKhamBenhDlg extends Dialog {
 				txtMathe.forceFocus();
 			}
 		});
+		
+		Button btnCheckMTh = new Button(compositeGroupButtonEnd, SWT.NONE);
+		btnCheckMTh.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if(KIEU_THANH_TOAN==Utils.THANHTOAN_BHYT || KIEU_THANH_TOAN==Utils.THANHTOAN_BHYT_2){
+					BenhNhan obj = getBenhNhanDlg();
+					if(obj.MA_THE==null || (obj.MA_THE!=null && obj.MA_THE.length()==0)){
+						MessageDialog.openError(shellKhamBenh, "Có lỗi", "Chưa có MÃ THẺ");
+						return;
+					}
+					objCheck = DbHelper.objBHYTThread.checkDataBHYT(obj);
+					if(objCheck.checkCode!=0){
+						//
+						//
+						if(objCheck.checkCode==7){
+							// Sai ngay sinh...
+							txtNgaySinh.isNgaySinh0101 = true;
+							obj.setNGAY_SINH(txtNgaySinh.getDateByYear());
+							objCheck = DbHelper.objBHYTThread.checkDataBHYT(obj);
+							if(objCheck.checkCode==7){
+								MessageDialog.openError(shellKhamBenh, "Có lỗi", objCheck.checkText + ". Ngày sinh: " + obj.NGAY_SINH+". Thử check lại lần nữa.");
+							}
+							else{
+								// OK
+								btnSave.setEnabled(true);
+								btnTHANHTOAN.setEnabled(true);
+								btnInPhieu.setEnabled(true);
+								//
+								listKhamBenh.removeAll();
+								for(int i=0; i<objCheck.listKhamBenh.size(); i++){
+									listKhamBenh.add(objCheck.listKhamBenh.get(i));
+								}
+							}
+						}
+						else{
+							MessageDialog.openError(shellKhamBenh, "Có lỗi", objCheck.checkText);
+						}
+						if(objCheck.checkCode==401){
+							//Relogin
+							DbHelper.objBHYTThread.login(Main.USER_GATE_ID, Main.USER_GATE_PASSWORD);
+						}
+						//
+						btnSave.setEnabled(false);
+						btnTHANHTOAN.setEnabled(false);
+						btnInPhieu.setEnabled(false);
+					}
+					else{
+						//
+						btnSave.setEnabled(true);
+						btnTHANHTOAN.setEnabled(true);
+						btnInPhieu.setEnabled(true);
+						//
+						listKhamBenh.removeAll();
+						for(int i=0; i<objCheck.listKhamBenh.size(); i++){
+							listKhamBenh.add(objCheck.listKhamBenh.get(i));
+						}
+						//
+					}
+				}
+				else{
+					MessageDialog.openInformation(shellKhamBenh, "Không check thẻ", "Không check thẻ với khám viện phí");
+				}
+			}
+		});
+		btnCheckMTh.setToolTipText("Lưu phiếu, bấm F2");
+		btnCheckMTh.setText("Check Thẻ");
+		btnCheckMTh.setImage(SWTResourceManager.getImage(FormKhamBenhDlg.class, "/png/check-3x.png"));
+		btnCheckMTh.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
 		btnSave = new Button(compositeGroupButtonEnd, SWT.NONE);
 		btnSave.setToolTipText("Lưu phiếu, bấm F2");
 		btnSave.addSelectionListener(new SelectionAdapter() {
@@ -3257,81 +3595,217 @@ public class FormKhamBenhDlg extends Dialog {
 				keyPress(e);
 			}
 		});
-
-		btnXetNghiem = new Button(compositeGroupButtonEnd, SWT.NONE);
-		btnXetNghiem.setToolTipText("Mua phiếu xét nghiệm, bấm F3");
-		btnXetNghiem.addSelectionListener(new SelectionAdapter() {
+		
+				btnXetNghiem = new Button(compositeGroupButtonEnd, SWT.NONE);
+				btnXetNghiem.setToolTipText("Mua phiếu xét nghiệm, bấm F3");
+				btnXetNghiem.addSelectionListener(new SelectionAdapter() {
+					@Override
+					public void widgetSelected(SelectionEvent e) {
+						doSavePhieuXetNghiem();
+					}
+				});
+				btnXetNghiem.setText("Bán phiếu CLS (F3)");
+				btnXetNghiem.setImage(SWTResourceManager.getImage(
+						FormKhamBenhDlg.class, "/png/cog-3x.png"));
+				btnXetNghiem.setFont(SWTResourceManager.getFont("Tahoma", 12,
+						SWT.NORMAL));
+		
+		Button btnInTt = new Button(compositeGroupButtonEnd, SWT.NONE);
+		btnInTt.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				muaPhieuXetNghiem();
+				doInThanhToanOnly();
 			}
 		});
-		btnXetNghiem.setText("Bán phiếu CLS (F3)");
-		btnXetNghiem.setImage(SWTResourceManager.getImage(
-				FormKhamBenhDlg.class, "/png/cog-3x.png"));
-		btnXetNghiem.setFont(SWTResourceManager.getFont("Tahoma", 12,
-				SWT.NORMAL));
-
-		btnInPhieu = new Button(compositeGroupButtonEnd, SWT.NONE);
-		btnInPhieu.setToolTipText("In Phiếu, bấm F9");
-		btnInPhieu.addSelectionListener(new SelectionAdapter() {
+		btnInTt.setToolTipText("In Phiếu, bấm F9");
+		btnInTt.setText("In TT");
+		btnInTt.setImage(SWTResourceManager.getImage(FormKhamBenhDlg.class, "/png/print-3x.png"));
+		btnInTt.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
+		
+		btnTHANHTOAN = new Button(compositeGroupButtonEnd, SWT.NONE);
+		GridData gd_btnTHANHTOAN = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+		gd_btnTHANHTOAN.widthHint = 104;
+		btnTHANHTOAN.setLayoutData(gd_btnTHANHTOAN);
+		btnTHANHTOAN.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				printPhieu();
+				doThanhToanOnly();
+				//
 			}
 		});
-		btnInPhieu.setText("In Phiếu (F9)");
-		btnInPhieu.setImage(SWTResourceManager.getImage(FormKhamBenhDlg.class,
-				"/png/print-3x.png"));
-		btnInPhieu
-				.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
+		btnTHANHTOAN.setImage(SWTResourceManager.getImage(FormKhamBenhDlg.class, "/png/spreadsheet-3x.png"));
+		btnTHANHTOAN.setText("THANH TOÁN ");
+		
+				btnInPhieu = new Button(compositeGroupButtonEnd, SWT.NONE);
+				btnInPhieu.setToolTipText("In Phiếu, bấm F9");
+				btnInPhieu.addSelectionListener(new SelectionAdapter() {
+					@Override
+					public void widgetSelected(SelectionEvent e) {
+						printPhieu();
+					}
+				});
+				btnInPhieu.setText("In Phiếu (F9)");
+				btnInPhieu.setImage(SWTResourceManager.getImage(FormKhamBenhDlg.class, "/png/print-3x.png"));
+				btnInPhieu.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
 
 	}
 
-	protected void updateCongKham() {
-		// System.out.println("widgetSelected text");
-		Dichvu congkham = DbHelper.hashCongKham.get(cbKhoa.getText());
-		//
-		if (congkham != null) {
-			if (objCongKham == null) {
-				objCongKham = new DvChitiet();
+	protected void maytinhtien() {
+		FormMayTinhTienDlg dlg = new FormMayTinhTienDlg(shellKhamBenh, 0);
+		dlg.TONGTIEN = ""+TONGCONG_NB;
+		dlg.open();
+	}
+	protected void doInThanhToanOnly() {
+		// Check ICD
+		if( KIEU_THANH_TOAN==Utils.THANHTOAN_BHYT || KIEU_THANH_TOAN==Utils.THANHTOAN_BHYT_2){
+			if(cbMaBenh.getText().trim().length()==0){
+				tabFolder.setSelection(2);
+				cbMaBenh.forceFocus();
+				MessageDialog.openError(shellKhamBenh, "Có lỗi", "ICD phải có");
+				return;
 			}
-			objCongKham.DON_GIA = congkham.DON_GIA;
-			objCongKham.DON_GIA2 = congkham.DON_GIA2;
-			objCongKham.DV_ID = 1;
-			objCongKham.SO_LUONG = 1;
-			objCongKham.MA_DICH_VU = congkham.MA_DVKT;
-			objCongKham.TEN_DICH_VU = congkham.TEN_DVKT;
-			objCongKham.MA_BAC_SI = "";
-			objCongKham.MA_BENH = "";
-			objCongKham.MA_KHOA = DbHelper.getMAKHOA(congkham.MA_DVKT);
-			objCongKham.MA_NHOM = Utils.getInt(congkham.MANHOM_9324);
-			objCongKham.MA_PTTT = 1;
-			objCongKham.MA_VAT_TU = "";
-			// format = "yyyy-MM-dd HH:mm:ss";
-			objCongKham.NGAY_KQ = Utils.getDatetime(new Date(), "yyyyMMddHHmm");
-			objCongKham.NGAY_YL = Utils.getDatetime(new Date(), "yyyyMMddHHmm");
-			objCongKham.THANH_TIEN = objCongKham.DON_GIA2
-					* objCongKham.SO_LUONG;
-			objCongKham.TT_BH = 0;
-			objCongKham.TT_NB = 0;
-			objCongKham.TYLE_TT = 100;
-			//
-			cbListBacSiForm.removeAll();
-			cbListBacSiCLS.removeAll();
-			cbListBacsiThuoc.removeAll();
-			for (Users obj : DbHelper.listUsers) {
-				if (obj.MA_KHOA.equals(congkham.MA_DVKT) == true) {
-					cbListBacSiForm.add(obj.U_NAME);
-					cbListBacSiCLS.add(obj.U_NAME);
-					cbListBacsiThuoc.add(obj.U_NAME);
+		}
+		// Set Thanh Toan
+		//
+		if (CHI_XET_NGHIEM == 1) {
+			doSavePhieuXetNghiem();
+		}
+		else{
+			doSaveFormKhamBenh();
+		}
+		//Print 
+		printPhieu(false);
+	}
+	protected void doThanhToanOnly() {
+		if( KIEU_THANH_TOAN==Utils.THANHTOAN_BHYT || KIEU_THANH_TOAN==Utils.THANHTOAN_BHYT_2){
+			if(cbMaBenh.getText().trim().length()==0){
+				tabFolder.setSelection(2);
+				cbMaBenh.forceFocus();
+				MessageDialog.openError(shellKhamBenh, "Có lỗi", "ICD phải có");
+				return;
+			}
+		}
+		//Update thanh toan
+		//=================================================================================
+		if(objCongKham!=null){
+			if( isCapCuu==true && (KIEU_THANH_TOAN!=Utils.THANHTOAN_BHYT_2 && KIEU_THANH_TOAN!=Utils.THANHTOAN_BHYT)){
+				//
+				MessageDialog.openInformation(shellKhamBenh, "", "Không save cong kham");
+			}
+			else{
+				// Nghia: Da thanh toan roi, nhung van update lai CONG KHAM  
+				Users bacsy = DbHelper.hashDataUsers.get(cbListBacSiForm.getText());
+				if(bacsy!=null && bacsy.MACCHN!=objCongKham.MA_BAC_SI){
+					objCongKham.MA_BAC_SI = bacsy.MACCHN;
+					logger.info("UPDATE CONGKHAM: "+ objCongKham.toString());
+				}
+				//
+				if(objCongKham.THANHTOAN==0){
+					objCongKham.THANHTOAN = 1;
+					if(objCongKham.NV_ID==0){
+						objCongKham.NV_ID = DbHelper.currentSessionUserId.U_ID;
+						objCongKham.NV_NAME = DbHelper.currentSessionUserId.U_NAME;
+					}
+					objCongKham.insert();
 				}
 			}
-			cbListBacSiForm.select(0);
-			cbListBacSiCLS.select(0);
-			cbListBacsiThuoc.select(0);
 		}
+		for (DvChitiet obj : listCLSData) {
+			obj.BN_ID = objBenhNhan.BN_ID;
+			obj.MA_LK = objPhieuKhamBenh.MA_LK;
 
+			if (obj.STS == -1) {
+				obj.STS = 0;
+			}
+			//
+			if(obj.THANHTOAN==0){
+				obj.THANHTOAN = 1;
+				if(obj.NV_ID==0){
+					obj.NV_ID = DbHelper.currentSessionUserId.U_ID;
+					obj.NV_NAME = DbHelper.currentSessionUserId.U_NAME;
+				}
+				//
+				obj.insert();
+			}
+		}
+		for (ThuocChitiet obj : listThuocData) {
+			if (obj.STS == -1) {
+				obj.STS = 0;
+			}
+			if(obj.THANHTOAN==0){
+				obj.THANHTOAN = 1;
+				if(obj.NV_ID==0){
+					obj.NV_ID = DbHelper.currentSessionUserId.U_ID;
+					obj.NV_NAME = DbHelper.currentSessionUserId.U_NAME;
+				}
+				// Insert thuoc chi tiet.
+				obj.insert();
+				// Update kho thuoc ....
+				//
+			}
+		}
+		//
+		if(objPhieuKhamBenh!=null){
+			objPhieuKhamBenh.NGAY_TTOAN = Utils.getDatetime(new Date(), "yyyyMMddHHmm");
+			objPhieuKhamBenh.update();
+		}
+		//
+		if (CHI_XET_NGHIEM == 1) {
+			doSavePhieuXetNghiem();
+		}
+		else{
+			doSaveFormKhamBenh();
+		}
+		tableViewerCLS.refresh();
+		tableViewerSelectedCLS.refresh();
+		tableViewerTHUOC.refresh();
+		tableViewerPhieuKham.refresh();
+		//=================================================================================
+	}
+
+	protected void updateCongKham() {
+		//
+			Dichvu congkham = DbHelper.hashCongKham.get(cbKhoa.getText());
+			//
+			if (congkham != null) {
+				if (objCongKham == null) {
+					objCongKham = new DvChitiet();
+				}
+				objCongKham.DON_GIA = congkham.DON_GIA;
+				objCongKham.DON_GIA2 = congkham.DON_GIA2;
+				objCongKham.DV_ID = 1;
+				objCongKham.SO_LUONG = 1;
+				objCongKham.MA_DICH_VU = congkham.MA_DVKT;
+				objCongKham.TEN_DICH_VU = congkham.TEN_DVKT;
+				objCongKham.MA_BAC_SI = "";
+				objCongKham.MA_BENH = "";
+				objCongKham.MA_KHOA = DbHelper.getMAKHOA(congkham.MA_DVKT);
+				objCongKham.MA_NHOM = Utils.getInt(congkham.MANHOM_9324);
+				objCongKham.MA_PTTT = 1;
+				objCongKham.MA_VAT_TU = "";
+				// format = "yyyy-MM-dd HH:mm:ss";
+				objCongKham.NGAY_KQ = Utils.getDatetime(new Date(), "yyyyMMddHHmm");
+				objCongKham.NGAY_YL = Utils.getDatetime(new Date(), "yyyyMMddHHmm");
+				objCongKham.THANH_TIEN = objCongKham.DON_GIA2 * objCongKham.SO_LUONG;
+				objCongKham.TT_BHTT = 0;
+				objCongKham.TT_BNTT = 0;
+				objCongKham.MUC_HUONG = 100;
+				//System.out.println("NGHIA LUONG " + objCongKham.toString());
+				//
+				cbListBacSiForm.removeAll();
+				cbListBacSiCLS.removeAll();
+				cbListBacsiThuoc.removeAll();
+				for (Users obj : DbHelper.listUsers) {
+					//if (obj.MA_KHOA.equals(congkham.MA_DVKT) == true) {
+						cbListBacSiForm.add(obj.U_ID+"-"+obj.TEN_NHANVIEN);
+						cbListBacSiCLS.add(obj.U_ID+"-"+obj.TEN_NHANVIEN);
+						cbListBacsiThuoc.add(obj.U_ID+"-"+obj.TEN_NHANVIEN);
+					//}
+				}
+				cbListBacSiForm.select(0);
+				cbListBacSiCLS.select(0);
+				cbListBacsiThuoc.select(0);
+			}
 	}
 
 	protected void doLoadThuocLastest(String MA_BENH) {
@@ -3349,18 +3823,24 @@ public class FormKhamBenhDlg extends Dialog {
 			KhamBenh objKhamBenh = con.createQuery(sql).executeAndFetchFirst(
 					KhamBenh.class);
 			if (objKhamBenh != null) {
-				sql = "select * from thuoc_chitiet where MA_LK="
-						+ objKhamBenh.MA_LK.intValue();
-				List<ThuocChitiet> listDV = con.createQuery(sql)
-						.executeAndFetch(ThuocChitiet.class);
+				sql = "select * from thuoc_chitiet where MA_LK="+ objKhamBenh.MA_LK.intValue();
+				List<ThuocChitiet> listDV = con.createQuery(sql).executeAndFetch(ThuocChitiet.class);
 				// Check so luong thuoc ...
 				// Nghialuong
 				if (listDV != null) {
 					int dvId = 1;
 					for (ThuocChitiet obj : listDV) {
 						// check in CTNhap
-						CtNhapthuoc objCtNhapthuoc = hashDataCtNhapthuoc
-								.get(obj.THUOC_ID);
+						CtNhapthuoc objCtNhapthuoc = null;
+						// find thuoc ID in listNhapThuoc
+						for(int i=0; i<listDataCtNhapthuoc.size(); i++){
+							if( listDataCtNhapthuoc.get(i).THUOC_ID==obj.THUOC_ID ){
+								// FOUND it
+								objCtNhapthuoc = listDataCtNhapthuoc.get(i);
+								break;
+							}
+						}
+						// If found thuoc, add vo
 						if (objCtNhapthuoc == null
 								|| (objCtNhapthuoc != null && objCtNhapthuoc.SL_TONKHO < obj.SO_LUONG)) {
 							//
@@ -3371,8 +3851,7 @@ public class FormKhamBenhDlg extends Dialog {
 										+ obj.SO_LUONG;
 							}
 							logger.info(error);
-							MessageDialog.openError(shellKhamBenh, "Có lỗi",
-									error);
+							MessageDialog.openError(shellKhamBenh, "Có lỗi", error);
 							//
 							continue;
 						}
@@ -3381,6 +3860,10 @@ public class FormKhamBenhDlg extends Dialog {
 						obj.STS = -1;
 						obj.STT = dvId++;
 						obj.MA_BENH = MA_BENH;
+						obj.TYP = objCtNhapthuoc.TYP;
+						obj.THANHTOAN = 0;
+						obj.SO_DANG_KY = objCtNhapthuoc.SO_DANG_KY;
+						obj.TT_THAU = objCtNhapthuoc.TT_THAU;
 						//
 						//
 						listThuocData.add(obj);
@@ -3439,8 +3922,7 @@ public class FormKhamBenhDlg extends Dialog {
 			if (objKhamBenh != null) {
 				sql = "select * from dv_chitiet where MA_LK="
 						+ objKhamBenh.MA_LK.intValue();
-				List<DvChitiet> listDV = con.createQuery(sql).executeAndFetch(
-						DvChitiet.class);
+				List<DvChitiet> listDV = con.createQuery(sql).executeAndFetch(DvChitiet.class);
 				//
 				if (listDV != null) {
 					int dvId = 1;
@@ -3471,13 +3953,15 @@ public class FormKhamBenhDlg extends Dialog {
 		//
 		try {
 			Connection con = DbHelper.getSql2o();
-			String sql = "select DISTINCT LIEU_DUNG from thuoc_chitiet where LENGTH(LIEU_DUNG)>0";
-			System.out.println(sql);
-			org.sql2o.data.Table tb = con.createQuery(sql)
-					.executeAndFetchTable();
+//			String sql = "select DISTINCT LIEU_DUNG from thuoc_chitiet where LENGTH(LIEU_DUNG)>0";
+//			//System.out.println(sql);
+//			org.sql2o.data.Table tb = con.createQuery(sql).executeAndFetchTable();
+			String sql = "select LIEUDUNG_ID, LIEUDUNG_NAME  from mst_lieudung order by RANK DESC";
+			org.sql2o.data.Table tb = con.createQuery(sql).executeAndFetchTable();
 			for (Row r : tb.rows()) {
-				String LIEU_DUNG = r.getString("LIEU_DUNG");
-				cbLieuDung.add(LIEU_DUNG);
+				String LIEUDUNG_NAME = r.getString("LIEUDUNG_NAME");
+				Integer LIEUDUNG_ID = r.getInteger("LIEUDUNG_ID");
+				cbLieuDung.add(LIEUDUNG_ID.intValue()+ "#"+LIEUDUNG_NAME);
 				// System.out.println("Add "+LIEU_DUNG);
 			}
 			cbLieuDung.select(0);
@@ -3516,16 +4000,17 @@ public class FormKhamBenhDlg extends Dialog {
 			txtMathe.strMathe = data[0];
 			txtHoten.setText(TheBHXH.convertHex2String(data[1]));
 			txtNgaySinh.setText(data[2]);
-
+			//
 			int iGT = Utils.getInt(data[3]);
 			if (iGT == 1) {
-				btnGIOITINH.setText("NAM");
+				btnGIOITINH.setText("NAM(1)");
+				btnGIOITINH.setSelection(false);
 			} else {
-				btnGIOITINH.setText("NỮ");
-
+				btnGIOITINH.setText("NỮ(2)");
+				btnGIOITINH.setSelection(true);
 			}
 			txtDiachi.setText(TheBHXH.convertHex2String(data[4]));
-			cbNoiDKKB.setText(data[5].replaceAll("–", "").replaceAll(" ", ""));
+			cbNoiDKKB.setText(data[5].replaceAll("-", "").replaceAll(" ", ""));
 			txtTuNgay.setText(data[6]);
 			txtDenNgay.setText(data[7]);
 
@@ -3539,6 +4024,8 @@ public class FormKhamBenhDlg extends Dialog {
 			txtChuoiKiemTra.setText(data[13]);
 			// Process tylehuong
 			//
+			checkCanNangTreem();
+			//
 			txtMathe.processMaThe(txtMathe.strMathe);
 			txtMathe.updateMaThe(txtMathe.strMathe);
 			// tabFolder.setSelection(0);
@@ -3546,12 +4033,36 @@ public class FormKhamBenhDlg extends Dialog {
 		}
 	}
 
+	// Print all item
 	protected void printPhieu() {
+		// Check ICD 
+		if( KIEU_THANH_TOAN==Utils.THANHTOAN_BHYT || KIEU_THANH_TOAN==Utils.THANHTOAN_BHYT_2 ){
+			if(cbMaBenh.getText().trim().length()==0){
+				tabFolder.setSelection(2);
+				cbMaBenh.forceFocus();
+				MessageDialog.openError(shellKhamBenh, "Có lỗi", "ICD phải có");
+				return;
+			}
+		}
+		//
+		printPhieu(true);
+	}
+	/**
+	 * 
+	 * @param isPrintAll = true: Print all
+	 * false: Only print chưa thanh toán
+	 */
+	protected void printPhieu(boolean isPrintAll) {
 		try {
 			if (CHI_XET_NGHIEM == 1) {
-				printPhieuXetNghiem();
+				printPhieuXetNghiem(isPrintAll);
 			} else {
-				printPhieuBHYT();
+				if( KIEU_THANH_TOAN == Utils.THANHTOAN_BHYT || KIEU_THANH_TOAN == Utils.THANHTOAN_BHYT_2){
+					printPhieuBHYT(isPrintAll);
+				}
+				else{
+					printPhieuVienPhi(isPrintAll);
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -3577,9 +4088,24 @@ public class FormKhamBenhDlg extends Dialog {
 		loadCongkhamFromDB();
 		//
 		updateDlg();
-		updateGiaTien();
-		tabFolder.setSelection(1);
-		cbListBacSiCLS.forceFocus();
+		//
+		updateTinhTien();
+		//
+		txtSearchCLS.setText("");
+		txtSearchCtNhapthuoc.setText("");
+		txtBenhBanDau.setText("");
+		txtSearchCtNhapthuoc.setText("");
+		//
+		//tabFolder.setSelection(1);
+		//cbListBacSiCLS.forceFocus();
+		//
+		listKhamBenh.removeAll();
+		if(objBenhNhan.GATE_INFO!=null || (objBenhNhan.GATE_INFO!=null && objBenhNhan.GATE_INFO.length()>0)){
+			String listKham[] = objBenhNhan.GATE_INFO.split("@");
+			for(int i=0; i<listKham.length; i++){
+				listKhamBenh.add(listKham[i]);
+			}
+		}
 		//
 	}
 
@@ -3590,10 +4116,17 @@ public class FormKhamBenhDlg extends Dialog {
 		objDVChiTiet = null;
 		objCongKham = null;
 		objCtNhapthuoc = null;
+		//
 		listDataCtNhapthuoc.clear();
+		hashDichVuChiTiet.clear();
+		hashDataCtNhapthuoc.clear();
 		listCLSData.clear();
 		listDichVu.clear();
 		listThuocData.clear();
+		//
+		cbMabenhKhac.setText("");
+		txtTenBenhPhu.setText("");
+		//
 		TONGCONG = 0;
 		TONGCONG_BH = 0;
 		TONGCONG_BHYT = 0;
@@ -3601,12 +4134,16 @@ public class FormKhamBenhDlg extends Dialog {
 		//
 		KIEU_THANH_TOAN = Utils.THANHTOAN_BHYT_2;
 		CHI_XET_NGHIEM = 0;
-		updateGiaTien();
+		//
+		updateTinhTien();
+		//
 		startDialog();
 		cbBenhBanDau.setVisible(false);
 		txtBenhBanDau.setVisible(true);
 		tabFolder.setSelection(0);
+		cbKhoThuoc.setText("Kho bảo hiểm");
 		setFocusTabFolder();
+		//
 	}
 
 	private void startDialog() {
@@ -3636,18 +4173,21 @@ public class FormKhamBenhDlg extends Dialog {
 		if (DbHelper.currentSessionUserId.LOAI.toUpperCase().equals("ACCT") == true) {
 			btnTHANHTOAN.setEnabled(true);
 		} else {
-			btnTHANHTOAN.setEnabled(false);
+			//btnTHANHTOAN.setEnabled(false);
 		}
 		// list bs
 		cbKhoThuoc.removeAll();
 		cbKhoThuoc.add("Tất cả");
 		for(Khohang obj: DbHelper.listDataKhohang){
-			cbKhoThuoc.add(obj.KHO_NAME);
+			if(obj.TYPE==0){
+				// Add only kho thuoc.
+				cbKhoThuoc.add(obj.KHO_NAME);
+			}
 		}
 		// list bs
 		cbLieuDung.removeAll();
 		for(MstLieudung obj: DbHelper.listDataMstLieuDung){
-			cbLieuDung.add(obj.LIEUDUNG_NAME);
+			cbLieuDung.add(obj.LIEUDUNG_ID + "#" + obj.LIEUDUNG_NAME);
 		}
 		//
 		// doSearchBenhNhan(1);
@@ -3670,6 +4210,8 @@ public class FormKhamBenhDlg extends Dialog {
 		buttonRefresh(false);
 		//
 		setBeginFocus();
+		//
+		
 	}
 
 	private void setBeginFocus() {
@@ -3682,15 +4224,46 @@ public class FormKhamBenhDlg extends Dialog {
 		}
 	}
 
-	public static void doSearchBenhNhan(int isSearchAll) {
+	public static void doSearchBenhNhan() {
+	
 		try {
 			Connection con = DbHelper.getSql2o();
-			String sql = "SELECT * FROM benh_nhan as bn, kham_benh as kb where bn.BN_ID=kb.BN_ID ";
-			if (isSearchAll == 1) {
+			//String sql = "SELECT * FROM benh_nhan as bn, kham_benh as kb where bn.BN_ID=kb.BN_ID ";
+			String sql = "SELECT * FROM kham_benh where STS>-1 ";
+			if( btnCheckButtonTatCaPhieuDta==true){
+				sql += " and MA_KHOA='K31' ";
+			}
+			
+			if( btnCheckButtonNgayXemDta==false){
 				sql += " and DATE(KB_DATE) = CURDATE()";
 			}
+			else{
+				sql += " and DATEDIFF(NOW(), KB_DATE) <= 30 ";
+			}
+			if( btnCheckButtonTatCaTHANHTOANDta==true){
+				sql += " ";//and LENGTH(NGAY_TTOAN)>0";
+			}
+			else{
+				sql += " and LENGTH(NGAY_TTOAN)=0";
+			}
+			if( btnCheckButtonTatCaNVDta==false){
+				sql += " ";
+			}
+			else{
+				sql += " and NV_ID="+DbHelper.currentSessionUserId.U_ID.intValue();
+			}
+
 			sql += " order by KB_DATE desc";
+			logger.info("SQL PHIEUKHAM=" + sql);
 			listData = con.createQuery(sql).executeAndFetchTable().rows();
+			//
+			tongBN = 0;
+			tongChi = 0;
+			for(Row obj: listData){
+				tongBN+=obj.getInteger("T_BNTT").intValue();
+				tongChi+=obj.getInteger("T_TONGCHI").intValue();
+			}
+			//
 		} catch (Exception e) {
 			logger.error(e);
 		}
@@ -3701,6 +4274,9 @@ public class FormKhamBenhDlg extends Dialog {
 				tableViewerPhieuKham.setInput(listData);
 				tableViewerPhieuKham.refresh();
 				tablePhieuKham.setSelection(selectIndex);
+				lbTONG_BN.setText("Thu BN:"+java.text.NumberFormat.getInstance(java.util.Locale.ITALY)
+						.format(tongBN) +"/Tổng Thu:"+java.text.NumberFormat.getInstance(java.util.Locale.ITALY)
+						.format(tongChi));
 			}
 		});
 	}
@@ -3715,11 +4291,11 @@ public class FormKhamBenhDlg extends Dialog {
 			// logger.info("LOAD CONGKHAM");
 			Connection con = DbHelper.getSql2o();
 			String sql = "select * from dv_chitiet where MA_LK="
-					+ objPhieuKhamBenh.MA_LK + " and MA_NHOM=13";
-			System.out.println(sql);
-			List<DvChitiet> list = con.createQuery(sql).executeAndFetch(
-					DvChitiet.class);
-			System.out.println("List<DvChitiet> list size=" + list.size());
+					+ objPhieuKhamBenh.MA_LK + " and (MA_NHOM=13 or MA_NHOM=14)";
+					//+ objPhieuKhamBenh.MA_LK + " and MA_NHOM=13";
+			//System.out.println(sql);
+			List<DvChitiet> list = con.createQuery(sql).executeAndFetch(DvChitiet.class);
+			//System.out.println("List<DvChitiet> list size=" + list.size());
 			// con.close();
 			//
 			if (list.size() == 1) {
@@ -3727,8 +4303,7 @@ public class FormKhamBenhDlg extends Dialog {
 				setCHI_XET_NGHIEM(0);
 				logger.info("CONG KHAM LOAD " + objCongKham.TEN_DICH_VU);
 			} else {
-				logger.info("----------------- CONG KHAM LOAD: " + objCongKham
-						+ " size=" + list.size());
+				logger.info("----------------- CONG KHAM LOAD: " + objCongKham+ " size=" + list.size());
 				objCongKham = null;
 				setCHI_XET_NGHIEM(1);
 				KIEU_THANH_TOAN = Utils.THANHTOAN_VIENPHI;
@@ -3752,8 +4327,7 @@ public class FormKhamBenhDlg extends Dialog {
 		try {
 			System.out.println("LOAD THUOC");
 			Connection con = DbHelper.getSql2o();
-			String sql = "select * from thuoc_chitiet where MA_LK="
-					+ objPhieuKhamBenh.MA_LK + "";
+			String sql = "select * from thuoc_chitiet where MA_LK=" + objPhieuKhamBenh.MA_LK + "";
 			System.out.println(sql);
 			List<ThuocChitiet> list = con.createQuery(sql).executeAndFetch(
 					ThuocChitiet.class);
@@ -3776,7 +4350,7 @@ public class FormKhamBenhDlg extends Dialog {
 	}
 
 	private void selectTaiKham() {
-		updateGiaTien();
+		updateTinhTien();
 	}
 
 	private void setCHI_XET_NGHIEM(int value) {
@@ -3802,19 +4376,28 @@ public class FormKhamBenhDlg extends Dialog {
 		int idx0 = -1;
 		for (String key : DbHelper.hashCongKham.keySet()) {
 			Dichvu obj = DbHelper.hashCongKham.get(key);
+			if(cbCapCuu.getSelectionIndex()==0){
+				if(Utils.getInt(obj.MANHOM_9324)==14){
+					continue;
+				}
+			}
+			else{
+				if(Utils.getInt(obj.MANHOM_9324)==13){
+					continue;
+				}
+				
+			}
 			// System.out.println(obj.DON_GIA2);
 			if (KIEU_THANH_TOAN == Utils.THANHTOAN_BHYT) {
 				if (obj.DON_GIA2 == 29000) {
 					idx0++;
 					// System.out.println(obj.MA_DVKT
 					// +"-"+obj.TEN_DVKT+"("+obj.DON_GIA2+")");
-					cbKhoa.add(obj.MA_DVKT + "-" + obj.TEN_DVKT + "("
-							+ obj.DON_GIA2 + ")");
+					cbKhoa.add(obj.DV_ID +"-"+obj.MA_DVKT + "-" + obj.TEN_DVKT + "(" + obj.DON_GIA2 + ")");
 
 					if (obj.MA_DVKT.indexOf(names[0]) > -1) {
 						idxFound = idx0;
-						System.out.println("FOUND IDX=" + idxFound + " "
-								+ obj.MA_DVKT + " " + names[0]);
+						System.out.println("FOUND IDX=" + idxFound + " "+ obj.MA_DVKT + " " + names[0]);
 					}
 				}
 			} else {
@@ -3822,8 +4405,7 @@ public class FormKhamBenhDlg extends Dialog {
 				// +"-"+obj.TEN_DVKT+"("+obj.DON_GIA2+")");
 				if (obj.DON_GIA2 > 29000) {
 					idx0++;
-					cbKhoa.add(obj.MA_DVKT + "-" + obj.TEN_DVKT + "("
-							+ obj.DON_GIA2 + ")");
+					cbKhoa.add(obj.DV_ID +"-"+ obj.MA_DVKT + "-" + obj.TEN_DVKT + "("+ obj.DON_GIA2 + ")");
 					if (obj.MA_DVKT.indexOf(names[0]) > -1) {
 						idxFound = idx0;
 						System.out.println("FOUND IDX=" + idxFound + " "
@@ -3832,14 +4414,18 @@ public class FormKhamBenhDlg extends Dialog {
 				}
 			}
 		}
+		//Dichvu objCapCuu = DbHelper.hashCongKham.get("238-K02.1908-Giường Hồi sức cấp cứu Hạng IV - Khoa Hồi sức cấp cứu(40000)");
+		//cbKhoa.add(objCapCuu.MA_DVKT + "-" + objCapCuu.TEN_DVKT + "(" + objCapCuu.DON_GIA2 + ")");
 		// Reload
 		// System.out.println("-------------IDX=" + idxFound);
 		if (objCongKham != null) {
 			//
 			if (objCongKham.DON_GIA2 == 0 || objCongKham.DON_GIA2 > 29000) {
 				KIEU_THANH_TOAN = Utils.THANHTOAN_BHYT_2;
+				//System.out.println("-------------KIEU_THANH_TOAN = Utils.THANHTOAN_BHYT_2;" + KIEU_THANH_TOAN);
 			} else {
 				KIEU_THANH_TOAN = Utils.THANHTOAN_BHYT;
+				//System.out.println("-------------KIEU_THANH_TOAN = Utils.THANHTOAN_BHYT" + KIEU_THANH_TOAN);
 			}
 			//
 			cbKhoa.select(idxFound);
@@ -3850,11 +4436,11 @@ public class FormKhamBenhDlg extends Dialog {
 			cbListBacSiCLS.removeAll();
 			cbListBacsiThuoc.removeAll();
 			for (Users obj : DbHelper.listUsers) {
-				if (obj.MACCHN.equals(objCongKham.MA_BAC_SI) == true) {
-					cbListBacSiForm.add(obj.U_NAME);
-					cbListBacSiCLS.add(obj.U_NAME);
-					cbListBacsiThuoc.add(obj.U_NAME);
-				}
+				//if (obj.MACCHN.equals(objCongKham.MA_BAC_SI) == true) {
+					cbListBacSiForm.add(obj.U_ID+"-"+obj.TEN_NHANVIEN);
+					cbListBacSiCLS.add(obj.U_ID+"-"+obj.TEN_NHANVIEN);
+					cbListBacsiThuoc.add(obj.U_ID+"-"+obj.TEN_NHANVIEN);
+				//}
 			}
 			cbListBacSiForm.select(0);
 			cbListBacSiCLS.select(0);
@@ -3919,9 +4505,7 @@ public class FormKhamBenhDlg extends Dialog {
 			btnRadio4.setSelection(false);
 			btnRadio5.setSelection(false);
 			selectVienPhi();
-
 		}
-
 	}
 
 	private void setDefaultField() {
@@ -3931,6 +4515,7 @@ public class FormKhamBenhDlg extends Dialog {
 		txtBenhBanDau.setText("");
 		cbTenBenh.setText("");
 		cbTenBenhPhu.setText("");
+		cbCapCuu.select(0);
 		loadCongKhamData();
 		btnRadio4.setEnabled(false);
 		//
@@ -4021,19 +4606,27 @@ public class FormKhamBenhDlg extends Dialog {
 		TableItem item = tableTHUOC.getSelection()[0];
 		ThuocChitiet objThuocChitiet = (ThuocChitiet) item.getData();
 		if (objThuocChitiet != null) {
-			if (objThuocChitiet.STS <= 0) {
+			if (objThuocChitiet.STS <= 0 && objThuocChitiet.THANHTOAN==0) {
 				//
+				if(objThuocChitiet.STS==0){
+					CtNhapthuoc objCtNhapthuoc = hashDataCtNhapthuoc.get(objThuocChitiet.CT_ID);
+					if(objCtNhapthuoc!=null){
+						// Rollback soluong TON KHO
+						objCtNhapthuoc.SL_TONKHO = objCtNhapthuoc.SL_TONKHO +  objThuocChitiet.SO_LUONG;
+						objCtNhapthuoc.update();
+					}
+				}
 				listThuocData.remove(objThuocChitiet);
 				//
 				objThuocChitiet.deleteRow();
 				//
-				updateGiaTien();
+				updateTinhTien();
 				//
 				tableViewerTHUOC.refresh();
+				reloadTableChitietNhapthuoc();
 				//
 			} else {
-				MessageDialog.openError(shellKhamBenh, "Có lỗi",
-						"Thuốc đã phát, không xóa được");
+				MessageDialog.openError(shellKhamBenh, "Có lỗi", "Thuốc đã phát/Đã thanh toán, không xóa được");
 			}
 		}
 
@@ -4051,8 +4644,8 @@ public class FormKhamBenhDlg extends Dialog {
 			Connection con = DbHelper.getSql2o();
 			for (int i = 0; i < listThuocData.size(); i++) {
 				ThuocChitiet obj = (ThuocChitiet) listThuocData.get(i);
-				obj.insert();
 				obj.STS = 0;
+				obj.insert();
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -4200,7 +4793,12 @@ public class FormKhamBenhDlg extends Dialog {
 			//
 		} else if (e.keyCode == 32) {
 			// Change kieu Thanh Toan
-			updateKieuThanhToanCLS();
+			if(KIEU_THANH_TOAN==Utils.THANHTOAN_MUA_CLS){
+				updateBacSiCLS();
+			}
+			else{
+				updateKieuThanhToanCLS();
+			}
 			//
 		} else if (e.keyCode == SWT.DEL) {
 			//
@@ -4219,10 +4817,37 @@ public class FormKhamBenhDlg extends Dialog {
 			doViewCLS();
 			//
 		}
-		controlKey(e);
+		//controlKey(e);
 		//
 		keyPress(e);
 		//
+	}
+
+	private void updateBacSiCLS() {
+		if (tableSelectedCLS.getSelectionCount() == 0) {
+			return;
+		}
+		TableItem item = tableSelectedCLS.getSelection()[0];
+		DvChitiet objDVChiTiet = (DvChitiet) item.getData();
+		if (objDVChiTiet.STS <= 0 && objDVChiTiet.THANHTOAN==0) {
+			//
+		} else {
+			MessageDialog.openError(shellKhamBenh, "Có lỗi", "CLS đang/đã thực hiện/đã thanh toán, không chỉnh được");
+			return;
+		}
+		if (objDVChiTiet != null) {
+			if (objDVChiTiet.MA_BAC_SI!=null && objDVChiTiet.MA_BAC_SI.length()>0) {
+				objDVChiTiet.MA_BAC_SI = ""; 
+			} else {
+				if(DbHelper.hashDataUsers.get(cbListBacSiCLS.getText())!=null){
+					objDVChiTiet.MA_BAC_SI = DbHelper.hashDataUsers.get(cbListBacSiCLS.getText()).MACCHN;
+				}
+			}
+		}
+		objDVChiTiet.MA_KHOA = DbHelper.getMAKHOA(cbKhoa.getText());
+		//
+		tableViewerSelectedCLS.refresh();
+		
 	}
 
 	private void deleteCLS() {
@@ -4232,19 +4857,20 @@ public class FormKhamBenhDlg extends Dialog {
 		TableItem item = tableSelectedCLS.getSelection()[0];
 		DvChitiet objDVChiTiet = (DvChitiet) item.getData();
 		if (objDVChiTiet != null) {
-			if (objDVChiTiet.STS <= 0) {
-				//
+			if (objDVChiTiet.STS <= 0 && objDVChiTiet.THANHTOAN==0) {
+				// nghialuong
 				listCLSData.remove(objDVChiTiet);
+				//
+				hashDichVuChiTiet.remove(objDVChiTiet.MA_DICH_VU);
 				//
 				objDVChiTiet.deleteRow();
 				//
-				updateGiaTien();
+				updateTinhTien();
 				//
 				tableViewerSelectedCLS.refresh();
 				//
 			} else {
-				MessageDialog.openError(shellKhamBenh, "Có lỗi",
-						"CLS đang/đã thực hiện, không xóa được");
+				MessageDialog.openError(shellKhamBenh, "Có lỗi", "CLS đang/đã thực hiện/đã thanh toán, không xóa được");
 			}
 		}
 	}
@@ -4255,16 +4881,22 @@ public class FormKhamBenhDlg extends Dialog {
 		}
 		TableItem item = tableSelectedCLS.getSelection()[0];
 		DvChitiet objDVChiTiet = (DvChitiet) item.getData();
+		if (objDVChiTiet.STS <= 0 && objDVChiTiet.THANHTOAN==0) {
+			//
+		} else {
+			MessageDialog.openError(shellKhamBenh, "Có lỗi", "CLS đang/đã thực hiện/đã thanh toán, không chỉnh được");
+			return;
+		}
 		if (objDVChiTiet != null) {
-			if (objDVChiTiet.TYLE_TT == 0) {
-				objDVChiTiet.TYLE_TT = txtMathe.iTyLeHuong;
+			if (objDVChiTiet.MUC_HUONG == 0) {
+				objDVChiTiet.MUC_HUONG = txtMathe.iTyLeHuong;
 			} else {
-				objDVChiTiet.TYLE_TT = 0;
+				objDVChiTiet.MUC_HUONG = 0;
 			}
 		}
 		objDVChiTiet.MA_KHOA = DbHelper.getMAKHOA(cbKhoa.getText());
 		//
-		updateGiaTien();
+		updateTinhTien();
 		//
 		tableViewerSelectedCLS.refresh();
 	}
@@ -4279,6 +4911,8 @@ public class FormKhamBenhDlg extends Dialog {
 			case '2': // CTRL + 1
 				tabFolder.setSelection(1);
 				setFocusTabFolder();
+				Date obj = null;
+				obj.clone();
 				break;
 			case '3': // CTRL + 1
 				tabFolder.setSelection(2);
@@ -4303,15 +4937,15 @@ public class FormKhamBenhDlg extends Dialog {
 	protected void keyPress(KeyEvent e) {
 		//
 		switch (e.keyCode) {
-		case SWT.F2:
-			doSaveFormKhamBenh();
-			return;
-		case SWT.F3:
-			muaPhieuXetNghiem();
-			return;
-		case SWT.ESC:
-			// shellKhamBenh.close();
-			return;
+			case SWT.F2:
+				doSaveFormKhamBenh();
+				return;
+			case SWT.F3:
+				doSavePhieuXetNghiem();
+				return;
+			case SWT.ESC:
+				// shellKhamBenh.close();
+				return;
 		}
 		controlKey(e);
 	}
@@ -4417,42 +5051,18 @@ public class FormKhamBenhDlg extends Dialog {
 
 	}
 
-	private void inPhieuBHYT(ReportDAO report) {
+	private void inPhieuVienPhi(ReportDAO report) {
 		java.sql.Connection con = null;
 		try {
-			// String source = "report/PhieuBHYT.jrxml";
-			// JasperReport jr = JasperCompileManager.compileReport(source);
-			// InputStream jr =
-			// getClass().getResourceAsStream("PhieuBHYT.jasper");
-			// SWTResourceManager.
-			// JasperReport jr =
-			// JasperCompileManager.compileReport(getClass().getResourceAsStream("PhieuBHYT.jrxml"));
-			// logger.info("JasperCompileManager begin load");
-			//
-			String reportName = "PhieuBHYT.jasper";
-			String reportName_all = "PhieuBHYT4BN.jasper";
-			boolean isBHYT = false;
-			if (KIEU_THANH_TOAN == Utils.THANHTOAN_BHYT
-					|| KIEU_THANH_TOAN == Utils.THANHTOAN_BHYT_2) {
-				reportName = "PhieuBHYT.jasper";
-				reportName_all = "PhieuBHYT4BN.jasper";
-				isBHYT = true;
-			} else {
-				reportName = "PhieuVienPhi.jasper";
-			}
-			JasperReport jr = (JasperReport) JRLoader.loadObject(this
-					.getClass().getResource("/" + reportName));
-			JasperReport jrAll = null;
+			String reportName = "PhieuVienPhi.jasper";
+			JasperReport jr = (JasperReport) JRLoader.loadObject(this.getClass().getResource("/" + reportName));
 			// logger.info("JasperCompileManager " + jr);
-			JRBeanCollectionDataSource report_cong = new JRBeanCollectionDataSource(
-					report.congkham);
-			JRBeanCollectionDataSource report_dv = new JRBeanCollectionDataSource(
-					report.listdv);
-			JRBeanCollectionDataSource report_thuoc = new JRBeanCollectionDataSource(
-					report.thuoc);
-			// System.out.println(" COUNT = " + report_dv.getRecordCount());
+			//
+			JRBeanCollectionDataSource report_cong = new JRBeanCollectionDataSource( report.congkham);
+			JRBeanCollectionDataSource report_dv = new JRBeanCollectionDataSource( report.listdv);
+			JRBeanCollectionDataSource report_thuoc = new JRBeanCollectionDataSource( report.thuoc);
 			Map<String, Object> params = new HashMap<String, Object>();
-			Map<String, Object> params2 = new HashMap<String, Object>();
+			// System.out.println(" COUNT = " + report_dv.getRecordCount());
 			if (report.bn.MA_DKBD.equals("VP")) {
 				// report.bn.MA_DKBD = "";
 			}
@@ -4467,69 +5077,39 @@ public class FormKhamBenhDlg extends Dialog {
 			params.put("NGAYVAO", report.tuNgay);
 			params.put("NGAYRA", report.denNgay);
 
-			if (isBHYT) {
-				jrAll = (JasperReport) JRLoader.loadObject(this.getClass()
-						.getResource("/" + reportName_all));
-				params2.put("BN", report.bn);
-				params2.put("KB", report.kb);
-				params2.put("TIENCONG_DataSource",
-						new JRBeanCollectionDataSource(report.congkham));
-				params2.put("LISTDICHVU_DataSource",
-						new JRBeanCollectionDataSource(report.listdv));
-				params2.put("THUOC_DataSource", new JRBeanCollectionDataSource(
-						report.thuoc));
-				params2.put("DICHVU_SUM", report.sumDv);
-				params2.put("TIENCONG_SUM", report.sumCongkham);
-				params2.put("THUOC_SUM", report.sumThuoc);
-				params2.put("NGAYVAO", report.tuNgay);
-				params2.put("NGAYRA", report.denNgay);
-			}
-
 			if (objBenhNhan.MA_DKBD == null
 					|| objBenhNhan.MA_DKBD.length() == 0) {
 				params.put("TEN_CSKCB", "");
-				if (isBHYT) {
-					params2.put("TEN_CSKCB", "");
-				}
 			} else {
 				params.put(
 						"TEN_CSKCB",
 						MaCskcbCache.getMaCskcb(objBenhNhan.MA_DKBD) != null ? MaCskcbCache
 								.getMaCskcb(objBenhNhan.MA_DKBD).MA_NAME : "");
-				if (isBHYT) {
-					params2.put(
-							"TEN_CSKCB",
-							MaCskcbCache.getMaCskcb(objBenhNhan.MA_DKBD) != null ? MaCskcbCache
-									.getMaCskcb(objBenhNhan.MA_DKBD).MA_NAME
-									: "");
-				}
 			}
 
 			if (report.congkham != null) {
-				KhoaPhong objKhoaPhong = DbHelper.hashKhoaPhongMAKHOA
-						.get(report.congkham.get(0).MA_KHOA);
+				KhoaPhong objKhoaPhong = DbHelper.hashKhoaPhongMAKHOA.get(report.congkham.get(0).MA_KHOA);
 				if (objKhoaPhong != null) {
 					params.put("TENKHOAPHONG", objKhoaPhong.KP_NAME);
-					if (isBHYT)
-						params2.put("TENKHOAPHONG", objKhoaPhong.KP_NAME);
 
 				} else {
 					params.put("TENKHOAPHONG", report.congkham.get(0).MA_KHOA);
-					if (isBHYT)
-						params2.put("TENKHOAPHONG",
-								report.congkham.get(0).MA_KHOA);
 				}
-				Users bs = DbHelper.hashDataUsersMaCCHN.get(report.congkham
-						.get(0).MA_BAC_SI);
+				//
+				if(report.congkham.get(0).MA_NHOM.intValue()==14){
+					// CAP CUU
+					params.put("TENKHOAPHONG", "Cấp Cứu");
+					params.put("CONGKHAM_TITLE", "Tiền phòng điều trị cấp cứu");
+				}
+				else{
+					params.put("CONGKHAM_TITLE", "Tiền công khám bệnh");
+				}
+				//
+				Users bs = DbHelper.hashDataUsersMaCCHN.get(report.congkham.get(0).MA_BAC_SI);
 				if (bs != null) {
 					params.put("TENBACSI", bs.TEN_NHANVIEN);
-					if (isBHYT)
-						params2.put("TENBACSI", bs.TEN_NHANVIEN);
 				} else {
 					params.put("TENBACSI", report.congkham.get(0).MA_BAC_SI);
-					if (isBHYT)
-						params2.put("TENBACSI",
-								report.congkham.get(0).MA_BAC_SI);
 				}
 			}
 
@@ -4537,22 +5117,8 @@ public class FormKhamBenhDlg extends Dialog {
 			params.put("NGUOI_LAP", report.strNguoiLap == null ? ""
 					: report.strNguoiLap);
 			params.put("TONGCONG_SUM", report.sumTongCong);
-			if (isBHYT) {
-
-				params2.put("NGAY_GIO", report.ngayGio);
-				params2.put("NGUOI_LAP", report.strNguoiLap == null ? ""
-						: report.strNguoiLap);
-				params2.put("TONGCONG_SUM", report.sumTongCong);
-				//
-			}
-			JasperPrint jp = JasperFillManager.fillReport(jr, params,
-					new JREmptyDataSource());
+			JasperPrint jp = JasperFillManager.fillReport(jr, params,new JREmptyDataSource());
 			JasperViewer.viewReport(jp, false);
-			if (isBHYT) {
-				JasperPrint jp_all = JasperFillManager.fillReport(jrAll,
-						params2, new JREmptyDataSource());
-				JasperViewer.viewReport(jp_all, false);
-			}
 			// JasperPrintManager.printReport(jp, true);
 			// JasperPrintManager.printReport(jp_all, true);
 			// JasperPrintManager.printReport(jp,false);
@@ -4578,6 +5144,183 @@ public class FormKhamBenhDlg extends Dialog {
 		}
 	}
 
+	private void inPhieuTongHopAll(ReportDAO report) {
+		java.sql.Connection con = null;
+		try {
+			String reportName = "PhieuBHYT4BN.jasper";
+			JasperReport jr = (JasperReport) JRLoader.loadObject(this.getClass().getResource("/" + reportName));
+			// logger.info("JasperCompileManager " + jr);
+			JRBeanCollectionDataSource report_cong = new JRBeanCollectionDataSource( report.congkham);
+			JRBeanCollectionDataSource report_dv = new JRBeanCollectionDataSource( report.listdv);
+			JRBeanCollectionDataSource report_thuoc = new JRBeanCollectionDataSource( report.thuoc);
+			Map<String, Object> params = new HashMap<String, Object>();
+			// System.out.println(" COUNT = " + report_dv.getRecordCount());
+			if (report.bn.MA_DKBD.equals("VP")) {
+				// report.bn.MA_DKBD = "";
+			}
+			params.put("BN", report.bn);
+			params.put("KB", report.kb);
+			params.put("TIENCONG_DataSource", report_cong);
+			params.put("LISTDICHVU_DataSource", report_dv);
+			params.put("THUOC_DataSource", report_thuoc);
+			params.put("DICHVU_SUM", report.sumDv);
+			params.put("TIENCONG_SUM", report.sumCongkham);
+			params.put("THUOC_SUM", report.sumThuoc);
+			params.put("NGAYVAO", report.tuNgay);
+			params.put("NGAYRA", report.denNgay);
+
+			if (objBenhNhan.MA_DKBD == null
+					|| objBenhNhan.MA_DKBD.length() == 0) {
+				params.put("TEN_CSKCB", "");
+			} else {
+				params.put(
+						"TEN_CSKCB",
+						MaCskcbCache.getMaCskcb(objBenhNhan.MA_DKBD) != null ? MaCskcbCache
+								.getMaCskcb(objBenhNhan.MA_DKBD).MA_NAME : "");
+			}
+
+			if (report.congkham != null) {
+				KhoaPhong objKhoaPhong = DbHelper.hashKhoaPhongMAKHOA
+						.get(report.congkham.get(0).MA_KHOA);
+				if (objKhoaPhong != null) {
+					params.put("TENKHOAPHONG", objKhoaPhong.KP_NAME);
+
+				} else {
+					params.put("TENKHOAPHONG", report.congkham.get(0).MA_KHOA);
+				}
+				if(report.congkham.get(0).MA_NHOM.intValue()==14){
+					// CAP CUU
+					params.put("TENKHOAPHONG", "Cấp Cứu");
+					params.put("CONGKHAM_TITLE", "Tiền phòng điều trị cấp cứu");
+				}
+				else{
+					params.put("CONGKHAM_TITLE", "Tiền công khám bệnh");
+				}
+				Users bs = DbHelper.hashDataUsersMaCCHN.get(report.congkham.get(0).MA_BAC_SI);
+				if (bs != null) {
+					params.put("TENBACSI", bs.TEN_NHANVIEN);
+				} else {
+					params.put("TENBACSI", report.congkham.get(0).MA_BAC_SI);
+				}
+			}
+
+			params.put("NGAY_GIO", report.ngayGio);
+			params.put("NGUOI_LAP", report.strNguoiLap == null ? ""
+					: report.strNguoiLap);
+			params.put("TONGCONG_SUM", report.sumTongCong);
+			JasperPrint jp = JasperFillManager.fillReport(jr, params,new JREmptyDataSource());
+			JasperViewer.viewReport(jp, false);
+			// JasperPrintManager.printReport(jp, true);
+			// JasperPrintManager.printReport(jp_all, true);
+			// JasperPrintManager.printReport(jp,false);
+			//
+			//
+			// OutputStream os = new FileOutputStream("STUDENT_MARK_"+".pdf");
+			// JasperExportManager.exportReportToPdfStream(jp, os);
+
+			// os.flush();
+			// os.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		} finally {
+			try {
+				if (con != null && !con.isClosed()) {
+					// con.close();
+				}
+			} catch (Exception e) {
+				logger.error(e);
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	private void inPhieuBHYT(ReportDAO report) {
+		java.sql.Connection con = null;
+		try {
+			//
+			String reportName = "PhieuBHYT.jasper";
+			if (KIEU_THANH_TOAN == Utils.THANHTOAN_BHYT
+					|| KIEU_THANH_TOAN == Utils.THANHTOAN_BHYT_2) {
+				reportName = "PhieuBHYT.jasper";
+			} else {
+				reportName = "PhieuVienPhi.jasper";
+			}
+			JasperReport jr = (JasperReport) JRLoader.loadObject(this.getClass().getResource("/" + reportName));
+			// logger.info("JasperCompileManager " + jr);
+			JRBeanCollectionDataSource report_cong = new JRBeanCollectionDataSource( report.congkham);
+			JRBeanCollectionDataSource report_dv = new JRBeanCollectionDataSource( report.listdv);
+			JRBeanCollectionDataSource report_thuoc = new JRBeanCollectionDataSource( report.thuoc);
+			// System.out.println(" COUNT = " + report_dv.getRecordCount());
+			Map<String, Object> params = new HashMap<String, Object>();
+			if (report.bn.MA_DKBD.equals("VP")) {
+				// report.bn.MA_DKBD = "";
+			}
+			params.put("BN", report.bn);
+			params.put("KB", report.kb);
+			params.put("TIENCONG_DataSource", report_cong);
+			params.put("LISTDICHVU_DataSource", report_dv);
+			params.put("THUOC_DataSource", report_thuoc);
+			params.put("DICHVU_SUM", report.sumDv);
+			params.put("TIENCONG_SUM", report.sumCongkham);
+			params.put("THUOC_SUM", report.sumThuoc);
+			params.put("NGAYVAO", report.tuNgay);
+			params.put("NGAYRA", report.denNgay);
+
+			if (objBenhNhan.MA_DKBD == null
+					|| objBenhNhan.MA_DKBD.length() == 0) {
+				params.put("TEN_CSKCB", "");
+			} else {
+				params.put(
+						"TEN_CSKCB",
+						MaCskcbCache.getMaCskcb(objBenhNhan.MA_DKBD) != null ? MaCskcbCache
+								.getMaCskcb(objBenhNhan.MA_DKBD).MA_NAME : "");
+			}
+
+			if (report.congkham != null) {
+				KhoaPhong objKhoaPhong = DbHelper.hashKhoaPhongMAKHOA.get(report.congkham.get(0).MA_KHOA);
+				if (objKhoaPhong != null) {
+					params.put("TENKHOAPHONG", objKhoaPhong.KP_NAME);
+				} else {
+					params.put("TENKHOAPHONG", report.congkham.get(0).MA_KHOA);
+				}
+				if(report.congkham.get(0).MA_NHOM.intValue()==14){
+					// CAP CUU
+					params.put("TENKHOAPHONG", "Cấp Cứu");
+					params.put("CONGKHAM_TITLE", "Tiền phòng điều trị cấp cứu");
+				}
+				else{
+					params.put("CONGKHAM_TITLE", "Tiền công khám bệnh");
+				}
+				Users bs = DbHelper.hashDataUsersMaCCHN.get(report.congkham.get(0).MA_BAC_SI);
+				if (bs != null) {
+					params.put("TENBACSI", bs.TEN_NHANVIEN);
+				} else {
+					params.put("TENBACSI", report.congkham.get(0).MA_BAC_SI);
+				}
+			}
+
+			params.put("NGAY_GIO", report.ngayGio);
+			params.put("NGUOI_LAP", report.strNguoiLap == null ? "": report.strNguoiLap);
+			params.put("TONGCONG_SUM", report.sumTongCong);
+			JasperPrint jp = JasperFillManager.fillReport(jr, params,
+					new JREmptyDataSource());
+			JasperViewer.viewReport(jp, false);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		} finally {
+			try {
+				if (con != null && !con.isClosed()) {
+					// con.close();
+				}
+			} catch (Exception e) {
+				logger.error(e);
+				e.printStackTrace();
+			}
+		}
+	}
+
 	private void inPhieuXetNghiem(ReportDAO report) {
 		java.sql.Connection con = null;
 		try {
@@ -4586,8 +5329,7 @@ public class FormKhamBenhDlg extends Dialog {
 			JasperReport jr = (JasperReport) JRLoader.loadObject(this
 					.getClass().getResource("/PhieuCLS.jasper"));
 
-			JRBeanCollectionDataSource report_dv = new JRBeanCollectionDataSource(
-					report.listdv);
+			JRBeanCollectionDataSource report_dv = new JRBeanCollectionDataSource(report.listdv);
 			Map<String, Object> params = new HashMap<String, Object>();
 			params.put("BN", report.bn);
 			params.put("KB", report.kb);
@@ -4641,22 +5383,17 @@ public class FormKhamBenhDlg extends Dialog {
 	}
 
 	private void printPhieuXetNghiem() {
-		updateGiaTien();
-
+		printPhieuXetNghiem(true);
+	}
+	private void printPhieuXetNghiem(boolean isPrintAll) {
+		updateTinhTien();
+		//
 		ReportDAO report = new ReportDAO();
 		report.bn = objBenhNhan;
 		report.kb = objPhieuKhamBenh;
 
 		report.listdv = new ArrayList<>();
 		report.sumDv = new SumReportDAO();
-		// for (int i = 0; i < listCLSData.size(); i++) {
-		// DvChitiet obj = listCLSData.get(i);
-		// report.sumDv.TT += obj.THANH_TIEN;
-		// report.sumDv.BH += obj.TT_BH;
-		// report.sumDv.NB += obj.TT_NB;
-		// report.sumDv.KH += (obj.THANH_TIEN - obj.TT_BH - obj.TT_NB);
-		// report.dv.add(obj);
-		// }
 		report.sumThuoc = new SumReportDAO();
 		//
 		Hashtable<Integer, SumReportDAO> hashPhanLoaiDV = new Hashtable<Integer, SumReportDAO>();
@@ -4668,10 +5405,10 @@ public class FormKhamBenhDlg extends Dialog {
 				SumReportDAO obj = new SumReportDAO();
 				//
 				obj.TT2 += objDvChitiet.DON_GIA2 * 1;
-				obj.TT += obj.TT2;
+				obj.TT += objDvChitiet.DON_GIA2 * 1;
 				obj.BH += 0;
-				obj.NB += obj.TT2;
-				obj.NB2 += obj.TT2;
+				obj.NB += objDvChitiet.DON_GIA2 * 1;
+				obj.NB2 += objDvChitiet.DON_GIA2 * 1;
 				obj.KH += 0;
 				obj.dv.add(objDvChitiet);
 				obj.setPhanLoaiDichVu("" + objDvChitiet.MA_NHOM);
@@ -4684,14 +5421,13 @@ public class FormKhamBenhDlg extends Dialog {
 				SumReportDAO obj = hashPhanLoaiDV.get(MANHOM);
 				//
 				obj.TT2 += objDvChitiet.DON_GIA2 * 1;
-				obj.TT += obj.TT2;
+				obj.TT += objDvChitiet.DON_GIA2 * 1;
 				obj.BH += 0;
-				obj.NB += obj.TT2;
-				obj.NB2 += obj.TT2;
+				obj.NB += objDvChitiet.DON_GIA2 * 1;
+				obj.NB2 += objDvChitiet.DON_GIA2 * 1;
 				obj.KH += 0;
 				obj.dv.add(objDvChitiet);
 				obj.setPhanLoaiDichVu("" + objDvChitiet.MA_NHOM);
-				report.listdv.add(obj);
 				//
 			}
 			//
@@ -4712,177 +5448,712 @@ public class FormKhamBenhDlg extends Dialog {
 		inPhieuXetNghiem(report);
 	}
 
-	protected void printPhieuBHYT() throws Exception {
+	private void printPhieuBHYT() {
+		try {
+			printPhieuBHYT(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	protected void printPhieuBHYT(boolean isPrintAll) throws Exception {
 		//
-		updateGiaTien();
-		//
-		ReportDAO report = new ReportDAO();
-		report.bn = objBenhNhan;
-		report.kb = objPhieuKhamBenh;
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");// 201711091458
-																	// //yyyy-MM-dd
-																	// HH:mm:ss
-		//
-		report.tuNgay = Utils.getDatetime(sdf.parse(objPhieuKhamBenh.NGAY_VAO),
-				"HH:mm dd/MM/yyyy");
-		report.denNgay = Utils.getDatetime(sdf.parse(objPhieuKhamBenh.NGAY_RA),
-				"HH:mm dd/MM/yyyy");
-
-		report.listdv = new ArrayList<>();
-		report.sumDv = new SumReportDAO();
-		report.sumThuoc = new SumReportDAO();
-		//
-		Hashtable<Integer, SumReportDAO> hashPhanLoaiDV = new Hashtable<Integer, SumReportDAO>();
-		//
-		for (int i = 0; i < listCLSData.size(); i++) {
-			DvChitiet objDvChitiet = listCLSData.get(i);
-			objDvChitiet.DV_ID = i + 1;
-			int MANHOM = objDvChitiet.MA_NHOM;
-			if (hashPhanLoaiDV.get(MANHOM) == null) {
-				SumReportDAO obj = new SumReportDAO();
+		updateTinhTien(isPrintAll);
+		if(isPrintAll==true){
+			// REPORT BHYT ALL DICH VU
+			ReportDAO reportAll = new ReportDAO();
+			ReportDAO reportBHYT = new ReportDAO();
+			//
+			reportAll.bn = objBenhNhan;
+			reportAll.kb = objPhieuKhamBenh;
+			reportBHYT.bn = objBenhNhan;
+			reportBHYT.kb = objPhieuKhamBenh;
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");// 201711091458
+																		// //yyyy-MM-dd
+																		// HH:mm:ss
+			//
+			reportAll.tuNgay = Utils.getDatetime(sdf.parse(objPhieuKhamBenh.NGAY_VAO), "HH:mm dd/MM/yyyy");
+			reportAll.denNgay = Utils.getDatetime(sdf.parse(objPhieuKhamBenh.NGAY_RA), "HH:mm dd/MM/yyyy");
+			reportBHYT.tuNgay = Utils.getDatetime(sdf.parse(objPhieuKhamBenh.NGAY_VAO), "HH:mm dd/MM/yyyy");
+			reportBHYT.denNgay = Utils.getDatetime(sdf.parse(objPhieuKhamBenh.NGAY_RA), "HH:mm dd/MM/yyyy");
+			
+			reportAll.listdv = new ArrayList<>();
+			reportAll.sumDv = new SumReportDAO();
+			reportAll.sumThuoc = new SumReportDAO();
+			//
+			reportBHYT.listdv = new ArrayList<>();
+			reportBHYT.sumDv = new SumReportDAO();
+			reportBHYT.sumThuoc = new SumReportDAO();
+			//
+			Hashtable<Integer, SumReportDAO> hashPhanLoaiDV = new Hashtable<Integer, SumReportDAO>();
+			Hashtable<Integer, SumReportDAO> hashPhanLoaiDV_ForBH = new Hashtable<Integer, SumReportDAO>();
+			//
+			for (int i = 0; i < listCLSData.size(); i++) {
 				//
-				obj.TT2 += objDvChitiet.THANH_TIEN2;
-				obj.TT += objDvChitiet.THANH_TIEN;
-				obj.BH += objDvChitiet.TT_BH;
-				obj.NB += objDvChitiet.TT_NB;
-				obj.KH += (objDvChitiet.THANH_TIEN - objDvChitiet.TT_BH - objDvChitiet.TT_NB);
-				obj.dv.add(objDvChitiet);
-				obj.setPhanLoaiDichVu("" + objDvChitiet.MA_NHOM);
+				DvChitiet objDvChitiet = listCLSData.get(i);
+				objDvChitiet.DV_ID = i + 1;
+				int MANHOM = objDvChitiet.MA_NHOM;
+				
+				// Process for PHIEU TONG HOP
+				if (hashPhanLoaiDV.get(MANHOM) == null) {
+					SumReportDAO obj = new SumReportDAO();
+					//
+					obj.TT2 += objDvChitiet.THANH_TIEN2;
+					obj.TT += objDvChitiet.THANH_TIEN;
+					obj.BH += objDvChitiet.TT_BHTT;
+					obj.NB += objDvChitiet.TT_BNTT;
+					obj.KH += (objDvChitiet.THANH_TIEN - objDvChitiet.TT_BHTT - objDvChitiet.TT_BNTT);
+					obj.dv.add(objDvChitiet);
+					obj.setPhanLoaiDichVu("" + objDvChitiet.MA_NHOM);
+					//
+					//
+					hashPhanLoaiDV.put(MANHOM, obj);
+					reportAll.listdv.add(obj);
+				} else 
+				{
+					// Exist add...
+					SumReportDAO obj = hashPhanLoaiDV.get(MANHOM);
+					//
+					obj.TT2 += objDvChitiet.THANH_TIEN2;
+					obj.TT += objDvChitiet.THANH_TIEN;
+					obj.BH += objDvChitiet.TT_BHTT;
+					obj.NB += objDvChitiet.TT_BNTT;
+					obj.NB2 += objDvChitiet.THANH_TIEN2 - objDvChitiet.THANH_TIEN
+							+ objDvChitiet.TT_BNTT;
+					obj.KH += 0;
+					obj.dv.add(objDvChitiet);
+					obj.setPhanLoaiDichVu("" + objDvChitiet.MA_NHOM);
+					//
+				}
+				
+				// Process for PHIEU BAO HIEM
+				if(objDvChitiet.TYP==1 && objDvChitiet.MUC_HUONG!=0){
+					if (hashPhanLoaiDV_ForBH.get(MANHOM) == null) {
+						SumReportDAO obj = new SumReportDAO();
+						//
+						obj.TT2 += objDvChitiet.THANH_TIEN2;
+						obj.TT += objDvChitiet.THANH_TIEN;
+						obj.BH += objDvChitiet.TT_BHTT;
+						obj.NB += objDvChitiet.TT_BNTT;
+						obj.KH += (objDvChitiet.THANH_TIEN - objDvChitiet.TT_BHTT - objDvChitiet.TT_BNTT);
+						obj.dv.add(objDvChitiet);
+						obj.setPhanLoaiDichVu("" + objDvChitiet.MA_NHOM);
+						//
+						//
+						hashPhanLoaiDV_ForBH.put(MANHOM, obj);
+						reportBHYT.listdv.add(obj);
+					} else {
+						// Exist add...
+						SumReportDAO obj = hashPhanLoaiDV_ForBH.get(MANHOM);
+						//
+						obj.TT2 += objDvChitiet.THANH_TIEN2;
+						obj.TT += objDvChitiet.THANH_TIEN;
+						obj.BH += objDvChitiet.TT_BHTT;
+						obj.NB += objDvChitiet.TT_BNTT;
+						obj.NB2 += objDvChitiet.THANH_TIEN2 - objDvChitiet.THANH_TIEN + objDvChitiet.TT_BNTT;
+						obj.KH += 0;
+						obj.dv.add(objDvChitiet);
+						obj.setPhanLoaiDichVu("" + objDvChitiet.MA_NHOM);
+						//
+					}
+				}
+				// For BHYT
 				//
-				//
-				hashPhanLoaiDV.put(MANHOM, obj);
-				report.listdv.add(obj);
-			} else {
-				// Exist add...
-				SumReportDAO obj = hashPhanLoaiDV.get(MANHOM);
-				//
-				obj.TT2 += objDvChitiet.THANH_TIEN2;
-				obj.TT += objDvChitiet.THANH_TIEN;
-				obj.BH += objDvChitiet.TT_BH;
-				obj.NB += objDvChitiet.TT_NB;
-				obj.NB2 += objDvChitiet.THANH_TIEN2 - objDvChitiet.THANH_TIEN
-						+ objDvChitiet.TT_NB;
-				obj.KH += (objDvChitiet.THANH_TIEN - objDvChitiet.TT_BH - objDvChitiet.TT_NB);
-				obj.dv.add(objDvChitiet);
-				obj.setPhanLoaiDichVu("" + objDvChitiet.MA_NHOM);
+				if (KIEU_THANH_TOAN == Utils.THANHTOAN_BHYT
+						|| KIEU_THANH_TOAN == Utils.THANHTOAN_BHYT_2) {
+					reportAll.sumDv.TT2 += objDvChitiet.THANH_TIEN2;
+					reportAll.sumDv.TT += objDvChitiet.THANH_TIEN;
+					reportAll.sumDv.BH += objDvChitiet.TT_BHTT;
+					reportAll.sumDv.NB += objDvChitiet.TT_BNTT;
+					reportAll.sumDv.NB2 += objDvChitiet.THANH_TIEN2 - objDvChitiet.THANH_TIEN + objDvChitiet.TT_BNTT;
+					reportAll.sumDv.KH += (objDvChitiet.THANH_TIEN - objDvChitiet.TT_BHTT - objDvChitiet.TT_BNTT);
+					//
+					if(objDvChitiet.TYP==1 && objDvChitiet.MUC_HUONG!=0){
+						reportBHYT.sumDv.TT2 += objDvChitiet.THANH_TIEN2;
+						reportBHYT.sumDv.TT += objDvChitiet.THANH_TIEN;
+						reportBHYT.sumDv.BH += objDvChitiet.TT_BHTT;
+						reportBHYT.sumDv.NB += objDvChitiet.TT_BNTT;
+						reportBHYT.sumDv.NB2 += objDvChitiet.THANH_TIEN2 - objDvChitiet.THANH_TIEN + objDvChitiet.TT_BNTT;
+						reportBHYT.sumDv.KH += (objDvChitiet.THANH_TIEN - objDvChitiet.TT_BHTT - objDvChitiet.TT_BNTT);
+					}
+					//
+				} else {
+					reportAll.sumDv.TT2 += objDvChitiet.THANH_TIEN2;
+					reportAll.sumDv.TT += objDvChitiet.THANH_TIEN2;
+					reportAll.sumDv.BH += 0;
+					reportAll.sumDv.NB += objDvChitiet.THANH_TIEN2;
+					reportAll.sumDv.NB2 += objDvChitiet.THANH_TIEN2;
+					reportAll.sumDv.KH += 0;
+				}
 				//
 			}
+	
+			reportAll.thuoc = new ArrayList<>();
+			reportBHYT.thuoc = new ArrayList<>();
+			
+			
+			// Process all
+			for (int i = 0; i < listThuocData.size(); i++) {
+				ThuocChitiet obj = listThuocData.get(i);
+				//
+				reportAll.sumThuoc.TT2 += obj.THANH_TIEN;
+				reportAll.sumThuoc.TT += obj.THANH_TIEN;
+				reportAll.sumThuoc.BH += obj.TT_BHTT;
+				reportAll.sumThuoc.NB += obj.TT_BNTT;
+				reportAll.sumThuoc.NB2 += obj.TT_BNTT;
+				reportAll.sumThuoc.KH += (obj.THANH_TIEN - obj.TT_BHTT - obj.TT_BNTT);
+				reportAll.thuoc.add(obj);
+				//
+				if(obj.TYP==1 && obj.MUC_HUONG!=0){
+					// DV BAO HIEM  + KHONG PHAI TU CHI TRA
+					reportBHYT.sumThuoc.TT2 += obj.THANH_TIEN;
+					reportBHYT.sumThuoc.TT += obj.THANH_TIEN;
+					reportBHYT.sumThuoc.BH += obj.TT_BHTT;
+					reportBHYT.sumThuoc.NB += obj.TT_BNTT;
+					reportBHYT.sumThuoc.NB2 += obj.TT_BNTT;
+					reportBHYT.sumThuoc.KH += (obj.THANH_TIEN - obj.TT_BHTT - obj.TT_BNTT);
+					reportBHYT.thuoc.add(obj);
+				}
+				//
+			}
+			// 
+			
+			
+			System.out.println("Report cls=" + listCLSData.size() + " thuoc="
+					+ listThuocData.size() + " report.sumDv.TT=" + reportAll.sumDv.TT);
 			//
+			reportAll.congkham = new ArrayList<>();
+			reportAll.congkham.add(objCongKham);
+			reportBHYT.congkham = new ArrayList<>();
+			reportBHYT.congkham.add(objCongKham);
 			if (KIEU_THANH_TOAN == Utils.THANHTOAN_BHYT
 					|| KIEU_THANH_TOAN == Utils.THANHTOAN_BHYT_2) {
-				report.sumDv.TT2 += objDvChitiet.THANH_TIEN2;
-				report.sumDv.TT += objDvChitiet.THANH_TIEN;
-				report.sumDv.BH += objDvChitiet.TT_BH;
-				report.sumDv.NB += objDvChitiet.TT_NB;
-				report.sumDv.NB2 += objDvChitiet.THANH_TIEN2
-						- objDvChitiet.THANH_TIEN + objDvChitiet.TT_NB;
-				report.sumDv.KH += (objDvChitiet.THANH_TIEN
-						- objDvChitiet.TT_BH - objDvChitiet.TT_NB);
+				
+			}
+			else{
+				objCongKham.THANH_TIEN = Main.GIAKHAMVIENPHI;
+				objCongKham.THANH_TIEN2 = Main.GIAKHAMVIENPHI;
+				objCongKham.TT_BNTT = Main.GIAKHAMVIENPHI;
+				objCongKham.TT_BHTT = 0;
+			}
+			System.out.println("Cong khamobjCongKham =" + objCongKham.toString());
+			//
+			reportAll.sumCongkham = new SumReportDAO();
+			reportAll.sumCongkham.TT2 = objCongKham.THANH_TIEN2;
+			reportAll.sumCongkham.TT = objCongKham.THANH_TIEN;
+			//
+			reportBHYT.sumCongkham = new SumReportDAO();
+			reportBHYT.sumCongkham.TT2 = objCongKham.THANH_TIEN2;
+			reportBHYT.sumCongkham.TT = objCongKham.THANH_TIEN;
+			if (KIEU_THANH_TOAN == Utils.THANHTOAN_BHYT
+					|| KIEU_THANH_TOAN == Utils.THANHTOAN_BHYT_2) {
+				reportAll.sumCongkham.BH = objCongKham.TT_BHTT;
+				reportAll.sumCongkham.NB = objCongKham.TT_BNTT;
+				reportAll.sumCongkham.NB2 = (objCongKham.TT_BNTT + objCongKham.THANH_TIEN2 - objCongKham.THANH_TIEN);
+				reportAll.sumCongkham.KH = (objCongKham.THANH_TIEN - objCongKham.TT_BHTT - objCongKham.TT_BNTT);
+				//
+				reportBHYT.sumCongkham.BH = objCongKham.TT_BHTT;
+				reportBHYT.sumCongkham.NB = objCongKham.TT_BNTT;
+				reportBHYT.sumCongkham.NB2 = (objCongKham.TT_BNTT + objCongKham.THANH_TIEN2 - objCongKham.THANH_TIEN);
+				reportBHYT.sumCongkham.KH = (objCongKham.THANH_TIEN - objCongKham.TT_BHTT - objCongKham.TT_BNTT);
 			} else {
-				report.sumDv.TT2 += objDvChitiet.THANH_TIEN2;
-				report.sumDv.TT += objDvChitiet.THANH_TIEN2;
-				report.sumDv.BH += 0;
-				report.sumDv.NB += objDvChitiet.THANH_TIEN2;
-				report.sumDv.NB2 += objDvChitiet.THANH_TIEN2;
-				report.sumDv.KH += 0;
+				reportAll.sumCongkham.BH = 0;
+				reportAll.sumCongkham.NB = objCongKham.THANH_TIEN;
+				reportAll.sumCongkham.NB2 = objCongKham.THANH_TIEN2;
+				reportAll.sumCongkham.KH = 0;
+			}
+			System.out.println("Cong kham =" + reportAll.sumCongkham.toString());
+			//
+			reportAll.sumTongCong = new SumReportDAO();
+			reportBHYT.sumTongCong = new SumReportDAO();
+			if (KIEU_THANH_TOAN == Utils.THANHTOAN_BHYT || KIEU_THANH_TOAN == Utils.THANHTOAN_BHYT_2) {
+				reportAll.sumTongCong.TT2 = reportAll.sumDv.TT2 + reportAll.sumThuoc.TT2+ reportAll.sumCongkham.TT2;
+				reportAll.sumTongCong.TT = reportAll.sumDv.TT + reportAll.sumThuoc.TT+ reportAll.sumCongkham.TT;
+				reportAll.sumTongCong.BH = reportAll.sumDv.BH + reportAll.sumThuoc.BH+ reportAll.sumCongkham.BH;
+				reportAll.sumTongCong.NB = reportAll.sumDv.NB + reportAll.sumThuoc.NB+ reportAll.sumCongkham.NB;
+				reportAll.sumTongCong.NB2 = reportAll.sumDv.NB2 + reportAll.sumThuoc.NB2 + reportAll.sumCongkham.NB2;
+				reportAll.sumTongCong.KH = reportAll.sumDv.KH + reportAll.sumThuoc.KH + reportAll.sumCongkham.KH;
+				
+				reportBHYT.sumTongCong.TT2 = reportBHYT.sumDv.TT2 + reportBHYT.sumThuoc.TT2+ reportBHYT.sumCongkham.TT2;
+				reportBHYT.sumTongCong.TT = reportBHYT.sumDv.TT + reportBHYT.sumThuoc.TT+ reportBHYT.sumCongkham.TT;
+				reportBHYT.sumTongCong.BH = reportBHYT.sumDv.BH + reportBHYT.sumThuoc.BH+ reportBHYT.sumCongkham.BH;
+				reportBHYT.sumTongCong.NB = reportBHYT.sumDv.NB + reportBHYT.sumThuoc.NB+ reportBHYT.sumCongkham.NB;
+				reportBHYT.sumTongCong.NB2 = reportBHYT.sumDv.NB2 + reportBHYT.sumThuoc.NB2 + reportBHYT.sumCongkham.NB2;
+				reportBHYT.sumTongCong.KH = reportBHYT.sumDv.KH + reportBHYT.sumThuoc.KH + reportBHYT.sumCongkham.KH;
+			} else {
+				reportAll.sumTongCong.TT2 = reportAll.sumDv.TT2 + reportAll.sumThuoc.TT2+ reportAll.sumCongkham.TT2;
+				reportAll.sumTongCong.TT = reportAll.sumTongCong.TT2;
+				reportAll.sumTongCong.BH = 0;
+				reportAll.sumTongCong.NB = reportAll.sumTongCong.TT2;
+				reportAll.sumTongCong.NB2 = reportAll.sumTongCong.TT2;
+				reportAll.sumTongCong.KH = 0;
+			}
+			System.out.println("SUM TT" + reportAll.sumTongCong.TT + " " + reportAll.sumTongCong.getTTString());
+			System.out.println("SUM BH" + reportAll.sumTongCong.BH + " " + reportAll.sumTongCong.getBHString());
+			//
+			reportAll.strNguoiLap = DbHelper.currentSessionUserId.TEN_NHANVIEN;
+			reportBHYT.strNguoiLap = DbHelper.currentSessionUserId.TEN_NHANVIEN;
+			//
+			reportAll.ngayGio = Utils.getDatetimeLocal("Duy Xuyên", new Date());
+			reportBHYT.ngayGio = Utils.getDatetimeLocal("Duy Xuyên", new Date());
+			//
+			inPhieuBHYT(reportBHYT);
+			inPhieuTongHopAll(reportAll);
+		}
+		else{
+			// Only print the new....
+			// REPORT BHYT ALL DICH VU
+			ReportDAO reportAll = new ReportDAO();
+			//
+			reportAll.bn = objBenhNhan;
+			reportAll.kb = objPhieuKhamBenh;
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");// 201711091458
+																		// //yyyy-MM-dd
+																		// HH:mm:ss
+			//
+			reportAll.tuNgay = Utils.getDatetime(sdf.parse(objPhieuKhamBenh.NGAY_VAO), "HH:mm dd/MM/yyyy");
+			reportAll.denNgay = Utils.getDatetime(sdf.parse(objPhieuKhamBenh.NGAY_RA), "HH:mm dd/MM/yyyy");
+		
+			reportAll.listdv = new ArrayList<>();
+			reportAll.sumDv = new SumReportDAO();
+			reportAll.sumThuoc = new SumReportDAO();
+			//
+			//
+			Hashtable<Integer, SumReportDAO> hashPhanLoaiDV = new Hashtable<Integer, SumReportDAO>();
+			//
+			for (int i = 0; i < listCLSData.size(); i++) {
+				//
+				DvChitiet objDvChitiet = listCLSData.get(i);
+				if(objDvChitiet.THANHTOAN==1){
+					continue;
+				}
+				
+				objDvChitiet.DV_ID = i + 1;
+				int MANHOM = objDvChitiet.MA_NHOM;
+
+				if (hashPhanLoaiDV.get(MANHOM) == null) {
+					SumReportDAO obj = new SumReportDAO();
+					//
+					obj.TT2 += objDvChitiet.THANH_TIEN2;
+					obj.TT += objDvChitiet.THANH_TIEN;
+					obj.BH += objDvChitiet.TT_BHTT;
+					obj.NB += objDvChitiet.TT_BNTT;
+					obj.KH += (objDvChitiet.THANH_TIEN - objDvChitiet.TT_BHTT - objDvChitiet.TT_BNTT);
+					obj.dv.add(objDvChitiet);
+					obj.setPhanLoaiDichVu("" + objDvChitiet.MA_NHOM);
+					//
+					hashPhanLoaiDV.put(MANHOM, obj);
+					reportAll.listdv.add(obj);
+					
+				} else {
+					// Exist add...
+					SumReportDAO obj = hashPhanLoaiDV.get(MANHOM);
+					//
+					obj.TT2 += objDvChitiet.THANH_TIEN2;
+					obj.TT += objDvChitiet.THANH_TIEN;
+					obj.BH += objDvChitiet.TT_BHTT;
+					obj.NB += objDvChitiet.TT_BNTT;
+					obj.NB2 += objDvChitiet.THANH_TIEN2 - objDvChitiet.THANH_TIEN
+							+ objDvChitiet.TT_BNTT;
+					obj.KH += 0;
+					obj.dv.add(objDvChitiet);
+					obj.setPhanLoaiDichVu("" + objDvChitiet.MA_NHOM);
+					//
+				}
+				//
+				if (KIEU_THANH_TOAN == Utils.THANHTOAN_BHYT
+						|| KIEU_THANH_TOAN == Utils.THANHTOAN_BHYT_2) {
+					reportAll.sumDv.TT2 += objDvChitiet.THANH_TIEN2;
+					reportAll.sumDv.TT += objDvChitiet.THANH_TIEN;
+					reportAll.sumDv.BH += objDvChitiet.TT_BHTT;
+					reportAll.sumDv.NB += objDvChitiet.TT_BNTT;
+					reportAll.sumDv.NB2 += objDvChitiet.THANH_TIEN2 - objDvChitiet.THANH_TIEN + objDvChitiet.TT_BNTT;
+					reportAll.sumDv.KH += (objDvChitiet.THANH_TIEN - objDvChitiet.TT_BHTT - objDvChitiet.TT_BNTT);
+					
+					//
+				} else {
+					reportAll.sumDv.TT2 += objDvChitiet.THANH_TIEN2;
+					reportAll.sumDv.TT += objDvChitiet.THANH_TIEN2;
+					reportAll.sumDv.BH += 0;
+					reportAll.sumDv.NB += objDvChitiet.THANH_TIEN2;
+					reportAll.sumDv.NB2 += objDvChitiet.THANH_TIEN2;
+					reportAll.sumDv.KH += 0;
+				}
+				//
+			}
+	
+			reportAll.thuoc = new ArrayList<>();
+	
+			for (int i = 0; i < listThuocData.size(); i++) {
+				ThuocChitiet obj = listThuocData.get(i);
+				if(obj.THANHTOAN==1){
+					continue;
+				}
+				//
+				reportAll.sumThuoc.TT2 += obj.THANH_TIEN;
+				reportAll.sumThuoc.TT += obj.THANH_TIEN;
+				reportAll.sumThuoc.BH += obj.TT_BHTT;
+				reportAll.sumThuoc.NB += obj.TT_BNTT;
+				reportAll.sumThuoc.NB2 += obj.TT_BNTT;
+				reportAll.sumThuoc.KH += (obj.THANH_TIEN - obj.TT_BHTT - obj.TT_BNTT);
+				reportAll.thuoc.add(obj);
+				
+				//
+			}
+			System.out.println("Report cls=" + listCLSData.size() + " thuoc="
+					+ listThuocData.size() + " report.sumDv.TT=" + reportAll.sumDv.TT);
+			//
+			reportAll.congkham = new ArrayList<>();
+			reportAll.sumCongkham = new SumReportDAO();
+			reportAll.congkham.add(objCongKham);
+			//
+			if(objCongKham.THANHTOAN==0){
+				if (KIEU_THANH_TOAN == Utils.THANHTOAN_BHYT
+						|| KIEU_THANH_TOAN == Utils.THANHTOAN_BHYT_2) {
+					
+				}
+				else{
+					objCongKham.THANH_TIEN = Main.GIAKHAMVIENPHI;
+					objCongKham.THANH_TIEN2 = Main.GIAKHAMVIENPHI;
+					objCongKham.TT_BNTT = Main.GIAKHAMVIENPHI;
+					objCongKham.TT_BHTT = 0;
+				}
+				System.out.println("Cong khamobjCongKham =" + objCongKham.toString());
+				//
+				reportAll.sumCongkham.TT2 = objCongKham.THANH_TIEN2;
+				reportAll.sumCongkham.TT = objCongKham.THANH_TIEN;
+				//
+				if (KIEU_THANH_TOAN == Utils.THANHTOAN_BHYT
+						|| KIEU_THANH_TOAN == Utils.THANHTOAN_BHYT_2) {
+					reportAll.sumCongkham.BH = objCongKham.TT_BHTT;
+					reportAll.sumCongkham.NB = objCongKham.TT_BNTT;
+					reportAll.sumCongkham.NB2 = (objCongKham.TT_BNTT + objCongKham.THANH_TIEN2 - objCongKham.THANH_TIEN);
+					reportAll.sumCongkham.KH = (objCongKham.THANH_TIEN - objCongKham.TT_BHTT - objCongKham.TT_BNTT);
+					//
+				} else {
+					reportAll.sumCongkham.BH = 0;
+					reportAll.sumCongkham.NB = objCongKham.THANH_TIEN;
+					reportAll.sumCongkham.NB2 = objCongKham.THANH_TIEN2;
+					reportAll.sumCongkham.KH = 0;
+				}
+				System.out.println("Cong kham =" + reportAll.sumCongkham.toString());
 			}
 			//
+			reportAll.sumTongCong = new SumReportDAO();
+			if (KIEU_THANH_TOAN == Utils.THANHTOAN_BHYT || KIEU_THANH_TOAN == Utils.THANHTOAN_BHYT_2) {
+				reportAll.sumTongCong.TT2 = reportAll.sumDv.TT2 + reportAll.sumThuoc.TT2+ reportAll.sumCongkham.TT2;
+				reportAll.sumTongCong.TT = reportAll.sumDv.TT + reportAll.sumThuoc.TT+ reportAll.sumCongkham.TT;
+				reportAll.sumTongCong.BH = reportAll.sumDv.BH + reportAll.sumThuoc.BH+ reportAll.sumCongkham.BH;
+				reportAll.sumTongCong.NB = reportAll.sumDv.NB + reportAll.sumThuoc.NB+ reportAll.sumCongkham.NB;
+				reportAll.sumTongCong.NB2 = reportAll.sumDv.NB2 + reportAll.sumThuoc.NB2 + reportAll.sumCongkham.NB2;
+				reportAll.sumTongCong.KH = reportAll.sumDv.KH + reportAll.sumThuoc.KH + reportAll.sumCongkham.KH;
+			} else {
+				reportAll.sumTongCong.TT2 = reportAll.sumDv.TT2 + reportAll.sumThuoc.TT2+ reportAll.sumCongkham.TT2;
+				reportAll.sumTongCong.TT = reportAll.sumTongCong.TT2;
+				reportAll.sumTongCong.BH = 0;
+				reportAll.sumTongCong.NB = reportAll.sumTongCong.TT2;
+				reportAll.sumTongCong.NB2 = reportAll.sumTongCong.TT2;
+				reportAll.sumTongCong.KH = 0;
+			}
+			System.out.println("SUM TT" + reportAll.sumTongCong.TT + " " + reportAll.sumTongCong.getTTString());
+			System.out.println("SUM BH" + reportAll.sumTongCong.BH + " " + reportAll.sumTongCong.getBHString());
+			//
+			reportAll.strNguoiLap = DbHelper.currentSessionUserId.TEN_NHANVIEN;
+			//
+			reportAll.ngayGio = Utils.getDatetimeLocal("Duy Xuyên", new Date());
+			//
+			inPhieuTongHopAll(reportAll);
+			//
 		}
+	}
+	
+	protected void printPhieuVienPhi(boolean isPrintAll) throws Exception {
+		//
+		updateTinhTien(isPrintAll);
+		if(isPrintAll==true){
+			// REPORT BHYT ALL DICH VU
+			ReportDAO reportAll = new ReportDAO();
+			//
+			reportAll.bn = objBenhNhan;
+			reportAll.kb = objPhieuKhamBenh;
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");// 201711091458
+																		// //yyyy-MM-dd
+																		// HH:mm:ss
+			//
+			reportAll.tuNgay = Utils.getDatetime(sdf.parse(objPhieuKhamBenh.NGAY_VAO), "HH:mm dd/MM/yyyy");
+			reportAll.denNgay = Utils.getDatetime(sdf.parse(objPhieuKhamBenh.NGAY_RA), "HH:mm dd/MM/yyyy");
+			
+			reportAll.listdv = new ArrayList<>();
+			reportAll.sumDv = new SumReportDAO();
+			reportAll.sumThuoc = new SumReportDAO();
+			//
+			Hashtable<Integer, SumReportDAO> hashPhanLoaiDV = new Hashtable<Integer, SumReportDAO>();
+			//
+			for (int i = 0; i < listCLSData.size(); i++) {
+				//
+				DvChitiet objDvChitiet = listCLSData.get(i);
+				objDvChitiet.DV_ID = i + 1;
+				int MANHOM = objDvChitiet.MA_NHOM;
+				
+				// Process for PHIEU TONG HOP
+				if (hashPhanLoaiDV.get(MANHOM) == null) {
+					SumReportDAO obj = new SumReportDAO();
+					//
+					obj.TT2 += objDvChitiet.THANH_TIEN2;
+					obj.TT += objDvChitiet.THANH_TIEN2;
+					obj.BH += 0;
+					obj.NB += objDvChitiet.THANH_TIEN2;
+					obj.KH += 0;
+					obj.dv.add(objDvChitiet);
+					obj.setPhanLoaiDichVu("" + objDvChitiet.MA_NHOM);
+					//
+					//
+					hashPhanLoaiDV.put(MANHOM, obj);
+					reportAll.listdv.add(obj);
+				} else 
+				{
+					// Exist add...
+					SumReportDAO obj = hashPhanLoaiDV.get(MANHOM);
+					//
+					obj.TT2 += objDvChitiet.THANH_TIEN2;
+					obj.TT += objDvChitiet.THANH_TIEN2;
+					obj.BH += 0;
+					obj.NB += objDvChitiet.THANH_TIEN2;
+					obj.NB2 += objDvChitiet.THANH_TIEN2;
+					obj.KH += 0;
+					obj.dv.add(objDvChitiet);
+					obj.setPhanLoaiDichVu("" + objDvChitiet.MA_NHOM);
+					//
+				}
+				
+				//
+				reportAll.sumDv.TT2 += objDvChitiet.THANH_TIEN2;
+				reportAll.sumDv.TT += objDvChitiet.THANH_TIEN2;
+				reportAll.sumDv.BH += 0;
+				reportAll.sumDv.NB += objDvChitiet.THANH_TIEN2;
+				reportAll.sumDv.NB2 += objDvChitiet.THANH_TIEN2;
+				reportAll.sumDv.KH += 0;
+				//
+			}
+	
+			reportAll.thuoc = new ArrayList<>();
+			// Process all
+			for (int i = 0; i < listThuocData.size(); i++) {
+				ThuocChitiet obj = listThuocData.get(i);
+				//
+				reportAll.sumThuoc.TT2 += obj.THANH_TIEN;
+				reportAll.sumThuoc.TT += obj.THANH_TIEN;
+				reportAll.sumThuoc.BH += 0;
+				reportAll.sumThuoc.NB += obj.THANH_TIEN;
+				reportAll.sumThuoc.NB2 += obj.THANH_TIEN;
+				reportAll.sumThuoc.KH += 0;
+				reportAll.thuoc.add(obj);
+				//
+			}
+			// 
+			
+			
+			System.out.println("Report cls=" + listCLSData.size() + " thuoc="
+					+ listThuocData.size() + " report.sumDv.TT=" + reportAll.sumDv.TT);
+			//
+			reportAll.congkham = new ArrayList<>();
+			reportAll.congkham.add(objCongKham);
+			if (KIEU_THANH_TOAN == Utils.THANHTOAN_BHYT
+					|| KIEU_THANH_TOAN == Utils.THANHTOAN_BHYT_2) {
+				
+			}
+			else{
+				objCongKham.THANH_TIEN = objCongKham.THANH_TIEN2;
+				objCongKham.THANH_TIEN2 = objCongKham.THANH_TIEN2;
+				objCongKham.TT_BNTT = objCongKham.THANH_TIEN2;
+				objCongKham.TT_BHTT = 0;
+			}
+			System.out.println("Cong khamobjCongKham =" + objCongKham.toString());
+			//
+			reportAll.sumCongkham = new SumReportDAO();
+			reportAll.sumCongkham.TT2 = objCongKham.THANH_TIEN2;
+			reportAll.sumCongkham.TT = objCongKham.THANH_TIEN;
+			//
+			reportAll.sumCongkham.BH = 0;
+			reportAll.sumCongkham.NB = objCongKham.THANH_TIEN;
+			reportAll.sumCongkham.NB2 = objCongKham.THANH_TIEN2;
+			reportAll.sumCongkham.KH = 0;
+			System.out.println("Cong kham =" + reportAll.sumCongkham.toString());
+			//
+			reportAll.sumTongCong = new SumReportDAO();
+			reportAll.sumTongCong.TT2 = reportAll.sumDv.TT2 + reportAll.sumThuoc.TT2+ reportAll.sumCongkham.TT2;
+			reportAll.sumTongCong.TT = reportAll.sumTongCong.TT2;
+			reportAll.sumTongCong.BH = 0;
+			reportAll.sumTongCong.NB = reportAll.sumTongCong.TT2;
+			reportAll.sumTongCong.NB2 = reportAll.sumTongCong.TT2;
+			reportAll.sumTongCong.KH = 0;
+			System.out.println("SUM TT" + reportAll.sumTongCong.TT + " " + reportAll.sumTongCong.getTTString());
+			System.out.println("SUM BH" + reportAll.sumTongCong.BH + " " + reportAll.sumTongCong.getBHString());
+			//
+			reportAll.strNguoiLap = DbHelper.currentSessionUserId.TEN_NHANVIEN;
+			//
+			reportAll.ngayGio = Utils.getDatetimeLocal("Duy Xuyên", new Date());
+			//
+			inPhieuVienPhi(reportAll);
+		}
+		else{
+			// Only print the new....
+			// REPORT BHYT ALL DICH VU
+			ReportDAO reportAll = new ReportDAO();
+			//
+			reportAll.bn = objBenhNhan;
+			reportAll.kb = objPhieuKhamBenh;
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");// 201711091458
+																		// //yyyy-MM-dd
+																		// HH:mm:ss
+			//
+			reportAll.tuNgay = Utils.getDatetime(sdf.parse(objPhieuKhamBenh.NGAY_VAO), "HH:mm dd/MM/yyyy");
+			reportAll.denNgay = Utils.getDatetime(sdf.parse(objPhieuKhamBenh.NGAY_RA), "HH:mm dd/MM/yyyy");
+		
+			reportAll.listdv = new ArrayList<>();
+			reportAll.sumDv = new SumReportDAO();
+			reportAll.sumThuoc = new SumReportDAO();
+			//
+			//
+			Hashtable<Integer, SumReportDAO> hashPhanLoaiDV = new Hashtable<Integer, SumReportDAO>();
+			//
+			for (int i = 0; i < listCLSData.size(); i++) {
+				//
+				DvChitiet objDvChitiet = listCLSData.get(i);
+				if(objDvChitiet.THANHTOAN==1){
+					continue;
+				}
+				
+				objDvChitiet.DV_ID = i + 1;
+				int MANHOM = objDvChitiet.MA_NHOM;
 
-		report.thuoc = new ArrayList<>();
-
-		for (int i = 0; i < listThuocData.size(); i++) {
-			ThuocChitiet obj = listThuocData.get(i);
-			report.sumThuoc.TT2 += obj.THANH_TIEN;
-			report.sumThuoc.TT += obj.THANH_TIEN;
-			report.sumThuoc.BH += obj.TT_BH;
-			report.sumThuoc.NB += obj.TT_NB;
-			report.sumThuoc.NB2 += obj.TT_NB;
-			report.sumThuoc.KH += (obj.THANH_TIEN - obj.TT_BH - obj.TT_NB);
-			report.thuoc.add(obj);
+				if (hashPhanLoaiDV.get(MANHOM) == null) {
+					SumReportDAO obj = new SumReportDAO();
+					//
+					obj.TT2 += objDvChitiet.THANH_TIEN2;
+					obj.TT += objDvChitiet.THANH_TIEN2;
+					obj.BH +=0;
+					obj.NB += objDvChitiet.THANH_TIEN2;
+					obj.KH += 0;
+					obj.dv.add(objDvChitiet);
+					obj.setPhanLoaiDichVu("" + objDvChitiet.MA_NHOM);
+					//
+					hashPhanLoaiDV.put(MANHOM, obj);
+					reportAll.listdv.add(obj);
+					
+				} else {
+					// Exist add...
+					SumReportDAO obj = hashPhanLoaiDV.get(MANHOM);
+					//
+					obj.TT2 += objDvChitiet.THANH_TIEN2;
+					obj.TT += objDvChitiet.THANH_TIEN2;
+					obj.BH += 0;
+					obj.NB += objDvChitiet.THANH_TIEN2;
+					obj.NB2 += objDvChitiet.THANH_TIEN2 ;
+					obj.KH += 0;
+					obj.dv.add(objDvChitiet);
+					obj.setPhanLoaiDichVu("" + objDvChitiet.MA_NHOM);
+					//
+				}
+				//
+				reportAll.sumDv.TT2 += objDvChitiet.THANH_TIEN2;
+				reportAll.sumDv.TT += objDvChitiet.THANH_TIEN2;
+				reportAll.sumDv.BH += 0;
+				reportAll.sumDv.NB += objDvChitiet.THANH_TIEN2;
+				reportAll.sumDv.NB2 += objDvChitiet.THANH_TIEN2;
+				reportAll.sumDv.KH += 0;
+				//
+			}
+	
+			reportAll.thuoc = new ArrayList<>();
+	
+			for (int i = 0; i < listThuocData.size(); i++) {
+				ThuocChitiet obj = listThuocData.get(i);
+				if(obj.THANHTOAN==1){
+					continue;
+				}
+				//
+				reportAll.sumThuoc.TT2 += obj.THANH_TIEN;
+				reportAll.sumThuoc.TT += obj.THANH_TIEN;
+				reportAll.sumThuoc.BH += 0;
+				reportAll.sumThuoc.NB += obj.THANH_TIEN;
+				reportAll.sumThuoc.NB2 += obj.THANH_TIEN;
+				reportAll.sumThuoc.KH += 0;
+				reportAll.thuoc.add(obj);
+				
+				//
+			}
+			System.out.println("Report cls=" + listCLSData.size() + " thuoc="
+					+ listThuocData.size() + " report.sumDv.TT=" + reportAll.sumDv.TT);
+			//
+			reportAll.congkham = new ArrayList<>();
+			reportAll.sumCongkham = new SumReportDAO();
+			reportAll.congkham.add(objCongKham);
+			//
+			if(objCongKham.THANHTOAN==0){
+				objCongKham.THANH_TIEN = objCongKham.THANH_TIEN2;
+				objCongKham.THANH_TIEN2 = objCongKham.THANH_TIEN2;
+				objCongKham.TT_BNTT = objCongKham.THANH_TIEN2;
+				objCongKham.TT_BHTT = 0;
+				System.out.println("Cong khamobjCongKham =" + objCongKham.toString());
+				//
+				reportAll.sumCongkham.TT2 = objCongKham.THANH_TIEN2;
+				reportAll.sumCongkham.TT = objCongKham.THANH_TIEN;
+				//
+				reportAll.sumCongkham.BH = 0;
+				reportAll.sumCongkham.NB = objCongKham.THANH_TIEN;
+				reportAll.sumCongkham.NB2 = objCongKham.THANH_TIEN2;
+				reportAll.sumCongkham.KH = 0;
+				System.out.println("Cong kham =" + reportAll.sumCongkham.toString());
+			}
+			//
+			reportAll.sumTongCong = new SumReportDAO();
+			reportAll.sumTongCong.TT2 = reportAll.sumDv.TT2 + reportAll.sumThuoc.TT2+ reportAll.sumCongkham.TT2;
+			reportAll.sumTongCong.TT = reportAll.sumTongCong.TT2;
+			reportAll.sumTongCong.BH = 0;
+			reportAll.sumTongCong.NB = reportAll.sumTongCong.TT2;
+			reportAll.sumTongCong.NB2 = reportAll.sumTongCong.TT2;
+			reportAll.sumTongCong.KH = 0;
+			System.out.println("SUM TT" + reportAll.sumTongCong.TT + " " + reportAll.sumTongCong.getTTString());
+			System.out.println("SUM BH" + reportAll.sumTongCong.BH + " " + reportAll.sumTongCong.getBHString());
+			//
+			reportAll.strNguoiLap = DbHelper.currentSessionUserId.TEN_NHANVIEN;
+			//
+			reportAll.ngayGio = Utils.getDatetimeLocal("Duy Xuyên", new Date());
+			//
+			inPhieuVienPhi(reportAll);
+			//
 		}
-		System.out.println("Report cls=" + listCLSData.size() + " thuoc="
-				+ listThuocData.size() + " report.sumDv.TT=" + report.sumDv.TT);
-		//
-		report.congkham = new ArrayList<>();
-		report.congkham.add(objCongKham);
-		System.out.println("Cong khamobjCongKham =" + objCongKham.toString());
-		//
-		report.sumCongkham = new SumReportDAO();
-		report.sumCongkham.TT2 = objCongKham.THANH_TIEN2;
-		report.sumCongkham.TT = objCongKham.THANH_TIEN;
-		if (KIEU_THANH_TOAN == Utils.THANHTOAN_BHYT
-				|| KIEU_THANH_TOAN == Utils.THANHTOAN_BHYT_2) {
-			report.sumCongkham.BH = objCongKham.TT_BH;
-			report.sumCongkham.NB = objCongKham.TT_NB;
-			report.sumCongkham.NB2 = (objCongKham.TT_NB
-					+ objCongKham.THANH_TIEN2 - objCongKham.THANH_TIEN);
-			report.sumCongkham.KH = (objCongKham.THANH_TIEN - objCongKham.TT_BH - objCongKham.TT_NB);
-		} else {
-			report.sumCongkham.BH = 0;
-			report.sumCongkham.NB = objCongKham.THANH_TIEN;
-			report.sumCongkham.NB2 = objCongKham.THANH_TIEN2;
-			report.sumCongkham.KH = 0;
-		}
-		System.out.println("Cong kham =" + report.sumCongkham.toString());
-		//
-		report.sumTongCong = new SumReportDAO();
-		if (KIEU_THANH_TOAN == Utils.THANHTOAN_BHYT
-				|| KIEU_THANH_TOAN == Utils.THANHTOAN_BHYT_2) {
-			report.sumTongCong.TT2 = report.sumDv.TT2 + report.sumThuoc.TT2
-					+ report.sumCongkham.TT2;
-			report.sumTongCong.TT = report.sumDv.TT + report.sumThuoc.TT
-					+ report.sumCongkham.TT;
-			report.sumTongCong.BH = report.sumDv.BH + report.sumThuoc.BH
-					+ report.sumCongkham.BH;
-			report.sumTongCong.NB = report.sumDv.NB + report.sumThuoc.NB
-					+ report.sumCongkham.NB;
-			report.sumTongCong.NB2 = report.sumDv.NB2 + report.sumThuoc.NB2
-					+ report.sumCongkham.NB2;
-			report.sumTongCong.KH = report.sumDv.KH + report.sumThuoc.KH
-					+ report.sumCongkham.KH;
-		} else {
-			report.sumTongCong.TT2 = report.sumDv.TT2 + report.sumThuoc.TT2
-					+ report.sumCongkham.TT2;
-			report.sumTongCong.TT = report.sumTongCong.TT2;
-			report.sumTongCong.BH = 0;
-			report.sumTongCong.NB = report.sumTongCong.TT2;
-			report.sumTongCong.NB2 = report.sumTongCong.TT2;
-			report.sumTongCong.KH = 0;
-		}
-		System.out.println("SUM TT" + report.sumTongCong.TT + " "
-				+ report.sumTongCong.getTTString());
-		System.out.println("SUM BH" + report.sumTongCong.BH + " "
-				+ report.sumTongCong.getBHString());
-		//
-		report.strNguoiLap = DbHelper.currentSessionUserId.TEN_NHANVIEN;
-		//
-		report.ngayGio = Utils.getDatetimeLocal("Duy Xuyên", new Date());
-		//
-		inPhieuBHYT(report);
 	}
 
 	//
-	private void updateGiaTien(float tyleHuongBH) {
+	private void updateGiaTien(float tyleHuongBH, boolean isAll) {
 		logger.info("Update tien:" + tyleHuongBH);
 		TONGCONG_BHYT = 0;
 		TONGCONG = 0;
 		TONGCONG_BH = 0;
 		TONGCONG_NB = 0;
 		T_THUOC = 0;
+		// ============================================================================================
 		// UPDATE CONG KHAM
+		// ============================================================================================
 		if (KIEU_THANH_TOAN == Utils.THANHTOAN_BHYT) {
 			// chỉ đổi giá công khám
-			if (objCongKham != null) {
+			if (objCongKham != null && (objCongKham.THANHTOAN==0 || isAll==true)) {
 				//
 				objCongKham.BN_ID = objBenhNhan.BN_ID;
 				if (objPhieuKhamBenh != null)
 					objCongKham.MA_LK = objPhieuKhamBenh.MA_LK;
-				objCongKham.TYLE_TT = txtMathe.iTyLeHuong;
+				objCongKham.MUC_HUONG = txtMathe.iTyLeHuong;
+				if(tyleHuongBH==1){
+					objCongKham.MUC_HUONG = 100;
+				}
+				objCongKham.TYLE_TT = 100;
+
 				// Update field
 				objCongKham.MA_PTTT = 0;
 				objCongKham.MA_KHOA = DbHelper.getMAKHOA(cbKhoa.getText());
-				objCongKham.MA_BAC_SI = DbHelper.currentSessionUserId.MACCHN;
+				//objCongKham.MA_BAC_SI = DbHelper.currentSessionUserId.MACCHN;
 				objCongKham.MA_BENH = cbMaBenh.getText();
 				//
 				String key = cbKhoa.getText();
@@ -4893,14 +6164,13 @@ public class FormKhamBenhDlg extends Dialog {
 					objCongKham.DON_GIA2 = obj.DON_GIA2;// THUC THU
 					objCongKham.THANH_TIEN2 = obj.DON_GIA2 * 1;
 					//
-					objCongKham.TT_BH = (int) ((float) obj.DON_GIA * tyleHuongBH);
-					objCongKham.TT_NB = objCongKham.THANH_TIEN
-							- objCongKham.TT_BH;
+					objCongKham.TT_BHTT = (int) ((float) obj.DON_GIA * tyleHuongBH);
+					objCongKham.TT_BNTT = objCongKham.THANH_TIEN - objCongKham.TT_BHTT;
 					//
 					TONGCONG += objCongKham.THANH_TIEN2;
 					TONGCONG_BHYT += objCongKham.THANH_TIEN;
-					TONGCONG_BH += objCongKham.TT_BH;
-					TONGCONG_NB += objCongKham.THANH_TIEN2 - objCongKham.TT_BH;
+					TONGCONG_BH += objCongKham.TT_BHTT;
+					TONGCONG_NB += objCongKham.THANH_TIEN2 - objCongKham.TT_BHTT;
 					//
 					System.out.println("Công khám: " + objCongKham.toString()
 							+ " TONGCONG=" + TONGCONG + " TONGCONG_BH"
@@ -4910,18 +6180,22 @@ public class FormKhamBenhDlg extends Dialog {
 			//
 		} else if (KIEU_THANH_TOAN == Utils.THANHTOAN_BHYT_2) {
 			// chỉ đổi giá công khám
-			if (objCongKham != null) {
+			if (objCongKham != null && (objCongKham.THANHTOAN==0 || isAll==true)) {
 				objCongKham.BN_ID = objBenhNhan.BN_ID;
 				if (objPhieuKhamBenh != null)
 					objCongKham.MA_LK = objPhieuKhamBenh.MA_LK;
-				objCongKham.TYLE_TT = txtMathe.iTyLeHuong;
+				objCongKham.MUC_HUONG = txtMathe.iTyLeHuong;
+				if(tyleHuongBH==1){
+					objCongKham.MUC_HUONG = 100;
+				}
+				objCongKham.TYLE_TT = 100;
+				
 				// Update field
 				objCongKham.MA_PTTT = 0;
 				objCongKham.MA_KHOA = DbHelper.getMAKHOA(cbKhoa.getText());
-				objCongKham.MA_BAC_SI = DbHelper.currentSessionUserId.MACCHN;
+				//objCongKham.MA_BAC_SI = DbHelper.currentSessionUserId.MACCHN;
 				objCongKham.MA_BENH = cbMaBenh.getText();
 				//
-
 				String key = cbKhoa.getText();
 				Dichvu obj = DbHelper.hashCongKham.get(key);
 				if (obj != null) {
@@ -4939,14 +6213,14 @@ public class FormKhamBenhDlg extends Dialog {
 					// objCongKham.DON_GIA2 = obj.DON_GIA;
 					// objCongKham.DON_GIA = obj.DON_GIA2;
 					// objCongKham.THANH_TIEN = obj.DON_GIA2 * 1;
-					objCongKham.TT_BH = (int) ((float) obj.DON_GIA * tyleHuongBH);
-					objCongKham.TT_NB = objCongKham.THANH_TIEN
-							- objCongKham.TT_BH;
+					objCongKham.TT_BHTT = (int) ((float) obj.DON_GIA * tyleHuongBH);
+					objCongKham.TT_BNTT = objCongKham.THANH_TIEN
+							- objCongKham.TT_BHTT;
 					//
 					TONGCONG += objCongKham.THANH_TIEN2;
 					TONGCONG_BHYT += objCongKham.THANH_TIEN;
-					TONGCONG_BH += objCongKham.TT_BH;
-					TONGCONG_NB += objCongKham.THANH_TIEN2 - objCongKham.TT_BH;
+					TONGCONG_BH += objCongKham.TT_BHTT;
+					TONGCONG_NB += objCongKham.THANH_TIEN2 - objCongKham.TT_BHTT;
 					//
 				}
 			}
@@ -4956,38 +6230,41 @@ public class FormKhamBenhDlg extends Dialog {
 			if (CHI_XET_NGHIEM == 1) {
 				// Khong co cong kham benh
 			} else {
-				if (objCongKham != null) {
-					objCongKham.BN_ID = objBenhNhan.BN_ID;
-					if (objPhieuKhamBenh != null)
-						objCongKham.MA_LK = objPhieuKhamBenh.MA_LK;
-					objCongKham.TYLE_TT = 0;
-					// Update field
-					objCongKham.MA_PTTT = 0;
-					objCongKham.MA_KHOA = DbHelper.getMAKHOA(cbKhoa.getText());
-					objCongKham.MA_BAC_SI = DbHelper.currentSessionUserId.MACCHN;
-					objCongKham.MA_BENH = cbMaBenh.getText();
-					//
-
-					String key = cbKhoa.getText();
-					Dichvu obj = DbHelper.hashCongKham.get(key);
-					if (obj != null) {
-						objCongKham.DON_GIA = obj.DON_GIA;// GIA BH
-						objCongKham.THANH_TIEN = obj.DON_GIA * 1;
-						objCongKham.DON_GIA2 = Main.GIAKHAMVIENPHI;// THUC THU
-						objCongKham.THANH_TIEN2 = objCongKham.DON_GIA2 * 1;
+				if (objCongKham != null && (objCongKham.THANHTOAN==0 || isAll==true)) {
+					if( isCapCuu==true ){
 						//
-						// objCongKham.DON_GIA2 = obj.DON_GIA2;
-						// objCongKham.DON_GIA = Main.GIAKHAMVIENPHI;
-						// objCongKham.THANH_TIEN = Main.GIAKHAMVIENPHI * 1;
-						objCongKham.TT_BH = 0;
-						objCongKham.TT_NB = objCongKham.THANH_TIEN2
-								- objCongKham.TT_BH;
+						//MessageDialog.openInformation(shellKhamBenh, "", "Không save cong kham");
+					}
+					else{
+						objCongKham.BN_ID = objBenhNhan.BN_ID;
+						if (objPhieuKhamBenh != null)
+							objCongKham.MA_LK = objPhieuKhamBenh.MA_LK;
+						objCongKham.MUC_HUONG = 0;
+						// Update field
+						objCongKham.MA_PTTT = 0;
+						objCongKham.MA_KHOA = DbHelper.getMAKHOA(cbKhoa.getText());
+						//objCongKham.MA_BAC_SI = DbHelper.currentSessionUserId.MACCHN;
+						objCongKham.MA_BENH = cbMaBenh.getText();
 						//
-						TONGCONG += objCongKham.THANH_TIEN2;
-						TONGCONG_BHYT += objCongKham.TT_BH;
-						TONGCONG_BH += objCongKham.TT_BH;
-						TONGCONG_NB += objCongKham.TT_NB;
-						//
+	
+						String key = cbKhoa.getText();
+						Dichvu obj = DbHelper.hashCongKham.get(key);
+						if (obj != null) {
+							objCongKham.DON_GIA = obj.DON_GIA;// GIA BH
+							objCongKham.THANH_TIEN = obj.DON_GIA * 1;
+							if( objCongKham.MA_NHOM==13){
+								objCongKham.DON_GIA2 = Main.GIAKHAMVIENPHI;// THUC THU
+							}
+							objCongKham.THANH_TIEN2 = objCongKham.DON_GIA2 * 1;
+							objCongKham.TT_BHTT = 0;
+							objCongKham.TT_BNTT = objCongKham.THANH_TIEN2 - objCongKham.TT_BHTT;
+							//
+							TONGCONG += objCongKham.THANH_TIEN2;
+							TONGCONG_BHYT += objCongKham.TT_BHTT;
+							TONGCONG_BH += objCongKham.TT_BHTT;
+							TONGCONG_NB += objCongKham.TT_BNTT;
+							//
+						}
 					}
 				}
 			}
@@ -4997,7 +6274,7 @@ public class FormKhamBenhDlg extends Dialog {
 			if (CHI_XET_NGHIEM == 1) {
 				// Khong co cong kham benh
 			} else {
-				if (objCongKham != null) {
+				if (objCongKham != null && (objCongKham.THANHTOAN==0 || isAll==true)) {
 					// Update field
 					String key = cbKhoa.getText();
 					Dichvu obj = DbHelper.hashCongKham.get(key);
@@ -5007,17 +6284,17 @@ public class FormKhamBenhDlg extends Dialog {
 					}
 					objCongKham.MA_PTTT = 0;
 					objCongKham.MA_KHOA = DbHelper.getMAKHOA(cbKhoa.getText());
-					objCongKham.MA_BAC_SI = DbHelper.currentSessionUserId.MACCHN;
+					//objCongKham.MA_BAC_SI = DbHelper.currentSessionUserId.MACCHN;
 					objCongKham.MA_BENH = cbMaBenh.getText();
 					//
 					objCongKham.THANH_TIEN = 0;
-					objCongKham.TT_BH = 0;
-					objCongKham.TT_NB = 0;
+					objCongKham.TT_BHTT = 0;
+					objCongKham.TT_BNTT = 0;
 					//
 					TONGCONG += objCongKham.THANH_TIEN;
 					TONGCONG_BHYT += objCongKham.THANH_TIEN;
-					TONGCONG_BH += objCongKham.TT_BH;
-					TONGCONG_NB += objCongKham.TT_NB;
+					TONGCONG_BH += objCongKham.TT_BHTT;
+					TONGCONG_NB += objCongKham.TT_BNTT;
 					//
 				}
 			}
@@ -5025,25 +6302,52 @@ public class FormKhamBenhDlg extends Dialog {
 		// UPDATE THUOC
 		// THUOC HUONG theo ty le %
 		for (ThuocChitiet obj : listThuocData) {
+			if( obj.THANHTOAN==1 && isAll == false){
+				continue;
+			}
 			if (KIEU_THANH_TOAN == Utils.THANHTOAN_BHYT
 					|| KIEU_THANH_TOAN == Utils.THANHTOAN_BHYT_2) {
-				obj.TYLE_TT = (float) txtMathe.iTyLeHuong;
-				obj.THANH_TIEN = obj.DON_GIA * obj.SO_LUONG;
-				obj.TT_BH = (int) (obj.THANH_TIEN * tyleHuongBH);
-				obj.TT_NB = obj.THANH_TIEN - obj.TT_BH;
 				//
-				TONGCONG += obj.THANH_TIEN;
-				TONGCONG_BHYT += obj.THANH_TIEN;
-				TONGCONG_BH += obj.TT_BH;
-				TONGCONG_NB += obj.THANH_TIEN - obj.TT_BH;
-				//
-				T_THUOC += obj.THANH_TIEN;
+				if( obj.TYP==1 ){
+					// THUOC BAO HIEM
+					obj.MUC_HUONG = (float) txtMathe.iTyLeHuong;
+					if(tyleHuongBH==1){
+						obj.MUC_HUONG = (float)100;
+					}
+					obj.TYLE_TT = 100;
+					obj.THANH_TIEN = obj.DON_GIA * obj.SO_LUONG;
+					obj.TT_BHTT = (int) (obj.THANH_TIEN * tyleHuongBH);
+					obj.TT_BNTT = obj.THANH_TIEN - obj.TT_BHTT;
+					obj.MA_BENH = cbMaBenh.getText();
+					//
+					TONGCONG += obj.THANH_TIEN;
+					TONGCONG_BHYT += obj.THANH_TIEN;
+					TONGCONG_BH += obj.TT_BHTT;
+					TONGCONG_NB += obj.THANH_TIEN - obj.TT_BHTT;
+					//
+					T_THUOC += obj.THANH_TIEN;
+				}
+				else{
+					// THUOC VIEN PHI
+					obj.MUC_HUONG = (float)0;
+					obj.THANH_TIEN = obj.DON_GIA * obj.SO_LUONG;
+					obj.TT_BHTT = 0;
+					obj.TT_BNTT = obj.THANH_TIEN;
+					obj.MA_BENH = cbMaBenh.getText();
+					//
+					TONGCONG += obj.THANH_TIEN;
+					TONGCONG_BHYT += 0;
+					TONGCONG_BH += 0;
+					TONGCONG_NB += obj.THANH_TIEN;
+					//
+					T_THUOC += obj.THANH_TIEN;
+				}
 				//
 			} else {
-				obj.TYLE_TT = (float) 0.0;
+				obj.MUC_HUONG = (float) 0.0;
 				obj.THANH_TIEN = obj.DON_GIA * obj.SO_LUONG;
-				obj.TT_BH = 0;
-				obj.TT_NB = obj.THANH_TIEN;
+				obj.TT_BHTT = 0;
+				obj.TT_BNTT = obj.THANH_TIEN;
 				//
 				TONGCONG += obj.THANH_TIEN;
 				TONGCONG_BHYT += obj.THANH_TIEN;
@@ -5063,65 +6367,91 @@ public class FormKhamBenhDlg extends Dialog {
 			if (objPhieuKhamBenh != null) {
 				obj.MA_LK = objPhieuKhamBenh.MA_LK;
 			}
+			if( obj.THANHTOAN==1 && isAll == false){
+				continue;
+			}
 			//
-			if (KIEU_THANH_TOAN == Utils.THANHTOAN_BHYT) {
+			if (KIEU_THANH_TOAN == Utils.THANHTOAN_BHYT
+					|| KIEU_THANH_TOAN == Utils.THANHTOAN_BHYT_2
+					) {
 				// Update field
 				// obj.TYLE_TT = txtMathe.iTyLeHuong;
+				if(tyleHuongBH==1){
+					obj.MUC_HUONG = 100;
+				}
+				obj.TYLE_TT = 100;
 				obj.MA_PTTT = 0;
 				obj.MA_KHOA = DbHelper.getMAKHOA(cbKhoa.getText());
 				// obj.MA_BAC_SI = DbHelper.currentSessionUserId.MACCHN;
 				obj.MA_BENH = cbMaBenh.getText();
 				//
-				obj.THANH_TIEN = obj.DON_GIA * obj.SO_LUONG; // BHTT
-				obj.THANH_TIEN2 = obj.DON_GIA2 * obj.SO_LUONG; // THUC THU CHENH
-																// LECH
-				if (obj.TYLE_TT == 0) {
-					// BN tu chi tra 100%
-					obj.TT_BH = 0;
-					obj.TT_NB = obj.THANH_TIEN - obj.TT_BH;
+				if( obj.TYP==1 ){
+				//if(objDvChitiet.TYP==1 && objDvChitiet.TYLE_TT!=0){
+
+					// CLS bảo hiểm 
+					obj.THANH_TIEN = obj.DON_GIA * obj.SO_LUONG; // BHTT
+					obj.THANH_TIEN2 = obj.DON_GIA2 * obj.SO_LUONG; // THUC THU CHENH LECH
+					if (obj.MUC_HUONG == 0) {
+						// BN tu chi tra 100%
+						obj.TT_BHTT = 0;
+						obj.TT_BNTT = obj.THANH_TIEN - obj.TT_BHTT;
+						TONGCONG_BHYT += 0;
+					} else {
+						obj.TT_BHTT = (int) (obj.DON_GIA * obj.SO_LUONG * tyleHuongBH);
+						obj.TT_BNTT = obj.THANH_TIEN - obj.TT_BHTT;
+						TONGCONG_BHYT += obj.THANH_TIEN;
+					}
+					//
+					//
+					TONGCONG += obj.THANH_TIEN2;
+					TONGCONG_BH += obj.TT_BHTT;
+					TONGCONG_NB += obj.THANH_TIEN2 - obj.TT_BHTT;
+				}
+				else{
+					// CLS viện phí
+					obj.THANH_TIEN = obj.DON_GIA2 * obj.SO_LUONG; // BHTT
+					obj.THANH_TIEN2 = obj.DON_GIA2 * obj.SO_LUONG; // THUC THU CHENH LECH
+					obj.MUC_HUONG = 0;
+					obj.TT_BHTT = 0;
+					obj.TT_BNTT = obj.THANH_TIEN2 - obj.TT_BHTT;
 					TONGCONG_BHYT += 0;
-				} else {
-					obj.TT_BH = (int) (obj.DON_GIA * obj.SO_LUONG * tyleHuongBH);
-					obj.TT_NB = obj.THANH_TIEN - obj.TT_BH;
-					TONGCONG_BHYT += obj.THANH_TIEN;
+					TONGCONG += obj.THANH_TIEN2;
+					TONGCONG_BH += obj.TT_BHTT;
+					TONGCONG_NB += obj.THANH_TIEN2;
 				}
 				//
 				//
-				TONGCONG += obj.THANH_TIEN2;
-				TONGCONG_BH += obj.TT_BH;
-				TONGCONG_NB += obj.THANH_TIEN2 - obj.TT_BH;
-				//
-				//
-			} else if (KIEU_THANH_TOAN == Utils.THANHTOAN_BHYT_2) {
-				// Update field
-				// obj.TYLE_TT = txtMathe.iTyLeHuong;
-				obj.MA_PTTT = 0;
-				obj.MA_KHOA = DbHelper.getMAKHOA(cbKhoa.getText());
-				// obj.MA_BAC_SI = DbHelper.currentSessionUserId.MACCHN;
-				obj.MA_BENH = cbMaBenh.getText();
-				//
-				obj.THANH_TIEN = obj.DON_GIA * obj.SO_LUONG; // BHTT
-				obj.THANH_TIEN2 = obj.DON_GIA2 * obj.SO_LUONG; // THUC THU CHENH
-																// LECH
-				if (obj.TYLE_TT == 0) {
-					// BN tu chi tra 100%
-					obj.TT_BH = 0;
-					obj.TT_NB = obj.THANH_TIEN - obj.TT_BH;
-					TONGCONG_BHYT += 0;
-				} else {
-					obj.TT_BH = (int) (obj.DON_GIA * obj.SO_LUONG * tyleHuongBH);
-					obj.TT_NB = obj.THANH_TIEN - obj.TT_BH;
-					TONGCONG_BHYT += obj.THANH_TIEN;
-				} //
-					//
-				TONGCONG += obj.THANH_TIEN2;
-				TONGCONG_BH += obj.TT_BH;
-				TONGCONG_NB += obj.THANH_TIEN2 - obj.TT_BH;
-				//
-				//
+//			} 
+//			else if (KIEU_THANH_TOAN == Utils.THANHTOAN_BHYT_2) {
+//				// Update field
+//				// obj.TYLE_TT = txtMathe.iTyLeHuong;
+//				obj.MA_PTTT = 0;
+//				obj.MA_KHOA = DbHelper.getMAKHOA(cbKhoa.getText());
+//				// obj.MA_BAC_SI = DbHelper.currentSessionUserId.MACCHN;
+//				obj.MA_BENH = cbMaBenh.getText();
+//				//
+//				obj.THANH_TIEN = obj.DON_GIA * obj.SO_LUONG; // BHTT
+//				obj.THANH_TIEN2 = obj.DON_GIA2 * obj.SO_LUONG; // THUC THU CHENH
+//																// LECH
+//				if (obj.TYLE_TT == 0) {
+//					// BN tu chi tra 100%
+//					obj.T_BHTT = 0;
+//					obj.T_BNTT = obj.THANH_TIEN - obj.T_BHTT;
+//					TONGCONG_BHYT += 0;
+//				} else {
+//					obj.T_BHTT = (int) (obj.DON_GIA * obj.SO_LUONG * tyleHuongBH);
+//					obj.T_BNTT = obj.THANH_TIEN - obj.T_BHTT;
+//					TONGCONG_BHYT += obj.THANH_TIEN;
+//				} //
+//					//
+//				TONGCONG += obj.THANH_TIEN2;
+//				TONGCONG_BH += obj.T_BHTT;
+//				TONGCONG_NB += obj.THANH_TIEN2 - obj.T_BHTT;
+//				//
+//				//
 			} else if (KIEU_THANH_TOAN == Utils.THANHTOAN_VIENPHI) {
 				// Update field
-				obj.TYLE_TT = 0;
+				obj.MUC_HUONG = 0;
 				obj.MA_PTTT = 0;
 				obj.MA_KHOA = DbHelper.getMAKHOA(cbKhoa.getText());
 				// obj.MA_BAC_SI = DbHelper.currentSessionUserId.MACCHN;
@@ -5129,18 +6459,18 @@ public class FormKhamBenhDlg extends Dialog {
 				//
 				obj.THANH_TIEN = obj.DON_GIA * obj.SO_LUONG;
 				obj.THANH_TIEN2 = obj.DON_GIA2 * obj.SO_LUONG;
-				obj.TT_BH = 0;
-				obj.TT_NB = obj.THANH_TIEN2;
+				obj.TT_BHTT = 0;
+				obj.TT_BNTT = obj.THANH_TIEN2;
 				//
 				TONGCONG += obj.THANH_TIEN2;
 				TONGCONG_BHYT += 0;
-				TONGCONG_BH += obj.TT_BH;
-				TONGCONG_NB += obj.TT_NB;
+				TONGCONG_BH += obj.TT_BHTT;
+				TONGCONG_NB += obj.TT_BNTT;
 				//
 				//
 			} else if (KIEU_THANH_TOAN == Utils.THANHTOAN_MUA_CLS) {
 				// Update field
-				obj.TYLE_TT = 0;
+				obj.MUC_HUONG = 0;
 				obj.MA_PTTT = 0;
 				obj.MA_KHOA = DbHelper.getMAKHOA(cbKhoa.getText());
 				// obj.MA_BAC_SI = DbHelper.currentSessionUserId.MACCHN;
@@ -5148,18 +6478,18 @@ public class FormKhamBenhDlg extends Dialog {
 				//
 				obj.THANH_TIEN = obj.DON_GIA2 * obj.SO_LUONG;
 				obj.THANH_TIEN2 = obj.DON_GIA2 * obj.SO_LUONG;
-				obj.TT_BH = 0;
-				obj.TT_NB = obj.THANH_TIEN2;
+				obj.TT_BHTT = 0;
+				obj.TT_BNTT = obj.THANH_TIEN2;
 				//
 				TONGCONG += obj.THANH_TIEN2;
 				TONGCONG_BHYT += 0;
-				TONGCONG_BH += obj.TT_BH;
-				TONGCONG_NB += obj.TT_NB;
+				TONGCONG_BH += obj.TT_BHTT;
+				TONGCONG_NB += obj.TT_BNTT;
 				//
 				//
 			} else if (KIEU_THANH_TOAN == Utils.THANHTOAN_VIENPHI_FREE) {
 				// Update field
-				obj.TYLE_TT = txtMathe.iTyLeHuong;
+				obj.MUC_HUONG = txtMathe.iTyLeHuong;
 				obj.MA_PTTT = 0;
 				obj.MA_KHOA = DbHelper.getMAKHOA(cbKhoa.getText());
 				// obj.MA_BAC_SI = DbHelper.currentSessionUserId.MACCHN;
@@ -5167,19 +6497,19 @@ public class FormKhamBenhDlg extends Dialog {
 				//
 				obj.THANH_TIEN = obj.DON_GIA * obj.SO_LUONG;
 				obj.THANH_TIEN2 = obj.DON_GIA2 * obj.SO_LUONG;
-				obj.TT_BH = 0;
-				obj.TT_NB = 0;
+				obj.TT_BHTT = 0;
+				obj.TT_BNTT = 0;
 				//
 				// 0914080456
 				TONGCONG += obj.THANH_TIEN2;
 				TONGCONG_BHYT += 0;
-				TONGCONG_BH += obj.TT_BH;
-				TONGCONG_NB += obj.TT_NB;
+				TONGCONG_BH += obj.TT_BHTT;
+				TONGCONG_NB += obj.TT_BNTT;
 				//
 				//
 			} else if (KIEU_THANH_TOAN == Utils.THANHTOAN_TAI_KHAM) {
 				// Update field
-				obj.TYLE_TT = txtMathe.iTyLeHuong;
+				obj.MUC_HUONG = txtMathe.iTyLeHuong;
 				obj.MA_PTTT = 0;
 				obj.MA_KHOA = DbHelper.getMAKHOA(cbKhoa.getText());
 				// obj.MA_BAC_SI = DbHelper.currentSessionUserId.MACCHN;
@@ -5187,31 +6517,31 @@ public class FormKhamBenhDlg extends Dialog {
 				//
 				obj.THANH_TIEN = obj.DON_GIA * obj.SO_LUONG;
 				obj.THANH_TIEN2 = obj.DON_GIA2 * obj.SO_LUONG;
-				obj.TT_BH = 0;
-				obj.TT_NB = obj.THANH_TIEN;
+				obj.TT_BHTT = 0;
+				obj.TT_BNTT = obj.THANH_TIEN;
 				//
 				//
 				TONGCONG += obj.THANH_TIEN2;
 				TONGCONG_BHYT += 0;
-				TONGCONG_BH += obj.TT_BH;
-				TONGCONG_NB += obj.TT_NB;
+				TONGCONG_BH += obj.TT_BHTT;
+				TONGCONG_NB += obj.TT_BNTT;
 				//
 				//
 			}
 		}
-		logger.info("Update tien TONGCONG:" + TONGCONG + " TONGCONG_BHYT:"
-				+ TONGCONG_BHYT);
+		logger.info("Update tien TONGCONG:" + TONGCONG + " TONGCONG_BHYT:" + TONGCONG_BHYT);
 	}
 
 	//
-	private void updateGiaTien() {
+	private void updateTinhTien() {
+		updateTinhTien(true);
+	}
+	private void updateTinhTien(boolean isAll) {
 		// logger.info("---------------------------- updateGiaTien ");
 		// UPDATE CONG KHAM
 		float tyleHuongBH = (float) txtMathe.iTyLeHuong / (float) 100;
-		updateGiaTien(tyleHuongBH);
-
-		// Check voi muc luong co so, neu tong chi phi <15% thi BHYT chi tra
-		// 100%
+		updateGiaTien(tyleHuongBH, isAll);
+		// Check voi muc luong co so, neu tong chi phi <15% MUC LUONG CO SO, thi BHYT chi tra 100%
 		if (tyleHuongBH < 1
 				&& (TONGCONG_BHYT < (int) (Main.MAX_MUCLUONGCOSO * 0.15))) {
 			if (CHI_XET_NGHIEM == 1
@@ -5220,12 +6550,13 @@ public class FormKhamBenhDlg extends Dialog {
 			} else {
 				// Update cong kham, ky thuat dich vu...
 				// UPDATE CONG KHAM
-				updateGiaTien(1);
-				tableViewerSelectedCLS.refresh();
+				if( isAll==true ){
+					updateGiaTien(1, isAll);
+					tableViewerSelectedCLS.refresh();
+				}
 			}
 			//
 		}
-
 		//
 		// UPDATE PHIEU KHAM BENH
 		if (objPhieuKhamBenh != null) {
@@ -5240,11 +6571,9 @@ public class FormKhamBenhDlg extends Dialog {
 													// : Cấp cứu; 3 : Trái
 													// tuyến)
 				if (objPhieuKhamBenh.NGAY_VAO.length() == 0) {
-					objPhieuKhamBenh.NGAY_VAO = Utils.getDatetime(new Date(),
-							"yyyyMMddHHmm");
+					objPhieuKhamBenh.NGAY_VAO = Utils.getDatetime(new Date(), "yyyyMMddHHmm");
 				}
-				objPhieuKhamBenh.NGAY_RA = Utils.getDatetime(new Date(),
-						"yyyyMMddHHmm");
+				objPhieuKhamBenh.NGAY_RA = Utils.getDatetime(new Date(), "yyyyMMddHHmm");
 				//
 				objPhieuKhamBenh.KET_QUA_DTRI = 2;
 				objPhieuKhamBenh.TINH_TRANG_RV = 1;
@@ -5254,21 +6583,19 @@ public class FormKhamBenhDlg extends Dialog {
 													// ngoại trú; 3: Điều trị
 													// nội trú)
 				objPhieuKhamBenh.MA_CSKCB = "49172";
-				objPhieuKhamBenh.MA_KHUVUC = "";
+				objPhieuKhamBenh.MA_KHUVUC = "20";
 				objPhieuKhamBenh.MA_PTTT_QT = "";
-				objPhieuKhamBenh.CAN_NANG = Utils.getDouble(txtCanNang
-						.getText());
-				objPhieuKhamBenh.NAM_QT = new Date().getYear() + 1970;
+				objPhieuKhamBenh.CAN_NANG = Utils.getDouble(txtCanNang.getText());
+				objPhieuKhamBenh.NAM_QT = new Date().getYear() + 1900;
 				objPhieuKhamBenh.THANG_QT = new Date().getMonth() + 1;
 				objPhieuKhamBenh.MA_NOI_CHUYEN = "";
 				//
 				//
-				if (btnTHANHTOAN.getSelection() == true) {
-					objPhieuKhamBenh.NGAY_TTOAN = Utils.getDatetime(new Date(),
-							"yyyyMMddHHmm");
-				} else {
-					objPhieuKhamBenh.NGAY_TTOAN = "Chưa";
-				}
+//				if (btnTHANHTOAN.getSelection() == true) {
+//					objPhieuKhamBenh.NGAY_TTOAN = Utils.getDatetime(new Date(), "yyyyMMddHHmm");
+//				} else {
+//					objPhieuKhamBenh.NGAY_TTOAN = "Chưa";
+//				}
 				objPhieuKhamBenh.T_THUOC = T_THUOC;
 				objPhieuKhamBenh.T_VTYT = 0;
 				objPhieuKhamBenh.T_BHTT = TONGCONG_BH;
@@ -5304,16 +6631,18 @@ public class FormKhamBenhDlg extends Dialog {
 				objPhieuKhamBenh.MA_PTTT_QT = "";
 				objPhieuKhamBenh.CAN_NANG = Utils.getDouble(txtCanNang
 						.getText());
-				objPhieuKhamBenh.NAM_QT = new Date().getYear() + 1970;
+				objPhieuKhamBenh.NAM_QT = new Date().getYear() + 1900;
+				// new Date().getYear() + 1970 = 2087 
+				//                117            2017
 				objPhieuKhamBenh.THANG_QT = new Date().getMonth() + 1;
 				objPhieuKhamBenh.MA_NOI_CHUYEN = "";
 				//
-				if (btnTHANHTOAN.getSelection() == true) {
-					objPhieuKhamBenh.NGAY_TTOAN = Utils.getDatetime(new Date(),
-							"yyyyMMddHHmm");
-				} else {
-					objPhieuKhamBenh.NGAY_TTOAN = "Chưa";
-				}
+//				if (btnTHANHTOAN.getSelection() == true) {
+//					objPhieuKhamBenh.NGAY_TTOAN = Utils.getDatetime(new Date(),
+//							"yyyyMMddHHmm");
+//				} else {
+//					objPhieuKhamBenh.NGAY_TTOAN = "Chưa";
+//				}
 				objPhieuKhamBenh.MUC_HUONG = 0;
 				objPhieuKhamBenh.T_THUOC = T_THUOC;
 				objPhieuKhamBenh.T_VTYT = 0;
@@ -5344,10 +6673,10 @@ public class FormKhamBenhDlg extends Dialog {
 				+ ". BH: "
 				+ java.text.NumberFormat.getInstance(java.util.Locale.ITALY)
 						.format(TONGCONG_BH)
-				+ " BH Chi:"
+				+ " BHChi:"
 				+ java.text.NumberFormat.getInstance(java.util.Locale.ITALY)
 						.format(TONGCONG_BHYT)
-				+ " Người Bệnh: "
+				+ " Thu: "
 				+ java.text.NumberFormat.getInstance(java.util.Locale.ITALY)
 						.format(TONGCONG_NB));
 		//
@@ -5373,17 +6702,17 @@ public class FormKhamBenhDlg extends Dialog {
 		if(objKhoHang!=null){
 			sql += " and KHO_ID="+objKhoHang.KHO_ID.intValue();
 		}
+		
 		//
 		sql += " order by HANDUNG ASC";
 		try {
 			logger.info(sql);
 			Connection con = DbHelper.getSql2o();
-			listDataCtNhapthuoc = con.createQuery(sql).executeAndFetch(
-					CtNhapthuoc.class);
+			listDataCtNhapthuoc = con.createQuery(sql).executeAndFetch(CtNhapthuoc.class);
 			if (listDataCtNhapthuoc != null || listDataCtNhapthuoc.size() > 0) {
 				hashDataCtNhapthuoc.clear();
 				for (CtNhapthuoc obj : listDataCtNhapthuoc) {
-					hashDataCtNhapthuoc.put(obj.THUOC_ID, obj);
+					hashDataCtNhapthuoc.put(obj.CT_ID, obj);
 				}
 			}
 		} catch (Exception e) {
@@ -5415,7 +6744,6 @@ public class FormKhamBenhDlg extends Dialog {
 		iSoLuongChiDinh = Utils.getInt(txtThuocSoLuongChiDinh.getText());
 		if (iSoLuongChiDinh<=0 
 				|| (iSoLuongChiDinh > 0 && objCtNhapthuoc.SL_TONKHO <= iSoLuongChiDinh)) {
-
 			txtThuocSoLuongChiDinh.setBackground(SWTResourceManager .getColor(SWT.COLOR_RED));
 			txtThuocSoLuongChiDinh.forceFocus();
 			txtThuocSoLuongChiDinh.selectAll();
@@ -5424,18 +6752,27 @@ public class FormKhamBenhDlg extends Dialog {
 			txtThuocSoLuongChiDinh.setBackground(SWTResourceManager
 					.getColor(SWT.COLOR_YELLOW));
 		}
+		if (cbLieuDung.getText().length()==0) {
+			cbLieuDung.setBackground(SWTResourceManager .getColor(SWT.COLOR_RED));
+			cbLieuDung.forceFocus();
+			return false;
+		} else {
+			cbLieuDung.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
+		}
 		// ======================================================
 		//
 		// ======================================================
 		ThuocChitiet objThuocChiTiet = new ThuocChitiet();
 		objThuocChiTiet.THUOC_ID = objCtNhapthuoc.THUOC_ID;
 		objThuocChiTiet.MA_BENH = cbMaBenh.getText();
-		objThuocChiTiet.TYLE_TT = (float) 100.0;
+		objThuocChiTiet.MUC_HUONG = (float) 100.0;
 		if (objPhieuKhamBenh != null) {
 			objThuocChiTiet.MA_LK = objPhieuKhamBenh.MA_LK;
 		}
 		objThuocChiTiet.SO_LUONG = 1;
-		objThuocChiTiet.LIEU_DUNG = cbLieuDung.getText();
+		//
+		String lieudung[] = cbLieuDung.getText().split("#");
+		objThuocChiTiet.LIEU_DUNG = lieudung.length==2?lieudung[1]:cbLieuDung.getText();
 		//
 		if( DbHelper.hashDataMstLieuDung.get(objThuocChiTiet.LIEU_DUNG)!=null){
 			DbHelper.hashDataMstLieuDung.get(objThuocChiTiet.LIEU_DUNG).RANK++;
@@ -5455,28 +6792,50 @@ public class FormKhamBenhDlg extends Dialog {
 					&& objCtNhapthuoc.TENTHUOC.length() > 0) {
 				Thuoc objThuoc = Thuoc.load(objCtNhapthuoc.THUOC_ID);
 				if (objThuoc != null) {
-					objThuocChiTiet.MA_THUOC = objThuoc.MA_AX;
-					objThuocChiTiet.MA_NHOM = "" + objThuoc.MANHOM_9324;
-					objThuocChiTiet.TEN_THUOC = objThuoc.TENTHUOC_AX;
-					objThuocChiTiet.DON_VI_TINH = objThuoc.DON_VI_TINH;
-					objThuocChiTiet.HAM_LUONG = objThuoc.HAMLUONG_AX;
-					objThuocChiTiet.DUONG_DUNG = objThuoc.MA_DUONGDUNG_AX;
-					objThuocChiTiet.SO_DANG_KY = objThuoc.SODANGKY_AX;
+					if( objThuoc.TENTHUOC_AX!=null && objThuoc.TENTHUOC_AX.length()>0 ){
+						objThuocChiTiet.MA_THUOC = objThuoc.MA_AX;
+						objThuocChiTiet.MA_NHOM = "" + objThuoc.MANHOM_9324;
+						// THUOC BAO HIEM
+						objThuocChiTiet.TEN_THUOC = objThuoc.TENTHUOC_AX;
+						objThuocChiTiet.DON_VI_TINH = objThuoc.DON_VI_TINH;
+						objThuocChiTiet.HAM_LUONG = objThuoc.HAMLUONG_AX;
+						objThuocChiTiet.DUONG_DUNG = objThuoc.MA_DUONGDUNG_AX;
+						objThuocChiTiet.SO_DANG_KY = objThuoc.SODANGKY_AX;
+					}
+					else{
+						objThuocChiTiet.TEN_THUOC = objThuoc.TEN_THUOC;
+						objThuocChiTiet.DON_VI_TINH = objThuoc.DON_VI_TINH;
+						objThuocChiTiet.MA_NHOM = "" + objThuoc.NHOM_THAU;
+						objThuocChiTiet.HAM_LUONG = "";
+						objThuocChiTiet.DUONG_DUNG = "";
+						objThuocChiTiet.SO_DANG_KY = "";
+					}
 				}
 				objThuocChiTiet.KHO_NAME = objCtNhapthuoc.TENKHO;
-				objThuocChiTiet.DON_GIA = objCtNhapthuoc.DONGIA;
+				//
+				objThuocChiTiet.TYP = objCtNhapthuoc.TYP;
+				if(objThuocChiTiet.TYP==1){
+					// THUOC VIEN PHI
+					objThuocChiTiet.DON_GIA = objCtNhapthuoc.DONGIA;
+				}
+				else{
+					objThuocChiTiet.DON_GIA = objCtNhapthuoc.DONGIA_BAN;
+				}
+				//
 				objThuocChiTiet.THUOC_ID = objCtNhapthuoc.THUOC_ID;
 				objThuocChiTiet.CT_ID = objCtNhapthuoc.CT_ID;
 				objThuocChiTiet.NT_ID = objCtNhapthuoc.NT_ID;
+				objThuocChiTiet.TT_THAU = objCtNhapthuoc.TT_THAU;
+				objThuocChiTiet.SO_DANG_KY = objCtNhapthuoc.SO_DANG_KY;
 				objThuocChiTiet.SO_LUONG = iSoLuongChiDinh;
 				//
 				objThuocChiTiet.STT = listThuocData.size() + 1;
+				objThuocChiTiet.STS = -1;  // JuSY ADD 
 				listThuocData.add(objThuocChiTiet);
-				// hashThuocChiTiet.put(objThuocChiTiet.TEN_THUOC,
-				// objThuocChiTiet);
+				// hashThuocChiTiet.put(objThuocChiTiet.TEN_THUOC,objThuocChiTiet);
 			}
 			//
-			updateGiaTien();
+			updateTinhTien();
 			tableViewerTHUOC.refresh();
 		}
 		// ======================================================
@@ -5529,11 +6888,20 @@ public class FormKhamBenhDlg extends Dialog {
 		//
 		if (objDv != null) {
 			// Check is exist
+			
 			if (hashDichVuChiTiet.get(objDv.MA_DVKT) != null) {
-				// exist
-				MessageDialog.openError(shellKhamBenh, "Có lỗi",
-						"Đã có dịch vụ đó trong danh sách");
-				return;
+				//
+				logger.info(objPhieuKhamBenh);
+				if(objPhieuKhamBenh!=null){
+					if( objPhieuKhamBenh.MA_KHOA!=null && objPhieuKhamBenh.MA_KHOA.equals("K31")){
+						// PHUC HOI CHUC NANG
+					}
+					else{
+						// exist
+						MessageDialog.openError(shellKhamBenh, "Có lỗi", "Đã có dịch vụ đó trong danh sách");
+						return;
+					}
+				}
 			}
 
 			DvChitiet objDVChiTiet = new DvChitiet();
@@ -5546,25 +6914,37 @@ public class FormKhamBenhDlg extends Dialog {
 			//
 			objDVChiTiet.MA_DICH_VU = objDv.MA_DVKT;
 			objDVChiTiet.TEN_DICH_VU = objDv.TEN_DVKT;
-			objDVChiTiet.DON_GIA = objDv.DON_GIA;
-			objDVChiTiet.DON_GIA2 = objDv.DON_GIA2;
-			objDVChiTiet.MA_NHOM = Utils.getInt(objDv.MANHOM_9324);
+			if( objPhieuKhamBenh!=null && objPhieuKhamBenh.MA_KHOA!=null && objPhieuKhamBenh.MA_KHOA.equals("K31")){
+				objDVChiTiet.TEN_DICH_VU = objDv.TEN_DVKT +"("+Utils.getDatetime(new Date(), "dd/MM")+ ")";
+			}
+			//
+			objDVChiTiet.TYP = objDv.TYP;
+			if(objDVChiTiet.TYP==1 ){
+				objDVChiTiet.DON_GIA = objDv.DON_GIA;
+				objDVChiTiet.DON_GIA2 = objDv.DON_GIA2;
+				objDVChiTiet.MA_NHOM = Utils.getInt(objDv.MANHOM_9324);
+			}
+			else{
+				objDVChiTiet.DON_GIA = objDv.DON_GIA2;
+				objDVChiTiet.DON_GIA2 = objDv.DON_GIA2;
+				objDVChiTiet.MA_NHOM = Utils.getInt(objDv.MANHOM_9324);
+			}
+			objDVChiTiet.NHOM_DV = objDv.NHOM_DV;
 			objDVChiTiet.SO_LUONG = 1;
 			objDVChiTiet.MA_VAT_TU = "";
 			objDVChiTiet.MA_BENH = "";
 			objDVChiTiet.MA_PTTT = 0;
-			objDVChiTiet.NGAY_YL = Utils
-					.getDatetime(new Date(), "yyyyMMddHHmm");
-			objDVChiTiet.NGAY_KQ = Utils
-					.getDatetime(new Date(), "yyyyMMddHHmm");
+			objDVChiTiet.NGAY_YL = Utils.getDatetime(new Date(), "yyyyMMddHHmm");
+			objDVChiTiet.NGAY_KQ = Utils.getDatetime(new Date(), "yyyyMMddHHmm");
 			objDVChiTiet.THANH_TIEN = objDv.DON_GIA2;
 			if (btnVp.getSelection() == true) {
-				objDVChiTiet.TYLE_TT = 0;
+				// Tu Chi Tra
+				objDVChiTiet.MUC_HUONG = 0;
 			} else {
-				objDVChiTiet.TYLE_TT = txtMathe.iTyLeHuong;
+				objDVChiTiet.MUC_HUONG = txtMathe.iTyLeHuong;
 			}
-			objDVChiTiet.TT_BH = 0;
-			objDVChiTiet.TT_NB = 0;
+			objDVChiTiet.TT_BHTT = 0;
+			objDVChiTiet.TT_BNTT = 0;
 			//
 			objDVChiTiet.MA_BAC_SI = "";
 			objDVChiTiet.MA_KHOA = "";
@@ -5586,7 +6966,7 @@ public class FormKhamBenhDlg extends Dialog {
 			//
 			// System.out.println("Add list dv chi iet");
 			//
-			updateGiaTien();
+			updateTinhTien();
 			// ======================================================
 			//
 			// ======================================================

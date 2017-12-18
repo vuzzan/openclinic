@@ -30,7 +30,7 @@ public class TheBHXH extends Composite {
 	private Text txt3;
 	private Text txt4;
 	private Hashtable<String, Integer> hashValue = new Hashtable<String, Integer>();
-	private String[] listString = new String[] {"DN", "HX", "CH", "NN", "TK", "HC", "XK", "CA", "HT", "TB", "MS", "XB", "XN", "TN", "CC", "CK", "CB", "KC", "HD", "BT", "HN", "TC", "TQ", "TA", "TY", "TE", "HG", "LS", "CN", "HS", "GD", "TL", "XV", "NO"};
+	private String[] listString = new String[] {"DN", "TV", "HX", "CH", "NN", "TK", "HC", "XK", "CA", "HT", "TB", "MS", "XB", "XN", "TN", "CC", "CK", "CB", "KC", "HD", "BT", "HN", "TC", "TQ", "TA", "TY", "TE", "HG", "LS", "CN", "HS", "GD", "TL", "XV", "NO"};
 	private int[] muchuong = {0, 100, 100, 95, 80, 100, 100, 100};
 	//                        0  1    2    3   4   5    6    7
 	private Label txt7;
@@ -219,6 +219,7 @@ public class TheBHXH extends Composite {
 		hashValue.put("GD2",100);
 		hashValue.put("XB7",80);
 		hashValue.put("KC7",80);
+		hashValue.put("TV4",80);
 	}
 
 	private void initialize() {
@@ -249,7 +250,6 @@ public class TheBHXH extends Composite {
 		txt2.setText("3");
 		txt2.setTextLimit(1);
 		txt2.setFont(SWTResourceManager.getFont("Courier New", 12, SWT.BOLD));
-		txt2.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
 		
 		txt3 = new Text(this, SWT.BORDER);
 		GridData gd_txt3 = new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1);
@@ -258,7 +258,6 @@ public class TheBHXH extends Composite {
 		txt3.setText("45");
 		txt3.setTextLimit(2);
 		txt3.setFont(SWTResourceManager.getFont("Courier New", 12, SWT.BOLD));
-		txt3.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
 		
 		txt4 = new Text(this, SWT.BORDER);
 		GridData gd_txt4 = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
@@ -267,7 +266,6 @@ public class TheBHXH extends Composite {
 		txt4.setText("67");
 		txt4.setTextLimit(2);
 		txt4.setFont(SWTResourceManager.getFont("Courier New", 12, SWT.BOLD));
-		txt4.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
 		
 		txt5 = new Text(this, SWT.BORDER);
 		GridData gd_txt5 = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
@@ -276,7 +274,6 @@ public class TheBHXH extends Composite {
 		txt5.setText("789");
 		txt5.setTextLimit(3);
 		txt5.setFont(SWTResourceManager.getFont("Courier New", 12, SWT.BOLD));
-		txt5.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
 		
 		txt6 = new Text(this, SWT.BORDER);
 		GridData gd_txt6 = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
@@ -285,7 +282,6 @@ public class TheBHXH extends Composite {
 		txt6.setText("12345");
 		txt6.setTextLimit(5);
 		txt6.setFont(SWTResourceManager.getFont("Courier New", 12, SWT.BOLD));
-		txt6.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
 		
 		txt7 = new Label(this, SWT.NONE);
 		GridData gd_lblLbtext = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
@@ -348,8 +344,15 @@ public class TheBHXH extends Composite {
 				}
 				else{
 					if(txt2.getText().length()==1){
-						txt3.forceFocus();
+						//txt3.forceFocus();
 					}
+				}
+			}
+			@Override
+			public void keyReleased(KeyEvent e) {
+				if(txt2.getText().length()==1){
+					txt2.forceFocus();
+					//getParent().forceFocus();
 				}
 			}
 		});
@@ -370,8 +373,15 @@ public class TheBHXH extends Composite {
 				}
 				else{
 					if(txt3.getText().length()==2){
-						txt4.forceFocus();
+						//txt4.forceFocus();
 					}
+				}
+			}
+			@Override
+			public void keyReleased(KeyEvent e) {
+				if(txt3.getText().length()==2){
+					//txt4.forceFocus();
+					txt3.selectAll();
 				}
 			}
 		});
@@ -393,8 +403,15 @@ public class TheBHXH extends Composite {
 				}
 				else{
 					if(txt4.getText().length()==2){
-						txt5.forceFocus();
+						//txt5.forceFocus();
 					}
+				}
+			}
+			@Override
+			public void keyReleased(KeyEvent e) {
+				if(txt4.getText().length()==2){
+					//txt4.forceFocus();
+					txt4.selectAll();
 				}
 			}
 		});
@@ -416,8 +433,15 @@ public class TheBHXH extends Composite {
 				}
 				else{
 					if(txt5.getText().length()==3){
-						txt6.forceFocus();
+						//txt6.forceFocus();
 					}
+				}
+			}
+			@Override
+			public void keyReleased(KeyEvent e) {
+				if(txt5.getText().length()==3){
+					//txt4.forceFocus();
+					txt5.selectAll();
 				}
 			}
 		});
@@ -439,6 +463,13 @@ public class TheBHXH extends Composite {
 					if(txt6.getText().length()==5){
 						getParent().forceFocus();
 					}
+				}
+			}
+			@Override
+			public void keyReleased(KeyEvent e) {
+				if(txt6.getText().length()==5){
+					//txt4.forceFocus();
+					//getParent().forceFocus();
 				}
 			}
 		});

@@ -3,6 +3,11 @@
 */
 package com.model.dao;
 
+
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +48,8 @@ import org.eclipse.swt.layout.GridData;
 import org.sql2o.Connection;
 
 import com.DbHelper;
+import com.openclinic.utils.Utils;
+
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.wb.swt.SWTResourceManager;
@@ -146,10 +153,10 @@ public class ${entity.name}ListDlg extends Dialog {
         
 		Composite compositeHeader${entity.name} = new Composite(compositeInShell${entity.name}, SWT.NONE);
 		compositeHeader${entity.name}.setLayoutData(BorderLayout.NORTH);
-		compositeHeader${entity.name}.setLayout(new GridLayout(2, false));
+		compositeHeader${entity.name}.setLayout(new GridLayout(5, false));
 
 		textSearch${entity.name} = new Text(compositeHeader${entity.name}, SWT.BORDER);
-		textSearch${entity.name}.setFont(SWTResourceManager.getFont("Tahoma", 11, SWT.NORMAL));
+		textSearch${entity.name}.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		textSearch${entity.name}.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -161,7 +168,7 @@ public class ${entity.name}ListDlg extends Dialog {
 		
 		Button btnNewButtonSearch${entity.name} = new Button(compositeHeader${entity.name}, SWT.NONE);
 		btnNewButtonSearch${entity.name}.setImage(SWTResourceManager.getImage(${entity.name}Dlg.class, "/png/media-play-2x.png"));
-		btnNewButtonSearch${entity.name}.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
+		btnNewButtonSearch${entity.name}.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 
 		btnNewButtonSearch${entity.name}.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -169,6 +176,18 @@ public class ${entity.name}ListDlg extends Dialog {
 				reloadTable${entity.name}();
 			}
 		});
+		Button btnNewButtonExportExcel${entity.name} = new Button(compositeHeader${entity.name}, SWT.NONE);
+		btnNewButtonExportExcel${entity.name}.setText("Export Excel");
+		btnNewButtonExportExcel${entity.name}.setImage(SWTResourceManager.getImage(KhamBenhListDlg.class, "/png/spreadsheet-2x.png"));
+		btnNewButtonExportExcel${entity.name}.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		btnNewButtonExportExcel${entity.name}.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				exportExcelTable${entity.name}();
+			}
+		});
+		
+		
 		GridData gd_btnNewButton${entity.name} = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
 		gd_btnNewButton${entity.name}.widthHint = 87;
 		btnNewButtonSearch${entity.name}.setLayoutData(gd_btnNewButton${entity.name});
@@ -176,7 +195,7 @@ public class ${entity.name}ListDlg extends Dialog {
         
 		tableViewer${entity.name} = new TableViewer(compositeInShell${entity.name}, SWT.BORDER | SWT.FULL_SELECTION);
 		table${entity.name} = tableViewer${entity.name}.getTable();
-		table${entity.name}.setFont(SWTResourceManager.getFont("Tahoma", 11, SWT.NORMAL));
+		table${entity.name}.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		table${entity.name}.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -254,7 +273,17 @@ public class ${entity.name}ListDlg extends Dialog {
 			}
 		});
 		mntmDelete${entity.name}.setText("Delete");
-
+		
+		MenuItem mntmExport${entity.name} = new MenuItem(menu${entity.name}, SWT.NONE);
+		mntmExport${entity.name}.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				exportExcelTable${entity.name}();
+			}
+		});
+		mntmExport${entity.name}.setImage(SWTResourceManager.getImage(${entity.name}Dlg.class, "/png/spreadsheet-2x.png"));
+		mntmExport${entity.name}.setText("Export Excel");
+		
 		tableViewer${entity.name}.setLabelProvider(new TableLabelProvider${entity.name}());
 		tableViewer${entity.name}.setContentProvider(new ContentProvider${entity.name}());
 		tableViewer${entity.name}.setInput(listData${entity.name});
@@ -271,6 +300,69 @@ public class ${entity.name}ListDlg extends Dialog {
 		if(textSearch${entity.name}String!=null){
 			textSearch${entity.name}.setText(textSearch${entity.name}String);
 		}
+	}
+	protected void exportExcelTable${entity.name}() {
+        if(DbHelper.checkPhanQuyen(DbHelper.READ, "${entity.databaseTable}")==false){
+			logger.info("DON'T HAVE READ RIGHT");
+			return;
+		}
+        if(listData${entity.name}!=null){
+            // Export to EXCEL
+    		
+			StringBuffer buff_${entity.databaseTable} = new StringBuffer();
+			String ${entity.databaseTable}_filename = "${entity.databaseTable}_"+Utils.getDatetimeCurent().replaceAll(":", "_")+".xls";
+			String delimiter = "</td><td>";
+			// Get header...
+			// Get header...
+			buff_${entity.databaseTable}.append( "<table>");
+			buff_${entity.databaseTable}.append( "<tr class='background-color:#dfdfdf'><td>");
+
+#foreach( $field in $entity.nonKeyAttributes )
+#if ($field.databaseName.contains("STS")==true )
+			buff_${entity.databaseTable}.append( "${field.databaseName}");
+#else
+			buff_${entity.databaseTable}.append( "${field.databaseName}" +delimiter);
+#end
+#end
+			// End of header
+			buff_${entity.databaseTable}.append( "</td></tr>");
+			buff_${entity.databaseTable}.append( "\n");
+			// Get data...
+			for( ${entity.name} obj:  listData${entity.name}){
+				buff_${entity.databaseTable}.append( "<tr><td>");
+#foreach( $field in $entity.nonKeyAttributes )
+#if ($field.databaseName.contains("STS")==true )
+				buff_${entity.databaseTable}.append( obj.${field.databaseName} );
+#else
+				buff_${entity.databaseTable}.append( obj.${field.databaseName} +delimiter);
+#end
+#end
+				// End of header
+				buff_${entity.databaseTable}.append( "</td></tr>");
+			}
+			//
+			buff_${entity.databaseTable}.append( "</table>");
+			Writer out = null;
+			try {
+				out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(${entity.databaseTable}_filename), "UTF-8"));
+				out.write('\uFEFF'); // BOM for UTF-*
+			    out.write(buff_${entity.databaseTable}.toString());
+			} 
+			catch(Exception ee){
+				ee.printStackTrace();
+			}
+			finally {
+			    try {
+					out.close();
+				} catch (Exception e) {
+					e.printStackTrace();
+					logger.error(e);
+				}
+			}
+			//
+            return;
+        }
+		// End of export
 	}
 	protected void reloadTable${entity.name}() {
         if(DbHelper.checkPhanQuyen(DbHelper.READ, "${entity.databaseTable}")==false){

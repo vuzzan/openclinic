@@ -3,6 +3,11 @@
 */
 package com.model.dao;
 
+
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +48,8 @@ import org.eclipse.swt.layout.GridData;
 import org.sql2o.Connection;
 
 import com.DbHelper;
+import com.openclinic.utils.Utils;
+
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.wb.swt.SWTResourceManager;
@@ -146,10 +153,10 @@ public class DvChitietListDlg extends Dialog {
         
 		Composite compositeHeaderDvChitiet = new Composite(compositeInShellDvChitiet, SWT.NONE);
 		compositeHeaderDvChitiet.setLayoutData(BorderLayout.NORTH);
-		compositeHeaderDvChitiet.setLayout(new GridLayout(2, false));
+		compositeHeaderDvChitiet.setLayout(new GridLayout(5, false));
 
 		textSearchDvChitiet = new Text(compositeHeaderDvChitiet, SWT.BORDER);
-		textSearchDvChitiet.setFont(SWTResourceManager.getFont("Tahoma", 11, SWT.NORMAL));
+		textSearchDvChitiet.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		textSearchDvChitiet.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -161,7 +168,7 @@ public class DvChitietListDlg extends Dialog {
 		
 		Button btnNewButtonSearchDvChitiet = new Button(compositeHeaderDvChitiet, SWT.NONE);
 		btnNewButtonSearchDvChitiet.setImage(SWTResourceManager.getImage(DvChitietDlg.class, "/png/media-play-2x.png"));
-		btnNewButtonSearchDvChitiet.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
+		btnNewButtonSearchDvChitiet.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 
 		btnNewButtonSearchDvChitiet.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -169,6 +176,18 @@ public class DvChitietListDlg extends Dialog {
 				reloadTableDvChitiet();
 			}
 		});
+		Button btnNewButtonExportExcelDvChitiet = new Button(compositeHeaderDvChitiet, SWT.NONE);
+		btnNewButtonExportExcelDvChitiet.setText("Export Excel");
+		btnNewButtonExportExcelDvChitiet.setImage(SWTResourceManager.getImage(KhamBenhListDlg.class, "/png/spreadsheet-2x.png"));
+		btnNewButtonExportExcelDvChitiet.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		btnNewButtonExportExcelDvChitiet.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				exportExcelTableDvChitiet();
+			}
+		});
+		
+		
 		GridData gd_btnNewButtonDvChitiet = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
 		gd_btnNewButtonDvChitiet.widthHint = 87;
 		btnNewButtonSearchDvChitiet.setLayoutData(gd_btnNewButtonDvChitiet);
@@ -176,7 +195,7 @@ public class DvChitietListDlg extends Dialog {
         
 		tableViewerDvChitiet = new TableViewer(compositeInShellDvChitiet, SWT.BORDER | SWT.FULL_SELECTION);
 		tableDvChitiet = tableViewerDvChitiet.getTable();
-		tableDvChitiet.setFont(SWTResourceManager.getFont("Tahoma", 11, SWT.NORMAL));
+		tableDvChitiet.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		tableDvChitiet.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -232,9 +251,25 @@ public class DvChitietListDlg extends Dialog {
 		tbTableColumnDvChitietMA_NHOM.setWidth(100);
 		tbTableColumnDvChitietMA_NHOM.setText("MA_NHOM");
 
+		TableColumn tbTableColumnDvChitietGOI_VTYT = new TableColumn(tableDvChitiet, SWT.LEFT);
+		tbTableColumnDvChitietGOI_VTYT.setWidth(100);
+		tbTableColumnDvChitietGOI_VTYT.setText("GOI_VTYT");
+
+		TableColumn tbTableColumnDvChitietTEN_VAT_TU = new TableColumn(tableDvChitiet, SWT.LEFT);
+		tbTableColumnDvChitietTEN_VAT_TU.setWidth(100);
+		tbTableColumnDvChitietTEN_VAT_TU.setText("TEN_VAT_TU");
+
 		TableColumn tbTableColumnDvChitietTEN_DICH_VU = new TableColumn(tableDvChitiet, SWT.LEFT);
 		tbTableColumnDvChitietTEN_DICH_VU.setWidth(100);
 		tbTableColumnDvChitietTEN_DICH_VU.setText("TEN_DICH_VU");
+
+		TableColumn tbTableColumnDvChitietDON_VI_TINH = new TableColumn(tableDvChitiet, SWT.LEFT);
+		tbTableColumnDvChitietDON_VI_TINH.setWidth(100);
+		tbTableColumnDvChitietDON_VI_TINH.setText("DON_VI_TINH");
+
+		TableColumn tbTableColumnDvChitietPHAM_VI = new TableColumn(tableDvChitiet, SWT.RIGHT);
+		tbTableColumnDvChitietPHAM_VI.setWidth(100);
+		tbTableColumnDvChitietPHAM_VI.setText("PHAM_VI");
 
 		TableColumn tbTableColumnDvChitietSO_LUONG = new TableColumn(tableDvChitiet, SWT.RIGHT);
 		tbTableColumnDvChitietSO_LUONG.setWidth(100);
@@ -248,6 +283,10 @@ public class DvChitietListDlg extends Dialog {
 		tbTableColumnDvChitietDON_GIA2.setWidth(100);
 		tbTableColumnDvChitietDON_GIA2.setText("DON_GIA2");
 
+		TableColumn tbTableColumnDvChitietTT_THAU = new TableColumn(tableDvChitiet, SWT.LEFT);
+		tbTableColumnDvChitietTT_THAU.setWidth(100);
+		tbTableColumnDvChitietTT_THAU.setText("TT_THAU");
+
 		TableColumn tbTableColumnDvChitietTHANH_TIEN = new TableColumn(tableDvChitiet, SWT.RIGHT);
 		tbTableColumnDvChitietTHANH_TIEN.setWidth(100);
 		tbTableColumnDvChitietTHANH_TIEN.setText("THANH_TIEN");
@@ -256,13 +295,37 @@ public class DvChitietListDlg extends Dialog {
 		tbTableColumnDvChitietTHANH_TIEN2.setWidth(100);
 		tbTableColumnDvChitietTHANH_TIEN2.setText("THANH_TIEN2");
 
-		TableColumn tbTableColumnDvChitietTT_BH = new TableColumn(tableDvChitiet, SWT.RIGHT);
-		tbTableColumnDvChitietTT_BH.setWidth(100);
-		tbTableColumnDvChitietTT_BH.setText("TT_BH");
+		TableColumn tbTableColumnDvChitietT_TRANTT = new TableColumn(tableDvChitiet, SWT.RIGHT);
+		tbTableColumnDvChitietT_TRANTT.setWidth(100);
+		tbTableColumnDvChitietT_TRANTT.setText("T_TRANTT");
 
-		TableColumn tbTableColumnDvChitietTT_NB = new TableColumn(tableDvChitiet, SWT.RIGHT);
-		tbTableColumnDvChitietTT_NB.setWidth(100);
-		tbTableColumnDvChitietTT_NB.setText("TT_NB");
+		TableColumn tbTableColumnDvChitietMUC_HUONG = new TableColumn(tableDvChitiet, SWT.RIGHT);
+		tbTableColumnDvChitietMUC_HUONG.setWidth(100);
+		tbTableColumnDvChitietMUC_HUONG.setText("MUC_HUONG");
+
+		TableColumn tbTableColumnDvChitietT_NGUONKHAC = new TableColumn(tableDvChitiet, SWT.RIGHT);
+		tbTableColumnDvChitietT_NGUONKHAC.setWidth(100);
+		tbTableColumnDvChitietT_NGUONKHAC.setText("T_NGUONKHAC");
+
+		TableColumn tbTableColumnDvChitietTT_BHTT = new TableColumn(tableDvChitiet, SWT.RIGHT);
+		tbTableColumnDvChitietTT_BHTT.setWidth(100);
+		tbTableColumnDvChitietTT_BHTT.setText("TT_BHTT");
+
+		TableColumn tbTableColumnDvChitietTT_BNTT = new TableColumn(tableDvChitiet, SWT.RIGHT);
+		tbTableColumnDvChitietTT_BNTT.setWidth(100);
+		tbTableColumnDvChitietTT_BNTT.setText("TT_BNTT");
+
+		TableColumn tbTableColumnDvChitietT_BNCCT = new TableColumn(tableDvChitiet, SWT.RIGHT);
+		tbTableColumnDvChitietT_BNCCT.setWidth(100);
+		tbTableColumnDvChitietT_BNCCT.setText("T_BNCCT");
+
+		TableColumn tbTableColumnDvChitietT_NGOAIDS = new TableColumn(tableDvChitiet, SWT.RIGHT);
+		tbTableColumnDvChitietT_NGOAIDS.setWidth(100);
+		tbTableColumnDvChitietT_NGOAIDS.setText("T_NGOAIDS");
+
+		TableColumn tbTableColumnDvChitietMA_GIUONG = new TableColumn(tableDvChitiet, SWT.LEFT);
+		tbTableColumnDvChitietMA_GIUONG.setWidth(100);
+		tbTableColumnDvChitietMA_GIUONG.setText("MA_GIUONG");
 
 		TableColumn tbTableColumnDvChitietMA_KHOA = new TableColumn(tableDvChitiet, SWT.LEFT);
 		tbTableColumnDvChitietMA_KHOA.setWidth(100);
@@ -291,6 +354,31 @@ public class DvChitietListDlg extends Dialog {
 		TableColumn tbTableColumnDvChitietTYLE_TT = new TableColumn(tableDvChitiet, SWT.RIGHT);
 		tbTableColumnDvChitietTYLE_TT.setWidth(100);
 		tbTableColumnDvChitietTYLE_TT.setText("TYLE_TT");
+
+
+		TableColumn tbTableColumnDvChitietCUR_DATE = new TableColumn(tableDvChitiet, SWT.NONE);
+		tbTableColumnDvChitietCUR_DATE.setWidth(100);
+		tbTableColumnDvChitietCUR_DATE.setText("CUR_DATE");
+
+		TableColumn tbTableColumnDvChitietTYP = new TableColumn(tableDvChitiet, SWT.RIGHT);
+		tbTableColumnDvChitietTYP.setWidth(100);
+		tbTableColumnDvChitietTYP.setText("TYP");
+
+		TableColumn tbTableColumnDvChitietTHANHTOAN = new TableColumn(tableDvChitiet, SWT.RIGHT);
+		tbTableColumnDvChitietTHANHTOAN.setWidth(100);
+		tbTableColumnDvChitietTHANHTOAN.setText("THANHTOAN");
+
+		TableColumn tbTableColumnDvChitietNV_ID = new TableColumn(tableDvChitiet, SWT.RIGHT);
+		tbTableColumnDvChitietNV_ID.setWidth(100);
+		tbTableColumnDvChitietNV_ID.setText("NV_ID");
+
+		TableColumn tbTableColumnDvChitietNV_NAME = new TableColumn(tableDvChitiet, SWT.LEFT);
+		tbTableColumnDvChitietNV_NAME.setWidth(100);
+		tbTableColumnDvChitietNV_NAME.setText("NV_NAME");
+
+		TableColumn tbTableColumnDvChitietNHOM_DV = new TableColumn(tableDvChitiet, SWT.RIGHT);
+		tbTableColumnDvChitietNHOM_DV.setWidth(100);
+		tbTableColumnDvChitietNHOM_DV.setText("NHOM_DV");
 
 		TableColumn tbTableColumnDvChitietSTS = new TableColumn(tableDvChitiet, SWT.RIGHT);
 		tbTableColumnDvChitietSTS.setWidth(100);
@@ -328,7 +416,17 @@ public class DvChitietListDlg extends Dialog {
 			}
 		});
 		mntmDeleteDvChitiet.setText("Delete");
-
+		
+		MenuItem mntmExportDvChitiet = new MenuItem(menuDvChitiet, SWT.NONE);
+		mntmExportDvChitiet.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				exportExcelTableDvChitiet();
+			}
+		});
+		mntmExportDvChitiet.setImage(SWTResourceManager.getImage(DvChitietDlg.class, "/png/spreadsheet-2x.png"));
+		mntmExportDvChitiet.setText("Export Excel");
+		
 		tableViewerDvChitiet.setLabelProvider(new TableLabelProviderDvChitiet());
 		tableViewerDvChitiet.setContentProvider(new ContentProviderDvChitiet());
 		tableViewerDvChitiet.setInput(listDataDvChitiet);
@@ -345,6 +443,133 @@ public class DvChitietListDlg extends Dialog {
 		if(textSearchDvChitietString!=null){
 			textSearchDvChitiet.setText(textSearchDvChitietString);
 		}
+	}
+	protected void exportExcelTableDvChitiet() {
+        if(DbHelper.checkPhanQuyen(DbHelper.READ, "dv_chitiet")==false){
+			logger.info("DON'T HAVE READ RIGHT");
+			return;
+		}
+        if(listDataDvChitiet!=null){
+            // Export to EXCEL
+    		
+			StringBuffer buff_dv_chitiet = new StringBuffer();
+			String dv_chitiet_filename = "dv_chitiet_"+Utils.getDatetimeCurent().replaceAll(":", "_")+".xls";
+			String delimiter = "</td><td>";
+			// Get header...
+			// Get header...
+			buff_dv_chitiet.append( "<table>");
+			buff_dv_chitiet.append( "<tr class='background-color:#dfdfdf'><td>");
+
+			buff_dv_chitiet.append( "BN_ID" +delimiter);
+			buff_dv_chitiet.append( "MA_LK" +delimiter);
+			buff_dv_chitiet.append( "DV_ID" +delimiter);
+			buff_dv_chitiet.append( "MA_DICH_VU" +delimiter);
+			buff_dv_chitiet.append( "MA_VAT_TU" +delimiter);
+			buff_dv_chitiet.append( "MA_NHOM" +delimiter);
+			buff_dv_chitiet.append( "GOI_VTYT" +delimiter);
+			buff_dv_chitiet.append( "TEN_VAT_TU" +delimiter);
+			buff_dv_chitiet.append( "TEN_DICH_VU" +delimiter);
+			buff_dv_chitiet.append( "DON_VI_TINH" +delimiter);
+			buff_dv_chitiet.append( "PHAM_VI" +delimiter);
+			buff_dv_chitiet.append( "SO_LUONG" +delimiter);
+			buff_dv_chitiet.append( "DON_GIA" +delimiter);
+			buff_dv_chitiet.append( "DON_GIA2" +delimiter);
+			buff_dv_chitiet.append( "TT_THAU" +delimiter);
+			buff_dv_chitiet.append( "THANH_TIEN" +delimiter);
+			buff_dv_chitiet.append( "THANH_TIEN2" +delimiter);
+			buff_dv_chitiet.append( "T_TRANTT" +delimiter);
+			buff_dv_chitiet.append( "MUC_HUONG" +delimiter);
+			buff_dv_chitiet.append( "T_NGUONKHAC" +delimiter);
+			buff_dv_chitiet.append( "TT_BHTT" +delimiter);
+			buff_dv_chitiet.append( "TT_BNTT" +delimiter);
+			buff_dv_chitiet.append( "T_BNCCT" +delimiter);
+			buff_dv_chitiet.append( "T_NGOAIDS" +delimiter);
+			buff_dv_chitiet.append( "MA_GIUONG" +delimiter);
+			buff_dv_chitiet.append( "MA_KHOA" +delimiter);
+			buff_dv_chitiet.append( "MA_BAC_SI" +delimiter);
+			buff_dv_chitiet.append( "MA_BENH" +delimiter);
+			buff_dv_chitiet.append( "NGAY_YL" +delimiter);
+			buff_dv_chitiet.append( "NGAY_KQ" +delimiter);
+			buff_dv_chitiet.append( "MA_PTTT" +delimiter);
+			buff_dv_chitiet.append( "TYLE_TT" +delimiter);
+			buff_dv_chitiet.append( "CUR_DATE" +delimiter);
+			buff_dv_chitiet.append( "TYP" +delimiter);
+			buff_dv_chitiet.append( "THANHTOAN" +delimiter);
+			buff_dv_chitiet.append( "NV_ID" +delimiter);
+			buff_dv_chitiet.append( "NV_NAME" +delimiter);
+			buff_dv_chitiet.append( "NHOM_DV" +delimiter);
+			buff_dv_chitiet.append( "STS");
+			// End of header
+			buff_dv_chitiet.append( "</td></tr>");
+			buff_dv_chitiet.append( "\n");
+			// Get data...
+			for( DvChitiet obj:  listDataDvChitiet){
+				buff_dv_chitiet.append( "<tr><td>");
+				buff_dv_chitiet.append( obj.BN_ID +delimiter);
+				buff_dv_chitiet.append( obj.MA_LK +delimiter);
+				buff_dv_chitiet.append( obj.DV_ID +delimiter);
+				buff_dv_chitiet.append( obj.MA_DICH_VU +delimiter);
+				buff_dv_chitiet.append( obj.MA_VAT_TU +delimiter);
+				buff_dv_chitiet.append( obj.MA_NHOM +delimiter);
+				buff_dv_chitiet.append( obj.GOI_VTYT +delimiter);
+				buff_dv_chitiet.append( obj.TEN_VAT_TU +delimiter);
+				buff_dv_chitiet.append( obj.TEN_DICH_VU +delimiter);
+				buff_dv_chitiet.append( obj.DON_VI_TINH +delimiter);
+				buff_dv_chitiet.append( obj.PHAM_VI +delimiter);
+				buff_dv_chitiet.append( obj.SO_LUONG +delimiter);
+				buff_dv_chitiet.append( obj.DON_GIA +delimiter);
+				buff_dv_chitiet.append( obj.DON_GIA2 +delimiter);
+				buff_dv_chitiet.append( obj.TT_THAU +delimiter);
+				buff_dv_chitiet.append( obj.THANH_TIEN +delimiter);
+				buff_dv_chitiet.append( obj.THANH_TIEN2 +delimiter);
+				buff_dv_chitiet.append( obj.T_TRANTT +delimiter);
+				buff_dv_chitiet.append( obj.TYLE_TT +delimiter);
+				buff_dv_chitiet.append( obj.T_NGUONKHAC +delimiter);
+				buff_dv_chitiet.append( obj.TT_BHTT +delimiter);
+				buff_dv_chitiet.append( obj.TT_BNTT +delimiter);
+				buff_dv_chitiet.append( obj.T_BNCCT +delimiter);
+				buff_dv_chitiet.append( obj.T_NGOAIDS +delimiter);
+				buff_dv_chitiet.append( obj.MA_GIUONG +delimiter);
+				buff_dv_chitiet.append( obj.MA_KHOA +delimiter);
+				buff_dv_chitiet.append( obj.MA_BAC_SI +delimiter);
+				buff_dv_chitiet.append( obj.MA_BENH +delimiter);
+				buff_dv_chitiet.append( obj.NGAY_YL +delimiter);
+				buff_dv_chitiet.append( obj.NGAY_KQ +delimiter);
+				buff_dv_chitiet.append( obj.MA_PTTT +delimiter);
+				buff_dv_chitiet.append( obj.MUC_HUONG +delimiter);
+				buff_dv_chitiet.append( obj.CUR_DATE +delimiter);
+				buff_dv_chitiet.append( obj.TYP +delimiter);
+				buff_dv_chitiet.append( obj.THANHTOAN +delimiter);
+				buff_dv_chitiet.append( obj.NV_ID +delimiter);
+				buff_dv_chitiet.append( obj.NV_NAME +delimiter);
+				buff_dv_chitiet.append( obj.NHOM_DV +delimiter);
+				buff_dv_chitiet.append( obj.STS );
+				// End of header
+				buff_dv_chitiet.append( "</td></tr>");
+			}
+			//
+			buff_dv_chitiet.append( "</table>");
+			Writer out = null;
+			try {
+				out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(dv_chitiet_filename), "UTF-8"));
+				out.write('\uFEFF'); // BOM for UTF-*
+			    out.write(buff_dv_chitiet.toString());
+			} 
+			catch(Exception ee){
+				ee.printStackTrace();
+			}
+			finally {
+			    try {
+					out.close();
+				} catch (Exception e) {
+					e.printStackTrace();
+					logger.error(e);
+				}
+			}
+			//
+            return;
+        }
+		// End of export
 	}
 	protected void reloadTableDvChitiet() {
         if(DbHelper.checkPhanQuyen(DbHelper.READ, "dv_chitiet")==false){
@@ -373,12 +598,18 @@ public class DvChitietListDlg extends Dialog {
             sql += " and ( 0 ";
         sql += " or LOWER(MA_DICH_VU) like '%"+searchString+"%'";
         sql += " or LOWER(MA_VAT_TU) like '%"+searchString+"%'";
+        sql += " or LOWER(GOI_VTYT) like '%"+searchString+"%'";
+        sql += " or LOWER(TEN_VAT_TU) like '%"+searchString+"%'";
         sql += " or LOWER(TEN_DICH_VU) like '%"+searchString+"%'";
+        sql += " or LOWER(DON_VI_TINH) like '%"+searchString+"%'";
+        sql += " or LOWER(TT_THAU) like '%"+searchString+"%'";
+        sql += " or LOWER(MA_GIUONG) like '%"+searchString+"%'";
         sql += " or LOWER(MA_KHOA) like '%"+searchString+"%'";
         sql += " or LOWER(MA_BAC_SI) like '%"+searchString+"%'";
         sql += " or LOWER(MA_BENH) like '%"+searchString+"%'";
         sql += " or LOWER(NGAY_YL) like '%"+searchString+"%'";
         sql += " or LOWER(NGAY_KQ) like '%"+searchString+"%'";
+        sql += " or LOWER(NV_NAME) like '%"+searchString+"%'";
             sql += " )";
         }
 		try  {

@@ -53,21 +53,24 @@ public class Main extends Dialog{
 	static Logger logger = LogManager.getLogger(Main.class.getName());
 	private static Shell shlOpenclinic;
 	static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-	public static final String TITLE = "Openclinic 1.0";
+	public static final String TITLE = "Openclinic 2.12";
+	public static boolean isCheckVersion = true;
+	
 	public static final int DELETE_STATUS = 1;
 	public static String DB_URL = "jdbc:mysql://pkap.ddns.net/openclinic?useUnicode=yes&characterEncoding=UTF-8";
 	public static String DB_USER = "root";
 	public static String DB_PASS = "ok";
 	private static Text txtTen;
 	private static Text txtMaThe;
-//	public static final String DB_URL = "jdbc:mysql://mmm.trecafe.net/trecafe_cfcontrol";
-//	public static final String DB_USER = "trecafe_cfcontro";
-//	public static final String DB_PASS = "qawsedrf";
+
 	private static Table table;
 	private static TableViewer tableViewer;
 	private static Button btnRefresh;
-	public static int MAX_MUCLUONGCOSO  =1150000;
+	public static int MAX_MUCLUONGCOSO  = 1300000;
 	public static int GIAKHAMVIENPHI = 30000;
+	public static int TABLE_ID = 1;
+	public static String USER_GATE_ID;
+	public static String USER_GATE_PASSWORD;
 	public Main(Shell parent, int style) {
 		super(parent, style);
 	}
@@ -91,14 +94,7 @@ public class Main extends Dialog{
 				keyPress(e);
 			}
 		});
-//		LoginDlg dlg = new LoginDlg(shlOpenclinic, SWT.NONE);
-//		//ListUsersDlg dlg = new ListUsersDlg(shlOpenclinic, SWT.NONE);
-//		Object ret = dlg.open();
-//		if(ret==null){
-//			shlOpenclinic.close();
-//			System.exit(0);
-//		}
-	
+
 		shlOpenclinic.setImage(SWTResourceManager.getImage(Main.class, "/png/cog-8x.png"));
 		shlOpenclinic.setSize(963, 573);
 		shlOpenclinic.setText("OpenClinic");
