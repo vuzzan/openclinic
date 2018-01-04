@@ -1,6 +1,8 @@
 package com.openclinic.khambenh;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
+
 import com.DbHelper;
 import com.model.dao.DvChitiet;
 import com.openclinic.ReadNumber;
@@ -9,13 +11,21 @@ public class SumReportDAO {
 	public ArrayList<DvChitiet> dv = new ArrayList<DvChitiet>();
 	public String phanLoaiDichVu = "TEST TEST";
 	//
-	public int TT;
-	public int TT2;
-	public int BH;
-	public int NB;
-	public int NB2;
-	public int KH;
+	public double TT;
+	public double TT2;
+	public double BH;
+	public double NB;
+	public double NB2;
+	public double KH;
 	//
+	public SumReportDAO(){
+		TT = (float)0.0;
+		TT2 = (float)0.0;
+		BH = (float)0.0;
+		NB = (float)0.0;
+		NB2 = (float)0.0;
+		KH = (float)0.0;
+	}
 	public String toString(){
 		return "SumReportDAO "+phanLoaiDichVu+" TT2="+TT2+" TT="+TT+" "+BH+" NB="+NB+" NB2="+NB2+" Count="+dv.size();
  	}
@@ -38,22 +48,22 @@ public class SumReportDAO {
 	public String getKHString(){
 		return ReadNumber.numberToString(KH);
 	}
-	public int getTT2(){
+	public double getTT2(){
 		return TT2;
 	}
-	public int getTT(){
+	public double getTT(){
 		return TT;
 	}
-	public int getBH(){
+	public double getBH(){
 		return BH;
 	}
-	public int getNB(){
+	public double getNB(){
 		return NB;
 	}
-	public int getNB2(){
+	public double getNB2(){
 		return NB2;
 	}	
-	public int getKH(){
+	public double getKH(){
 		return KH;
 	}
 	public String getphanLoaiDichVu(){

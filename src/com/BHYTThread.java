@@ -2,6 +2,7 @@ package com;
 
 import java.io.FileOutputStream;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.util.concurrent.Semaphore;
 
 import javax.net.ssl.SSLContext;
@@ -47,7 +48,7 @@ import com.model.dao.KhamBenh;
 import com.openclinic.utils.Utils;
 
 public class BHYTThread extends Thread {
-	public static String UA_FIREFOX30 ="Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101 Firefox/52.0";
+	public static String UA_FIREFOX30 ="Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36";
 
 	
 	public static final String HTTP_DOMAIN_ONLY = "egw.baohiemxahoi.gov.vn";
@@ -449,31 +450,36 @@ public class BHYTThread extends Thread {
 			objCheckTheObj.checkCode = iMakq ; 
 			String text = DbHelper.hashcheckThe.get(objCheckTheObj.checkCode);
 			if(text==null){
-				objCheckTheObj.checkText = "Có lỗi...";
+				objCheckTheObj.checkText = "Có lỗi...Mã lỗi: " + maKetQua;
 			}
 			else{
-				objCheckTheObj.checkText = text;
+				objCheckTheObj.checkText = "Mã lỗi:"+maKetQua +". "+ text;
 			}
 			if(result.get("dsLichSuKCB")==null){
-				
+				//
 			}
 			else{
-				JSONArray dsLichSuKCB = (JSONArray)result.get("dsLichSuKCB");
-				if(dsLichSuKCB==null){
-					//
-				}
-				else{
-					for(int i=0; i<dsLichSuKCB.length(); i++){
-						JSONObject objLichSu = (JSONObject)dsLichSuKCB.get(i);
-						String lineText = ""+(Integer)objLichSu.get("maHoSo") +";"+(String)objLichSu.get("maCSKCB") +";" +(String)objLichSu.get("tuNgay") +";" + (String)objLichSu.get("tenBenh");
-						objCheckTheObj.listKhamBenh.add( lineText);
-						objCheckTheObj.jsonText += lineText+"@";
+				try{
+					JSONArray dsLichSuKCB = (JSONArray)result.get("dsLichSuKCB");
+					if(dsLichSuKCB==null){
+						//
 					}
+					else{
+						for(int i=0; i<dsLichSuKCB.length(); i++){
+							JSONObject objLichSu = (JSONObject)dsLichSuKCB.get(i);
+							String lineText = ""+(Integer)objLichSu.get("maHoSo") +";"+(String)objLichSu.get("maCSKCB") +";" +(String)objLichSu.get("tuNgay") +";" + (String)objLichSu.get("tenBenh");
+							objCheckTheObj.listKhamBenh.add( lineText);
+							objCheckTheObj.jsonText += lineText+"@";
+						}
+					}
+				}
+				catch(Exception e){
+					logger.error(e);
 				}
 			}
 			//
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(e);
 		}
 		//addScreenLog("--------------Check OK");
 		return objCheckTheObj;
@@ -481,183 +487,7 @@ public class BHYTThread extends Thread {
 	public void doStop() {
 		isPause = true;
 	}
-	public String checkMaThe(String MaThe, String HoTen, String NgaySinh) {
-		System.out.println("MATHE="+MaThe+" Hoten="+HoTen+" Ngaysinh="+NgaySinh);
-		//===============================================================================
-		// GET VIEW STATE
-		//===============================================================================
-		String hoten = HoTen==null?"Nguyễn Phúc Thuần":HoTen;
-		String ngaysinh = NgaySinh==null?"12/12/2012":NgaySinh;
-		HttpUriRequest mainPageReq = RequestBuilder
-				.post()
-				.setUri("https://gdbhyt.baohiemxahoi.gov.vn/ThongTuyenLSKCB/CheckMaThe")
-				.addParameter("MaThe", MaThe)
-				.addParameter("HoTen", hoten)
-				.addParameter("NgaySinh", ngaysinh)
-				.build();
-		//
-		mainPageReq.setHeader("Accept", "application/json, text/javascript, */*; q=0.01");
-		mainPageReq.setHeader("Accept-Encoding", "gzip, deflate, br");
-		mainPageReq.setHeader("Accept-Language", "en-US,en;q=0.8,id;q=0.6,vi;q=0.4,ja;q=0.2,es;q=0.2");
-		mainPageReq.setHeader("Connection", "keep-alive");
-		mainPageReq.setHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
-		mainPageReq.setHeader("DNT", "1");
-		mainPageReq.setHeader("Host", "gdbhyt.baohiemxahoi.gov.vn");
-		mainPageReq.setHeader("Origin", "https://gdbhyt.baohiemxahoi.gov.vn");
-		mainPageReq.setHeader("Referer", "https://gdbhyt.baohiemxahoi.gov.vn/");
-		mainPageReq.setHeader("X-Requested-With", "XMLHttpRequest");
-		mainPageReq.setHeader("Upgrade-Insecure-Requests", "1");
-		
-		addScreenLog("--------------SEND Request POST "+mainPageReq.getURI().toASCIIString());
-		System.out.println("MATHE="+MaThe+" Hoten="+HoTen+" Ngaysinh="+NgaySinh);
-
-		CloseableHttpResponse mainPageRes;
-		try {
-			mainPageRes = httpclient.execute(mainPageReq);
-			System.out.println("checkMaThe httpclient="+httpclient);
-			//
-			StatusLine line = mainPageRes.getStatusLine();
-			//
-			logger.info("CODE checkMaThe="+line.getStatusCode());
-			System.out.println("CODE checkMaThe="+line.getStatusCode());
-			if(line.getStatusCode()==200){
-				//
-			}
-			HttpEntity entity = mainPageRes.getEntity();
-			String strHtml = EntityUtils.toString(entity);
-			logger.info("checkMaThe\n" + strHtml);
-			//
-			mainPageRes.close();
-			//
-			//{"code":3,"message":"Họ tên không đúng! (Tên CSDL thẻ: Nguyễn Ngọc Phương Thanh)"}
-			if(strHtml.indexOf("Họ tên không đúng")>-1){
-				//
-				String strBegin = "Họ tên không đúng! (Tên CSDL thẻ: ";
-				String strEnd = ")\"}";
-				int posBegin =strHtml.indexOf(strBegin);
-				int posEnd = -1;
-				if(posBegin>-1){
-					posEnd = strHtml.indexOf(strEnd);
-				}
-				if(posBegin>-1 && posEnd>-1){
-					String temp = strHtml.substring(posBegin+strBegin.length(), posEnd);
-					// return name
-					return temp.trim();
-				}
-				//
-			}
-			else if(strHtml.indexOf("Ngày sinh không đúng!")>-1){
-				//{"code":3,"message":"Ngày sinh không đúng! (Ngày sinh CSLD thẻ: 01/08/2006)"}
-				//
-				String strBegin = "Ngày sinh không đúng! (Ngày sinh CSLD thẻ: ";
-				String strEnd = ")\"}";
-				int posBegin =strHtml.indexOf(strBegin);
-				int posEnd = -1;
-				if(posBegin>-1){
-					posEnd = strHtml.indexOf(strEnd);
-				}
-				if(posBegin>-1 && posEnd>-1){
-					String temp = strHtml.substring(posBegin+strBegin.length(), posEnd);
-					// return ngay sinh
-					return temp.trim();
-				}
-				//
-			}
-			else if(strHtml.indexOf("Nơi KCBBĐ")>-1){
-				//{"code":2,"message":"Thẻ hết hạn! Họ tên: Nguyễn Ngọc Phương Thanh, Ngày sinh: 01/08/2006! (ĐC: Trường Tiểu học Chí Linh; Nơi KCBBĐ: 79032; Hạn thẻ: 01/10/2012 - 30/09/2013)."}
-				//
-				//////////////////////
-				String strBegin = "\"message\":\"";
-				String strEnd = "Họ tên: ";
-				int posBegin =strHtml.indexOf(strBegin);
-				int posEnd = -1;
-				if(posBegin>-1){
-					posEnd = strHtml.indexOf(strEnd);
-				}
-				String message = "";
-				if(posBegin>-1 && posEnd>-1){
-					message = strHtml.substring(posBegin+strBegin.length(), posEnd);
-					// return ngay sinh
-				}
-				//////////////////////
-				strBegin = strEnd;
-				strEnd = "Ngày sinh:";
-				posBegin =strHtml.indexOf(strBegin);
-				posEnd = -1;
-				if(posBegin>-1){
-					posEnd = strHtml.indexOf(strEnd);
-				}
-				hoten = "";
-				if(posBegin>-1 && posEnd>-1){
-					hoten = strHtml.substring(posBegin+strBegin.length(), posEnd);
-					// return ngay sinh
-				}
-				//////////////////////
-				strBegin = strEnd;
-				strEnd = "! (ĐC: ";
-				posBegin =strHtml.indexOf(strBegin);
-				posEnd = -1;
-				if(posBegin>-1){
-					posEnd = strHtml.indexOf(strEnd);
-				}
-				ngaysinh = "";
-				if(posBegin>-1 && posEnd>-1){
-					ngaysinh = strHtml.substring(posBegin+strBegin.length(), posEnd);
-					// return ngay sinh
-				}
-				//{"code":2,"message":"Thẻ hết hạn! Họ tên: Nguyễn Ngọc Phương Thanh, Ngày sinh: 01/08/2006! (ĐC: Trường Tiểu học Chí Linh; Nơi KCBBĐ: 79032; Hạn thẻ: 01/10/2012 - 30/09/2013)."}
-				//////////////////////
-				strBegin = strEnd;
-				strEnd = "; Nơi KCBBĐ";
-				posBegin =strHtml.indexOf(strBegin);
-				posEnd = -1;
-				if(posBegin>-1){
-					posEnd = strHtml.indexOf(strEnd);
-				}
-				String diachi = "";
-				if(posBegin>-1 && posEnd>-1){
-					diachi = strHtml.substring(posBegin+strBegin.length(), posEnd);
-					// return ngay sinh
-				}
-				//{"code":2,"message":"Thẻ hết hạn! Họ tên: Nguyễn Ngọc Phương Thanh, Ngày sinh: 01/08/2006! (ĐC: Trường Tiểu học Chí Linh; Nơi KCBBĐ: 79032; Hạn thẻ: 01/10/2012 - 30/09/2013)."}
-				strBegin = strEnd;
-				strEnd = "; Hạn thẻ:";
-				posBegin =strHtml.indexOf(strBegin);
-				posEnd = -1;
-				if(posBegin>-1){
-					posEnd = strHtml.indexOf(strEnd);
-				}
-				String KCBBD = "";
-				if(posBegin>-1 && posEnd>-1){
-					KCBBD = strHtml.substring(posBegin+strBegin.length(), posEnd);
-					// return ngay sinh
-				}
-				//
-				//{"code":2,"message":"Thẻ hết hạn! Họ tên: Nguyễn Ngọc Phương Thanh, Ngày sinh: 01/08/2006! (ĐC: Trường Tiểu học Chí Linh; Nơi KCBBĐ: 79032; Hạn thẻ: 01/10/2012 - 30/09/2013)."}
-				strBegin = strEnd;
-				strEnd = ").\"}";
-				posBegin =strHtml.indexOf(strBegin);
-				posEnd = -1;
-				if(posBegin>-1){
-					posEnd = strHtml.indexOf(strEnd);
-				}
-				String tungaydenngay = "";
-				if(posBegin>-1 && posEnd>-1){
-					tungaydenngay = strHtml.substring(posBegin+strBegin.length(), posEnd);
-					tungaydenngay.replaceAll("-", "|");
-					// return ngay sinh
-				}
-				//
-				return message+"|"+hoten+"|"+ngaysinh+"|"+diachi+"|"+KCBBD+"|"+tungaydenngay;
-				//
-			}
-			//
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		//
-		return "";
-	}
+	
 	public String home() {
 		//===============================================================================
 		// GET VIEW STATE
@@ -841,4 +671,383 @@ public class BHYTThread extends Thread {
 		}
 		return -1;
 	}
+	
+	public String[] checkMaThe(String MaThe, String HoTen, String NgaySinh) {
+		System.out.println("MATHE="+MaThe+" Hoten="+HoTen+" Ngaysinh="+NgaySinh);
+		String ret[] = new String[2];
+		ret[0] = "";
+		ret[1] = "";
+		//===============================================================================
+		// GET VIEW STATE
+		//===============================================================================
+		String hoten = HoTen==null?"Nguyễn Phúc Thuần":HoTen;
+		String ngaysinh = NgaySinh==null?"12/12/2012":NgaySinh;
+		HttpUriRequest mainPageReq = RequestBuilder
+				.post()
+				.setUri("https://gdbhyt.baohiemxahoi.gov.vn/ThongTuyenLSKCB/CheckMaThe")
+				.addParameter("MaThe", MaThe)
+				.addParameter("HoTen", hoten)
+				.addParameter("NgaySinh", ngaysinh)
+				.build();
+		//
+		mainPageReq.setHeader("Accept", "application/json, text/javascript, */*; q=0.01");
+		mainPageReq.setHeader("Accept-Encoding", "gzip, deflate, br");
+		mainPageReq.setHeader("Accept-Language", "en-US,en;q=0.8,id;q=0.6,vi;q=0.4,ja;q=0.2,es;q=0.2");
+		mainPageReq.setHeader("Connection", "keep-alive");
+		mainPageReq.setHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+		mainPageReq.setHeader("DNT", "1");
+		mainPageReq.setHeader("Host", "gdbhyt.baohiemxahoi.gov.vn");
+		mainPageReq.setHeader("Origin", "https://gdbhyt.baohiemxahoi.gov.vn");
+		mainPageReq.setHeader("Referer", "https://gdbhyt.baohiemxahoi.gov.vn/ThongTuyenLSKCB/Index");
+		mainPageReq.setHeader("X-Requested-With", "XMLHttpRequest");
+		//mainPageReq.setHeader("Upgrade-Insecure-Requests", "1");
+		mainPageReq.setHeader("DXCss", "/Content/Site.css,/Content/StyleSheet.css,/Content/Images/logo.ico,105_228,1_32,1_34,105_230,1_28,105_92,1_18,105_94,105_96,105_98");
+		mainPageReq.setHeader("DXScript", "1_182,1_180,1_181,1_179,1_225,1_164,1_130,1_127,1_202,1_213,1_207,1_210,1_129,14_36,14_3,1_206,1_218,1_146,14_8,1_208,1_148,1_147,14_9,1_162,1_170,1_223,1_189,1_191,1_224,1_174,14_10,1_217,1_216,1_201,14_35,1_134,1_175,1_211,1_209,1_149,1_220,1_188,1_186,1_192,14_14,1_133,1_194,1_195,14_16,1_196,1_197,14_17,14_18,1_176,14_12,1_199,1_203,14_21,1_214,14_23,1_212,1_215,14_27,1_219,14_31,14_34,1_151,14_1,1_161,1_190,14_13");
+		
+		addScreenLog("--------------SEND Request POST "+mainPageReq.getURI().toASCIIString());
+		System.out.println("MATHE="+MaThe+" Hoten="+HoTen+" Ngaysinh="+NgaySinh);
+
+		CloseableHttpResponse mainPageRes;
+		try {
+			mainPageRes = httpclient.execute(mainPageReq);
+			System.out.println("checkMaThe httpclient="+httpclient);
+			//
+			StatusLine line = mainPageRes.getStatusLine();
+			//
+			logger.info("CODE checkMaThe="+line.getStatusCode());
+			System.out.println("CODE checkMaThe="+line.getStatusCode());
+			if(line.getStatusCode()==200){
+				//
+			}
+			HttpEntity entity = mainPageRes.getEntity();
+			String strHtml = EntityUtils.toString(entity);
+			logger.info("checkMaThe\n" + strHtml);
+			JSONObject obj = new JSONObject(strHtml);
+			//
+			strHtml = strHtml.replaceAll("\u003cb\u003e", "");
+			strHtml = strHtml.replaceAll("\u003c/b\u003e", "");
+			//strHtml = strHtml.replaceAll(",", ";");
+			//strHtml = strHtml.replaceAll("(", "");
+			//strHtml = strHtml.replaceAll(")", "");
+			String test[] = strHtml.split(";");
+			for(int i=0; i<test.length; i++){
+				System.out.println(test[i]);
+			}
+
+			//
+			mainPageRes.close();
+			//
+			ret[0] = strHtml;
+			//
+			//{"code":3,"message":"Họ tên không đúng! (Tên CSDL thẻ: Nguyễn Ngọc Phương Thanh)"}
+			if(strHtml.indexOf("Họ tên không đúng")>-1){
+				//
+				String strBegin = "Họ tên không đúng! (Tên CSDL thẻ: ";
+				String strEnd = ")\"}";
+				int posBegin =strHtml.indexOf(strBegin);
+				int posEnd = -1;
+				if(posBegin>-1){
+					posEnd = strHtml.indexOf(strEnd);
+				}
+				if(posBegin>-1 && posEnd>-1){
+					String temp = strHtml.substring(posBegin+strBegin.length(), posEnd);
+					// return name
+					ret[1] = temp.trim();
+					return ret;
+				}
+				//
+			}
+			else if(strHtml.indexOf("Ngày sinh không đúng!")>-1){
+				//{"code":3,"message":"Ngày sinh không đúng! (Ngày sinh CSLD thẻ: 01/08/2006)"}
+				//
+				String strBegin = "Ngày sinh không đúng! (Ngày sinh CSLD thẻ: ";
+				String strEnd = ")\"}";
+				int posBegin =strHtml.indexOf(strBegin);
+				int posEnd = -1;
+				if(posBegin>-1){
+					posEnd = strHtml.indexOf(strEnd);
+				}
+				if(posBegin>-1 && posEnd>-1){
+					String temp = strHtml.substring(posBegin+strBegin.length(), posEnd);
+					// return ngay sinh
+					ret[1] = temp.trim();
+					return ret;
+				}
+				//
+			}
+			else if(strHtml.indexOf("Nơi KCBBĐ")>-1){
+				//{"code":2,"message":"Thẻ hết hạn! Họ tên: Nguyễn Ngọc Phương Thanh, Ngày sinh: 01/08/2006! (ĐC: Trường Tiểu học Chí Linh; Nơi KCBBĐ: 79032; Hạn thẻ: 01/10/2012 - 30/09/2013)."}
+				//
+				//////////////////////
+				String strBegin = "\"message\":\"";
+				String strEnd = "Họ tên: ";
+				int posBegin =strHtml.indexOf(strBegin);
+				int posEnd = -1;
+				if(posBegin>-1){
+					posEnd = strHtml.indexOf(strEnd);
+				}
+				String message = "";
+				if(posBegin>-1 && posEnd>-1){
+					message = strHtml.substring(posBegin+strBegin.length(), posEnd);
+					// return ngay sinh
+				}
+				//////////////////////
+				strBegin = strEnd;
+				strEnd = "Ngày sinh:";
+				posBegin =strHtml.indexOf(strBegin);
+				posEnd = -1;
+				if(posBegin>-1){
+					posEnd = strHtml.indexOf(strEnd);
+				}
+				hoten = "";
+				if(posBegin>-1 && posEnd>-1){
+					hoten = strHtml.substring(posBegin+strBegin.length(), posEnd);
+					// return ngay sinh
+				}
+				//////////////////////
+				strBegin = strEnd;
+				strEnd = "! (ĐC: ";
+				posBegin =strHtml.indexOf(strBegin);
+				posEnd = -1;
+				if(posBegin>-1){
+					posEnd = strHtml.indexOf(strEnd);
+				}
+				ngaysinh = "";
+				if(posBegin>-1 && posEnd>-1){
+					ngaysinh = strHtml.substring(posBegin+strBegin.length(), posEnd);
+					// return ngay sinh
+				}
+				//{"code":2,"message":"Thẻ hết hạn! Họ tên: Nguyễn Ngọc Phương Thanh, Ngày sinh: 01/08/2006! (ĐC: Trường Tiểu học Chí Linh; Nơi KCBBĐ: 79032; Hạn thẻ: 01/10/2012 - 30/09/2013)."}
+				//////////////////////
+				strBegin = strEnd;
+				strEnd = "; Nơi KCBBĐ";
+				posBegin =strHtml.indexOf(strBegin);
+				posEnd = -1;
+				if(posBegin>-1){
+					posEnd = strHtml.indexOf(strEnd);
+				}
+				String diachi = "";
+				if(posBegin>-1 && posEnd>-1){
+					diachi = strHtml.substring(posBegin+strBegin.length(), posEnd);
+					// return ngay sinh
+				}
+				//{"code":2,"message":"Thẻ hết hạn! Họ tên: Nguyễn Ngọc Phương Thanh, Ngày sinh: 01/08/2006! (ĐC: Trường Tiểu học Chí Linh; Nơi KCBBĐ: 79032; Hạn thẻ: 01/10/2012 - 30/09/2013)."}
+				strBegin = strEnd;
+				strEnd = "; Hạn thẻ:";
+				posBegin =strHtml.indexOf(strBegin);
+				posEnd = -1;
+				if(posBegin>-1){
+					posEnd = strHtml.indexOf(strEnd);
+				}
+				String KCBBD = "";
+				if(posBegin>-1 && posEnd>-1){
+					KCBBD = strHtml.substring(posBegin+strBegin.length(), posEnd);
+					// return ngay sinh
+				}
+				//
+				//{"code":2,"message":"Thẻ hết hạn! Họ tên: Nguyễn Ngọc Phương Thanh, Ngày sinh: 01/08/2006! (ĐC: Trường Tiểu học Chí Linh; Nơi KCBBĐ: 79032; Hạn thẻ: 01/10/2012 - 30/09/2013)."}
+				strBegin = strEnd;
+				strEnd = ").\"}";
+				posBegin =strHtml.indexOf(strBegin);
+				posEnd = -1;
+				if(posBegin>-1){
+					posEnd = strHtml.indexOf(strEnd);
+				}
+				String tungaydenngay = "";
+				if(posBegin>-1 && posEnd>-1){
+					tungaydenngay = strHtml.substring(posBegin+strBegin.length(), posEnd);
+					tungaydenngay.replaceAll("-", "|");
+					// return ngay sinh
+				}
+				//
+				//return message+"|"+hoten+"|"+ngaysinh+"|"+diachi+"|"+KCBBD+"|"+tungaydenngay;
+				ret[1] = message+"|"+hoten+"|"+ngaysinh+"|"+diachi+"|"+KCBBD+"|"+tungaydenngay;
+				return ret;
+				//
+			}
+			//
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		//
+		return ret;
+	}
+	
+	public CheckTheObj checkMaTheJSON(String MaThe, String HoTen, String NgaySinh) {
+		if(NgaySinh.indexOf("01/01/")>-1){
+			//
+			NgaySinh = NgaySinh.replaceAll("01/01/", "");
+			//
+		}
+		//HoTen = HoTen.toUpperCase();
+		CheckTheObj ret = new CheckTheObj();
+		//===============================================================================
+		// GET VIEW STATE
+		//===============================================================================
+		String hoten = HoTen==null?"Nguyễn Phúc Thuần":HoTen;
+		String ngaysinh = NgaySinh==null?"12/12/2012":NgaySinh;
+		ret.strHoTen = hoten;
+		ret.strMathe = MaThe;
+		ret.strNgaySinh = ngaysinh;
+		String hotenEncode = VNCharacterUtils.removeAccent(hoten);
+		//
+		logger.info("CHECKMATHE="+MaThe+" Hoten=["+hoten+"] checkhoten=["+hoten.toUpperCase()+"] ["+hotenEncode+"] Ngaysinh="+ngaysinh);
+		//MaThe=GD4490701009556&HoTen=NGUY%E1%BB%84N+TH%E1%BB%8A+BA&NgaySinh=13%2F09%2F1964
+		HttpUriRequest mainPageReq = RequestBuilder
+				.post()
+				.setUri("https://gdbhyt.baohiemxahoi.gov.vn/ThongTuyenLSKCB/CheckMaThe")
+				.addParameter("MaThe", MaThe)
+				.addParameter("HoTen", hotenEncode)
+				.addParameter("NgaySinh", ngaysinh)
+				.build();
+		//
+		mainPageReq.setHeader("Accept", "application/json, text/javascript, */*; q=0.01");
+		mainPageReq.setHeader("Accept-Encoding", "gzip, deflate, br");
+		mainPageReq.setHeader("Accept-Language", "en-US,en;q=0.8,id;q=0.6,vi;q=0.4,ja;q=0.2,es;q=0.2");
+		mainPageReq.setHeader("Connection", "keep-alive");
+		//mainPageReq.setHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+		//mainPageReq.setHeader("Content-Type", "application/x-www-form-urlencoded");
+		mainPageReq.setHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+		//mainPageReq.setHeader("DNT", "1");
+		mainPageReq.setHeader("Host", "gdbhyt.baohiemxahoi.gov.vn");
+		mainPageReq.setHeader("Origin", "https://gdbhyt.baohiemxahoi.gov.vn");
+		mainPageReq.setHeader("Referer", "https://gdbhyt.baohiemxahoi.gov.vn/ThongTuyenLSKCB/Index");
+		//mainPageReq.setHeader("X-Requested-With", "XMLHttpRequest");
+		//mainPageReq.setHeader("Upgrade-Insecure-Requests", "1");
+		
+		addScreenLog("--------------SEND Request POST "+mainPageReq.getURI().toASCIIString());
+		//System.out.println("MATHE="+MaThe+" Hoten="+HoTen+" Ngaysinh="+NgaySinh);
+
+		CloseableHttpResponse mainPageRes;
+		try {
+			mainPageRes = httpclient.execute(mainPageReq);
+			System.out.println("checkMaThe httpclient="+httpclient);
+			//
+			StatusLine line = mainPageRes.getStatusLine();
+			//
+			logger.info("CODE checkMaThe="+line.getStatusCode());
+			System.out.println("CODE checkMaThe="+line.getStatusCode());
+			if(line.getStatusCode()==200){
+				//
+			}
+			HttpEntity entity = mainPageRes.getEntity();
+			String strHtml = EntityUtils.toString(entity);
+			logger.info("checkMaThe\n" + strHtml);
+			JSONObject obj = new JSONObject(strHtml);
+			ret.checkCode = (Integer)obj.get("code");
+			ret.checkText = (String)obj.get("erro");
+			int code =Utils.getInt(ret.checkText); 
+			if( code==0 ){
+				ret.checkCode = 0;
+			}
+			else{
+				ret.checkCode = code;
+			}
+			ret.strMessage = (String)obj.get("message");
+			//
+			mainPageRes.close();
+			//
+			//
+			//{"code":3,"message":"Họ tên không đúng! (Tên CSDL thẻ: Nguyễn Ngọc Phương Thanh)"}
+			//try parse
+			String html = ret.strMessage.replaceAll("!", "");
+			html = html.replaceAll("<b>", "");
+			html = html.replaceAll("</b>", "");
+			html = html.replace(')', ' ');
+			html = html.replace('(', ';');
+			html = html.replaceAll("<b style='color: red'>", ";");
+			html = html.replaceAll("Hạn thẻ từ", "; Hạn thẻ từ: ");
+			html = html.replaceAll(" đến ", "-");
+			
+			String tmp0[] = html.split(";");
+			String tmp1[] = tmp0[0].split(",");
+			for(int i=0; i<tmp1.length; i++){
+				//System.out.println(i + " " +tmp1[i].trim());
+				String tmp[] = tmp1[i].trim().split(":");
+				if(tmp.length==2){
+					System.out.println(tmp[1]);
+					if( i== 0){
+						ret.strHoTen = tmp[1].trim();
+						System.out.println("\t strHoTen: " + ret.strHoTen);
+					}
+					else if( i== 1){
+						ret.strNgaySinh= tmp[1].trim();
+						System.out.println("\t strNgaySinh: " + ret.strNgaySinh);
+					}
+					else if( i== 2){
+						String gioitinh = tmp[1].trim();
+						if(gioitinh.indexOf("Nữ")>-1){
+							ret.gioitinh = 2;
+						}
+						else if(gioitinh.indexOf("Nam")>-1){
+							ret.gioitinh = 1;
+						}
+						else{
+							ret.gioitinh = 0;
+						}
+					}
+				}
+			}
+			for(int i=1; i<tmp0.length; i++){
+				//System.out.println(i + " " +tmp0[i].trim());
+				String tmp[] = tmp0[i].trim().split(":");
+				if(tmp.length==2){
+					System.out.println(tmp[1]);
+					if( i==3 ){
+						if( tmp[1].indexOf("Hạn thẻ")>-1){
+							String tmp3[] = tmp[1].split("-");
+							if(tmp3.length==2){
+								System.out.println("\tTừ ngày: " + tmp3[0] +" đến ngày:" + tmp3[1]);
+								ret.strTuNgay = tmp3[0].trim();
+								ret.strDenNgay = tmp3[1].trim();
+								System.out.println("\t strTuNgay: " + ret.strTuNgay);
+								System.out.println("\t strDenNgay: " + ret.strDenNgay);
+							}
+						}
+					}
+					//
+					if( i== 1){
+						ret.strDiaChi = tmp[1].trim();
+						System.out.println("\t strDiaChi: " + ret.strDiaChi);
+					}
+					else if( i== 2){
+						ret.strDKKCB= tmp[1].trim();
+						System.out.println("\t strDKKCB: " + ret.strDKKCB);
+					}
+					else if( i== 3){
+					}
+					else if( i== 4){
+						if( tmp[1].trim().indexOf("Chủ thẻ đã được cấp mã thẻ mới")>-1 ){
+							ret.strThoidiem5Nam= tmp[1].trim();
+							ret.strThoidiem5Nam = ret.strThoidiem5Nam.replaceAll("\\.", "").trim();
+							System.out.println("\t strThoidiem5Nam: " + ret.strThoidiem5Nam);
+						}
+						else{
+							String strMathe= tmp[1].trim();
+							strMathe = strMathe.replaceAll("\\.", "").trim();
+							ret.strMathe = strMathe;
+							System.out.println("\t ret.strMathe: " + strMathe);
+							ret.checkText = "Chủ thẻ đã được cấp mã thẻ mới: "+ret.strMathe;
+						}
+					}
+					else if( i== 5){
+						String tmp3[] = tmp[1].split("-");
+						if(tmp3.length==2){
+							System.out.println("\tTừ ngày: " + tmp3[0] +" đến ngày:" + tmp3[1]);
+							ret.strTuNgay = tmp3[0].trim();
+							ret.strDenNgay = tmp3[1].trim();
+							System.out.println("\t strTuNgay: " + ret.strTuNgay);
+							System.out.println("\t strDenNgay: " + ret.strDenNgay);
+						}
+					}
+				}
+			}
+			//
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		//
+		return ret;
+	}
+	
 }

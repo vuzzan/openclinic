@@ -691,10 +691,10 @@ public class ThuocDlg extends Dialog {
             objThuoc.DONG_GOI = txtDONG_GOI.getText();
             // String     = false
             objThuoc.DON_VI_TINH = txtDON_VI_TINH.getText();
-            // Integer    = true
-            objThuoc.DON_GIA = Utils.getInt( txtDON_GIA.getText() );
-            // Integer    = true
-            objThuoc.DON_GIA_TT = Utils.getInt( txtDON_GIA_TT.getText() );
+            // Double     = false
+            // objThuoc.DON_GIA = txtDON_GIA.getText();
+            // Double     = false
+            // objThuoc.DON_GIA_TT = txtDON_GIA_TT.getText();
             // Integer    = true
             objThuoc.SO_LUONG = Utils.getInt( txtSO_LUONG.getText() );
             // String     = false

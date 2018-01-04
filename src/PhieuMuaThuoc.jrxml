@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.3.1.final using JasperReports Library version 6.3.1  -->
-<!-- 2017-12-15T14:33:45 -->
+<!-- 2018-01-03T17:10:10 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="PhieuBenhNhan" pageWidth="421" pageHeight="595" whenNoDataType="NoPages" columnWidth="381" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3807cd06-b690-491a-afdb-4d5ce8b0f998">
 	<property name="com.jaspersoft.studio.unit." value="pixel"/>
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
@@ -54,12 +54,12 @@
 		<queryString>
 			<![CDATA[]]>
 		</queryString>
-		<field name="TT" class="java.lang.Integer"/>
-		<field name="TT2" class="java.lang.Integer"/>
-		<field name="BH" class="java.lang.Integer"/>
-		<field name="NB" class="java.lang.Integer"/>
-		<field name="NB2" class="java.lang.Integer"/>
-		<field name="KH" class="java.lang.Integer"/>
+		<field name="TT" class="java.lang.Double"/>
+		<field name="TT2" class="java.lang.Double"/>
+		<field name="BH" class="java.lang.Double"/>
+		<field name="NB" class="java.lang.Double"/>
+		<field name="NB2" class="java.lang.Double"/>
+		<field name="KH" class="java.lang.Double"/>
 		<field name="phanLoaiDichVu" class="java.lang.String"/>
 		<field name="dv" class="java.util.List"/>
 	</subDataset>
@@ -101,13 +101,13 @@
 		<field name="MA_LK" class="java.lang.Integer"/>
 		<field name="THUOC_ID" class="java.lang.Integer"/>
 		<field name="SO_LUONG" class="java.lang.Integer"/>
-		<field name="DON_GIA" class="java.lang.Integer"/>
+		<field name="DON_GIA" class="java.lang.Double"/>
 		<field name="TEN_THUOC" class="java.lang.String"/>
 		<field name="DON_VI_TINH" class="java.lang.String"/>
 		<field name="TYLE_TT" class="java.lang.Float"/>
-		<field name="THANH_TIEN" class="java.lang.Integer"/>
-		<field name="TT_BHTT" class="java.lang.Integer"/>
-		<field name="TT_BNTT" class="java.lang.Integer"/>
+		<field name="THANH_TIEN" class="java.lang.Double"/>
+		<field name="TT_BHTT" class="java.lang.Double"/>
+		<field name="TT_BNTT" class="java.lang.Double"/>
 		<field name="MA_BENH" class="java.lang.String"/>
 		<field name="STS" class="java.lang.Integer"/>
 	</subDataset>
@@ -144,10 +144,10 @@
 		<band splitType="Stretch"/>
 	</columnHeader>
 	<detail>
-		<band height="156" splitType="Stretch">
+		<band height="142" splitType="Stretch">
 			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 			<staticText>
-				<reportElement positionType="Float" x="0" y="110" width="124" height="32" uuid="4683d051-ee52-47b3-9269-f96ba182834e"/>
+				<reportElement positionType="Float" x="0" y="110" width="169" height="32" uuid="4683d051-ee52-47b3-9269-f96ba182834e"/>
 				<box>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -160,7 +160,7 @@
 				<text><![CDATA[Nội dung]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" x="124" y="110" width="26" height="32" uuid="8f768bf0-41b9-46d7-abda-89c33833dd2a"/>
+				<reportElement positionType="Float" x="169" y="110" width="26" height="32" uuid="8f768bf0-41b9-46d7-abda-89c33833dd2a"/>
 				<box>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -173,7 +173,7 @@
 				<text><![CDATA[ĐV Tính]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" x="150" y="110" width="24" height="32" uuid="c2990e72-80e6-4fb0-aaac-97dd3256a075"/>
+				<reportElement positionType="Float" x="195" y="110" width="24" height="32" uuid="c2990e72-80e6-4fb0-aaac-97dd3256a075"/>
 				<box>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -186,7 +186,7 @@
 				<text><![CDATA[Số lượng]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" x="174" y="110" width="36" height="32" uuid="fdac5fd9-cd48-42d7-b1b5-12e135ff80d7"/>
+				<reportElement positionType="Float" x="219" y="110" width="36" height="32" uuid="fdac5fd9-cd48-42d7-b1b5-12e135ff80d7"/>
 				<box>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -199,7 +199,7 @@
 				<text><![CDATA[Đơn giá]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" x="210" y="110" width="44" height="32" uuid="bf1d1b97-0f30-41db-abae-c6cf9553a57d"/>
+				<reportElement positionType="Float" x="255" y="110" width="44" height="32" uuid="bf1d1b97-0f30-41db-abae-c6cf9553a57d"/>
 				<box>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -212,7 +212,7 @@
 				<text><![CDATA[Thành tiền]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" x="254" y="110" width="123" height="16" uuid="6792fd27-cde2-4618-844e-d4f778683172"/>
+				<reportElement positionType="Float" x="300" y="110" width="77" height="16" uuid="6792fd27-cde2-4618-844e-d4f778683172"/>
 				<box>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -225,33 +225,7 @@
 				<text><![CDATA[Nguồn thanh toán (đồng)]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" x="254" y="126" width="46" height="16" uuid="9e8f942d-6deb-4481-93a9-0b24b2643fcf"/>
-				<box>
-					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement textAlignment="Center">
-					<font fontName="Times New Roman" size="10" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Quỹ BH]]></text>
-			</staticText>
-			<staticText>
-				<reportElement positionType="Float" x="300" y="126" width="30" height="16" uuid="6f3186e6-6b28-45cb-b64a-494a586a432a"/>
-				<box>
-					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement textAlignment="Center">
-					<font fontName="Times New Roman" size="10" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Khác]]></text>
-			</staticText>
-			<staticText>
-				<reportElement positionType="Float" x="330" y="126" width="47" height="16" uuid="a425a342-7248-4c63-8746-1fd8ed4d8188"/>
+				<reportElement positionType="Float" x="300" y="126" width="77" height="16" uuid="a425a342-7248-4c63-8746-1fd8ed4d8188"/>
 				<box>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -262,110 +236,6 @@
 					<font fontName="Times New Roman" size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Người bệnh]]></text>
-			</staticText>
-			<staticText>
-				<reportElement positionType="Float" x="0" y="142" width="124" height="14" uuid="587f3991-e714-4faf-8b04-ec5f31bf9569"/>
-				<box>
-					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement textAlignment="Center">
-					<font fontName="Times New Roman" isBold="true"/>
-				</textElement>
-				<text><![CDATA[(1)]]></text>
-			</staticText>
-			<staticText>
-				<reportElement positionType="Float" x="124" y="142" width="26" height="14" uuid="b79a23aa-bf16-41e2-a101-ddb851f4aeb7"/>
-				<box>
-					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement textAlignment="Center">
-					<font fontName="Times New Roman" isBold="true"/>
-				</textElement>
-				<text><![CDATA[(2)]]></text>
-			</staticText>
-			<staticText>
-				<reportElement positionType="Float" x="150" y="142" width="24" height="14" uuid="a85676b9-44f8-4338-9879-9c33d20f864e"/>
-				<box>
-					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement textAlignment="Center">
-					<font fontName="Times New Roman" isBold="true"/>
-				</textElement>
-				<text><![CDATA[(3)]]></text>
-			</staticText>
-			<staticText>
-				<reportElement positionType="Float" x="174" y="142" width="36" height="14" uuid="9786e044-7346-4d5d-9c50-56c60910926e"/>
-				<box>
-					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement textAlignment="Center">
-					<font fontName="Times New Roman" isBold="true"/>
-				</textElement>
-				<text><![CDATA[(4)]]></text>
-			</staticText>
-			<staticText>
-				<reportElement positionType="Float" x="210" y="142" width="44" height="14" uuid="9bb8797d-bd58-4046-beff-d8d7471732e4"/>
-				<box>
-					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement textAlignment="Center">
-					<font fontName="Times New Roman" isBold="true"/>
-				</textElement>
-				<text><![CDATA[(5)]]></text>
-			</staticText>
-			<staticText>
-				<reportElement positionType="Float" x="254" y="142" width="46" height="14" uuid="91706f20-79fa-4d1b-94db-2af46a684526"/>
-				<box>
-					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement textAlignment="Center">
-					<font fontName="Times New Roman" isBold="true"/>
-				</textElement>
-				<text><![CDATA[(6)]]></text>
-			</staticText>
-			<staticText>
-				<reportElement positionType="Float" x="300" y="142" width="30" height="14" uuid="7ed71ebb-0ecb-4146-8ccb-b515917671d1"/>
-				<box>
-					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement textAlignment="Center">
-					<font fontName="Times New Roman" isBold="true"/>
-				</textElement>
-				<text><![CDATA[(7)]]></text>
-			</staticText>
-			<staticText>
-				<reportElement positionType="Float" x="330" y="142" width="47" height="14" uuid="f70df2ff-0706-4d1a-b4ea-0f154d883bb3"/>
-				<box>
-					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement textAlignment="Center">
-					<font fontName="Times New Roman" isBold="true"/>
-				</textElement>
-				<text><![CDATA[(8)=5-6-7]]></text>
 			</staticText>
 			<staticText>
 				<reportElement positionType="Float" x="-1" y="54" width="70" height="14" uuid="17aaf416-ebef-4e10-a3a2-2eaaddec35ea"/>
@@ -391,7 +261,7 @@
 				<textElement textAlignment="Center">
 					<font fontName="Times New Roman" size="12" isBold="true"/>
 				</textElement>
-				<text><![CDATA[CHI TIẾT MUA THUỐC]]></text>
+				<text><![CDATA[CHI TIẾT MUA THUỐC, VẬT TƯ Y TẾ]]></text>
 			</staticText>
 			<staticText>
 				<reportElement positionType="Float" x="1" y="97" width="162" height="14" uuid="c35a7791-ee59-4e49-a2ed-ead112b34a76"/>
@@ -545,7 +415,7 @@
 				<text><![CDATA[Số thứ tự:]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="327" y="15" width="47" height="14" uuid="09e7b547-de09-4b16-901c-86858c520499"/>
+				<reportElement x="327" y="15" width="50" height="14" uuid="09e7b547-de09-4b16-901c-86858c520499"/>
 				<textElement textAlignment="Right">
 					<font fontName="Times New Roman" size="10" isBold="true"/>
 				</textElement>
@@ -553,9 +423,9 @@
 			</textField>
 		</band>
 		<band height="41">
-			<printWhenExpression><![CDATA[NOT(EQUALS(INTEGER_VALUE($P{THUOC_DataSource}.getRecordCount()+""), INTEGER_VALUE("0")))]]></printWhenExpression>
+			<printWhenExpression><![CDATA[NOT(EQUALS(DOUBLE_VALUE($P{THUOC_DataSource}.getRecordCount()+""), DOUBLE_VALUE("0")))]]></printWhenExpression>
 			<staticText>
-				<reportElement x="0" y="0" width="210" height="20" backcolor="#FFF7F7" uuid="4c4b666f-7e64-4922-b37c-44fe0fdc19f3"/>
+				<reportElement x="0" y="0" width="255" height="20" backcolor="#FFF7F7" uuid="4c4b666f-7e64-4922-b37c-44fe0fdc19f3"/>
 				<box>
 					<pen lineStyle="Solid"/>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -569,7 +439,7 @@
 				<text><![CDATA[Thuốc, vật tư y tế]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="210" y="0" width="44" height="20" backcolor="#FFF7F7" uuid="ea6da7aa-68fa-414a-9841-03d9f408bfe8"/>
+				<reportElement x="255" y="0" width="44" height="20" backcolor="#FFF7F7" uuid="ea6da7aa-68fa-414a-9841-03d9f408bfe8"/>
 				<box>
 					<pen lineStyle="Solid"/>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -583,21 +453,7 @@
 				<textFieldExpression><![CDATA[java.text.NumberFormat.getInstance(java.util.Locale.ITALY).format($P{THUOC_SUM}.getTT())]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="300" y="0" width="30" height="20" backcolor="#FFF7F7" uuid="94073df1-98d4-4908-8dd9-b2572d97f755"/>
-				<box>
-					<pen lineStyle="Solid"/>
-					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement textAlignment="Right">
-					<font fontName="Times New Roman" size="10" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[java.text.NumberFormat.getInstance(java.util.Locale.ITALY).format($P{THUOC_SUM}.getKH())]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="330" y="0" width="47" height="20" backcolor="#FFF7F7" uuid="5021b703-9471-4236-96c0-5f91cf6dc7b4"/>
+				<reportElement x="300" y="0" width="77" height="20" backcolor="#FFF7F7" uuid="5021b703-9471-4236-96c0-5f91cf6dc7b4"/>
 				<box>
 					<pen lineStyle="Solid"/>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -609,20 +465,6 @@
 					<font fontName="Times New Roman" size="10" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[java.text.NumberFormat.getInstance(java.util.Locale.ITALY).format($P{THUOC_SUM}.getNB())]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="254" y="0" width="46" height="20" backcolor="#FFF7F7" uuid="09260d2a-0bb0-4757-9cae-2aae805f9f5b"/>
-				<box>
-					<pen lineStyle="Solid"/>
-					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement textAlignment="Right">
-					<font fontName="Times New Roman" size="10" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[java.text.NumberFormat.getInstance(java.util.Locale.ITALY).format($P{THUOC_SUM}.getBH())]]></textFieldExpression>
 			</textField>
 			<componentElement>
 				<reportElement x="0" y="20" width="377" height="20" uuid="9c85ee29-531d-481b-82a1-68441541227c">
@@ -636,6 +478,7 @@
 						<dataSourceExpression><![CDATA[$P{THUOC_DataSource}]]></dataSourceExpression>
 					</datasetRun>
 					<jr:column width="24" uuid="93547dfe-5e47-4fec-a56d-3dd5027b7d29">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
 						<jr:detailCell height="20">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<box>
@@ -649,10 +492,11 @@
 									<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
 								</reportElement>
 								<box>
+									<pen lineStyle="Dotted"/>
 									<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<leftPen lineWidth="1.0" lineStyle="Dotted" lineColor="#000000"/>
 									<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<rightPen lineWidth="1.0" lineStyle="Dotted" lineColor="#000000"/>
 								</box>
 								<textElement textAlignment="Center">
 									<font fontName="Times New Roman" size="10"/>
@@ -661,8 +505,9 @@
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="100" uuid="aaa7516b-2fb1-43ae-9547-b0f0e0ae7aa4">
+					<jr:column width="145" uuid="aaa7516b-2fb1-43ae-9547-b0f0e0ae7aa4">
 						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column2"/>
 						<jr:detailCell height="20">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<box>
@@ -671,22 +516,24 @@
 								<bottomPen lineWidth="1.0" lineStyle="Dotted"/>
 								<rightPen lineWidth="1.0"/>
 							</box>
-							<textField isStretchWithOverflow="true">
-								<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="100" height="20" uuid="7aae2817-067e-42a7-8973-45e933c18c77"/>
+							<textField>
+								<reportElement x="0" y="0" width="145" height="20" uuid="53084fd7-2ae7-4e29-8cac-bc3abf965d30"/>
 								<box>
+									<pen lineStyle="Dotted"/>
 									<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<leftPen lineWidth="1.0" lineStyle="Dotted" lineColor="#000000"/>
 									<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<rightPen lineWidth="1.0" lineStyle="Dotted" lineColor="#000000"/>
 								</box>
 								<textElement>
-									<font fontName="Times New Roman" size="10"/>
+									<font fontName="Times New Roman"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$F{TEN_THUOC}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
 					<jr:column width="26" uuid="47b0118a-4eb3-40f8-9916-f22291e66ef6">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
 						<jr:detailCell height="20">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<box>
@@ -698,10 +545,11 @@
 							<textField>
 								<reportElement x="0" y="0" width="26" height="20" uuid="7aae2817-067e-42a7-8973-45e933c18c77"/>
 								<box>
+									<pen lineStyle="Dotted"/>
 									<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<leftPen lineWidth="1.0" lineStyle="Dotted" lineColor="#000000"/>
 									<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<rightPen lineWidth="1.0" lineStyle="Dotted" lineColor="#000000"/>
 								</box>
 								<textElement>
 									<font fontName="Times New Roman" size="10"/>
@@ -711,6 +559,7 @@
 						</jr:detailCell>
 					</jr:column>
 					<jr:column width="24" uuid="a6900c72-948b-4d8d-82c5-47dd12a71770">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column4"/>
 						<jr:detailCell height="20">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<box>
@@ -722,10 +571,11 @@
 							<textField>
 								<reportElement x="0" y="0" width="24" height="20" uuid="a518ca0a-63ca-4ca4-a9cd-2b8e1944a492"/>
 								<box>
+									<pen lineStyle="Dotted"/>
 									<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<leftPen lineWidth="1.0" lineStyle="Dotted" lineColor="#000000"/>
 									<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<rightPen lineWidth="1.0" lineStyle="Dotted" lineColor="#000000"/>
 								</box>
 								<textElement textAlignment="Center">
 									<font fontName="Times New Roman" size="10"/>
@@ -735,6 +585,7 @@
 						</jr:detailCell>
 					</jr:column>
 					<jr:column width="36" uuid="eb1b39e4-e671-4634-a370-0a8afa0f956c">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column5"/>
 						<jr:detailCell height="20">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<box>
@@ -746,10 +597,11 @@
 							<textField>
 								<reportElement x="0" y="0" width="36" height="20" uuid="16e4ec6c-59bf-4c22-9f3c-514a09db9771"/>
 								<box>
+									<pen lineStyle="Dotted"/>
 									<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<leftPen lineWidth="1.0" lineStyle="Dotted" lineColor="#000000"/>
 									<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<rightPen lineWidth="1.0" lineStyle="Dotted" lineColor="#000000"/>
 								</box>
 								<textElement textAlignment="Right">
 									<font fontName="Times New Roman" size="10"/>
@@ -759,6 +611,7 @@
 						</jr:detailCell>
 					</jr:column>
 					<jr:column width="44" uuid="a4273402-5295-4307-9e99-c4a2347555c2">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column6"/>
 						<jr:detailCell height="20">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<box>
@@ -770,10 +623,11 @@
 							<textField isStretchWithOverflow="true">
 								<reportElement x="0" y="0" width="44" height="20" uuid="1590030f-dbeb-4270-8fa4-64fe8147496b"/>
 								<box>
+									<pen lineStyle="Dotted"/>
 									<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<leftPen lineWidth="1.0" lineStyle="Dotted" lineColor="#000000"/>
 									<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<rightPen lineWidth="1.0" lineStyle="Dotted" lineColor="#000000"/>
 								</box>
 								<textElement textAlignment="Right">
 									<font fontName="Times New Roman" size="10"/>
@@ -782,7 +636,8 @@
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="46" uuid="7062bc72-5019-4912-ba94-d5a783c75cda">
+					<jr:column width="78" uuid="dac69659-53bd-4b6e-9010-01f4fa9ea1c7">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column7"/>
 						<jr:detailCell height="20">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<box>
@@ -792,63 +647,16 @@
 								<rightPen lineWidth="1.0"/>
 							</box>
 							<textField>
-								<reportElement x="0" y="0" width="46" height="20" uuid="cef23117-5187-4c56-af23-4b6e412d45c7"/>
+								<reportElement x="0" y="0" width="78" height="20" uuid="7cd2d97f-640e-40df-8a18-7b5509e68941"/>
 								<box>
+									<pen lineStyle="Dotted"/>
 									<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<leftPen lineWidth="1.0" lineStyle="Dotted" lineColor="#000000"/>
 									<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+									<rightPen lineWidth="1.0" lineStyle="Dotted" lineColor="#000000"/>
 								</box>
 								<textElement textAlignment="Right">
-									<font fontName="Times New Roman" size="10"/>
-								</textElement>
-								<textFieldExpression><![CDATA[java.text.NumberFormat.getInstance(java.util.Locale.ITALY).format($F{TT_BHTT})]]></textFieldExpression>
-							</textField>
-						</jr:detailCell>
-					</jr:column>
-					<jr:column width="30" uuid="cb35c551-43b5-4659-bd4e-ed0bea0dfaa3">
-						<jr:detailCell height="20">
-							<property name="com.jaspersoft.studio.unit.width" value="px"/>
-							<box>
-								<topPen lineWidth="1.0" lineStyle="Dotted"/>
-								<leftPen lineWidth="1.0"/>
-								<bottomPen lineWidth="1.0" lineStyle="Dotted"/>
-								<rightPen lineWidth="1.0"/>
-							</box>
-							<textField>
-								<reportElement x="0" y="0" width="30" height="20" uuid="70f8beb7-7df6-456d-86a7-611a5ae9f95f"/>
-								<box>
-									<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-								</box>
-								<textElement textAlignment="Right">
-									<font fontName="Times New Roman" size="10"/>
-								</textElement>
-								<textFieldExpression><![CDATA["0"]]></textFieldExpression>
-							</textField>
-						</jr:detailCell>
-					</jr:column>
-					<jr:column width="47" uuid="dac69659-53bd-4b6e-9010-01f4fa9ea1c7">
-						<jr:detailCell height="20">
-							<property name="com.jaspersoft.studio.unit.width" value="px"/>
-							<box>
-								<topPen lineWidth="1.0" lineStyle="Dotted"/>
-								<leftPen lineWidth="1.0"/>
-								<bottomPen lineWidth="1.0" lineStyle="Dotted"/>
-								<rightPen lineWidth="1.0"/>
-							</box>
-							<textField>
-								<reportElement x="0" y="0" width="47" height="20" uuid="83540d05-9902-4e0c-8e5a-ae5f9d4486d7"/>
-								<box>
-									<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-								</box>
-								<textElement textAlignment="Right">
-									<font fontName="Times New Roman" size="10"/>
+									<font fontName="Times New Roman"/>
 								</textElement>
 								<textFieldExpression><![CDATA[java.text.NumberFormat.getInstance(java.util.Locale.ITALY).format($F{THANH_TIEN})]]></textFieldExpression>
 							</textField>
@@ -857,29 +665,16 @@
 				</jr:table>
 			</componentElement>
 		</band>
-		<band height="97">
+		<band height="91">
 			<textField>
-				<reportElement x="0" y="82" width="101" height="15" uuid="44f437f4-e6ab-4637-9edb-119826c64264"/>
+				<reportElement x="0" y="70" width="101" height="15" uuid="44f437f4-e6ab-4637-9edb-119826c64264"/>
 				<textElement textAlignment="Center">
 					<font fontName="Times New Roman" size="10" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{NGUOI_LAP}.toString()]]></textFieldExpression>
 			</textField>
-			<staticText>
-				<reportElement positionType="Float" x="150" y="35" width="100" height="14" uuid="f2f9a827-99a2-4215-bcb6-7521193c801a"/>
-				<box>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement textAlignment="Center">
-					<font fontName="Times New Roman" isBold="false"/>
-				</textElement>
-				<text><![CDATA[Kế toán Viện Phí]]></text>
-			</staticText>
 			<textField>
-				<reportElement x="104" y="8" width="273" height="14" backcolor="#FFF7F7" uuid="debd1df5-a983-496e-87cb-a5e19a10155b"/>
+				<reportElement x="60" y="8" width="270" height="14" backcolor="#FFF7F7" uuid="debd1df5-a983-496e-87cb-a5e19a10155b"/>
 				<box>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -892,7 +687,7 @@
 				<textFieldExpression><![CDATA["(" + $P{TONGCONG_SUM}.getTT2String()+")"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="60" y="8" width="44" height="14" backcolor="#FFF7F7" uuid="4966245e-c1ae-4170-a9db-bf5b0912f094"/>
+				<reportElement x="310" y="0" width="65" height="22" backcolor="#FFF7F7" uuid="4966245e-c1ae-4170-a9db-bf5b0912f094"/>
 				<box>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -900,7 +695,7 @@
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textElement textAlignment="Right">
-					<font fontName="Times New Roman"/>
+					<font fontName="Times New Roman" size="16" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[java.text.NumberFormat.getInstance(java.util.Locale.ITALY).format($P{TONGCONG_SUM}.getTT2())]]></textFieldExpression>
 			</textField>
@@ -953,7 +748,7 @@
 		</band>
 	</detail>
 	<columnFooter>
-		<band height="6" splitType="Stretch"/>
+		<band splitType="Stretch"/>
 	</columnFooter>
 	<summary>
 		<band splitType="Stretch"/>

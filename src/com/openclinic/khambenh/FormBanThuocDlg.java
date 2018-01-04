@@ -21,6 +21,8 @@ import org.apache.logging.log4j.Logger;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseAdapter;
@@ -33,6 +35,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Monitor;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
@@ -46,6 +49,7 @@ import swing2swt.layout.BorderLayout;
 
 import com.DbHelper;
 import com.model.cache.MaCskcbCache;
+import com.model.dao.ActionLog;
 import com.model.dao.BenhNhan;
 import com.model.dao.CtNhapthuoc;
 import com.model.dao.DvChitiet;
@@ -64,16 +68,18 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
 
-public class FormThuocChitietListDlg extends Dialog {
-	static Logger logger = LogManager.getLogger(FormThuocChitietListDlg.class
-			.getName());
+public class FormBanThuocDlg extends Dialog {
+	static Logger logger = LogManager.getLogger(FormBanThuocDlg.class.getName());
 	protected Object result;
 	protected Shell shell;
 
 	private Table tableThuocChitiet;
 	private TableViewer tableViewerThuocChitiet;
 	private List<ThuocChitiet> listDataThuocChitiet = new ArrayList<ThuocChitiet>();
+	public int KHO_ID = 3;
 	private String textSearchThuocChitietString;
 	public ThuocChitiet objThuocChitiet = null;
 	public int typeThuocChitietDlg = TYPE_DLG_CHOOSEN;
@@ -82,7 +88,7 @@ public class FormThuocChitietListDlg extends Dialog {
 	private Text txtDIACHI;
 	private Text txtHOTEN;
 	private KhamBenh objKhambenh;
-	private BenhNhan objBenhNhan;
+	//private BenhNhan objBenhNhan;
 	private Text txtSearchCtNhapthuoc;
 	private Text txtThuocSoLuongChiDinh;
 	private Table tableCtNhapthuoc;
@@ -91,7 +97,11 @@ public class FormThuocChitietListDlg extends Dialog {
 	private List<CtNhapthuoc> listDataCtNhapthuoc;
 	private Hashtable<Integer, CtNhapthuoc> hashDataCtNhapthuoc = new Hashtable<Integer, CtNhapthuoc>();
 	private CtNhapthuoc objCtNhapthuoc;
-	private int TONG_TIEN;
+	private double TONG_TIEN_THUOC_VP;
+	private double TONG_TIEN_THUOC_BH;
+	private Button btnThanhToan;
+	private Button btnSavePhieu;
+	private Button btnInPhieu;
 
 	/**
 	 * Create the dialog.
@@ -99,7 +109,7 @@ public class FormThuocChitietListDlg extends Dialog {
 	 * @param parent
 	 * @param style
 	 */
-	public FormThuocChitietListDlg(Shell parent, int style) {
+	public FormBanThuocDlg(Shell parent, int style) {
 		super(parent, style);
 		setText("SWT Dialog");
 	}
@@ -130,23 +140,43 @@ public class FormThuocChitietListDlg extends Dialog {
 		return result;
 	}
 
-
 	/**
 	 * Create contents of the dialog.
 	 */
 	private void createContents() {
-		shell = new Shell(getParent(), SWT.SHELL_TRIM | SWT.BORDER
-				| SWT.PRIMARY_MODAL);
-		shell.setImage(SWTResourceManager.getImage(
-				FormThuocChitietListDlg.class, "/png/list-2x.png"));
+		shell = new Shell(getParent(), SWT.SHELL_TRIM | SWT.BORDER | SWT.PRIMARY_MODAL);
+		shell.setImage(SWTResourceManager.getImage(FormBanThuocDlg.class, "/png/list-2x.png"));
 		shell.setSize(1289, 498);
 		shell.setText("ThuocChitiet List View");
 		shell.setLayout(new BorderLayout(0, 0));
+		shell.addDisposeListener(new DisposeListener() {
+			public void widgetDisposed(DisposeEvent e) {
+				boolean isThanhToan = true;
+				for(ThuocChitiet obj: listDataThuocChitiet){
+					if(obj.THANHTOAN==0){
+						isThanhToan = false;
+						break;
+					}
+				}
+				System.out.println("THANH TOAN  = " + isThanhToan);
+				if(isThanhToan==false){
+					if( MessageDialog.openConfirm(shell, "Xác nhận", "Có muốn đánh dấu phiếu đã thanh toán không???") == true ){
+						thanhtoanDonThuoc();
+					}
+					else{
+						
+					}
+				}
+				//
+			}
+		});
 		shell.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
-				if (e.keyCode == SWT.ESC) {
+				if (e.keyCode == SWT.ESC) 
+				{
 					objThuocChitiet = null;
+					//
 				}
 			}
 		});
@@ -167,13 +197,20 @@ public class FormThuocChitietListDlg extends Dialog {
 				1, 1));
 
 		txtHOTEN = new Text(compositeHeaderThuocChitiet, SWT.BORDER);
+		txtHOTEN.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent e) {
+				txtHOTEN.setText(Utils.doCapitalizeFirstLetterInString(txtHOTEN.getText()));
+			}
+		});
+		
 		txtHOTEN.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				keyPress(e);
 			}
 		});
-		txtHOTEN.setFont(SWTResourceManager.getFont("Tahoma", 11, SWT.NORMAL));
+		txtHOTEN.setFont(SWTResourceManager.getFont("Tahoma", 14, SWT.NORMAL));
 		txtHOTEN.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false,
 				1, 1));
 
@@ -184,7 +221,7 @@ public class FormThuocChitietListDlg extends Dialog {
 				1, 1));
 
 		txtDIACHI = new Text(compositeHeaderThuocChitiet, SWT.BORDER);
-		txtDIACHI.setFont(SWTResourceManager.getFont("Tahoma", 11, SWT.NORMAL));
+		txtDIACHI.setFont(SWTResourceManager.getFont("Tahoma", 14, SWT.NORMAL));
 		txtDIACHI.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false,
 				1, 1));
 		txtDIACHI.addKeyListener(new KeyAdapter() {
@@ -193,9 +230,20 @@ public class FormThuocChitietListDlg extends Dialog {
 				keyPress(e);
 			}
 		});
+		txtDIACHI.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent e) {
+				txtDIACHI.setText(Utils.doCapitalizeFirstLetterInString(txtDIACHI.getText()));
+			}
 
-		SashForm sashForm = new SashForm(compositeInShellThuocChitiet,
-				SWT.VERTICAL);
+			@Override
+			public void focusGained(FocusEvent e) {
+				txtDIACHI.selectAll();
+			}
+
+		});
+		
+		SashForm sashForm = new SashForm(compositeInShellThuocChitiet,SWT.VERTICAL);
 		sashForm.setLayoutData(BorderLayout.CENTER);
 
 		Composite composite = new Composite(sashForm, SWT.NONE);
@@ -253,15 +301,14 @@ public class FormThuocChitietListDlg extends Dialog {
 		gd_txtThuocSoLuongChiDinh.widthHint = 95;
 		txtThuocSoLuongChiDinh.setLayoutData(gd_txtThuocSoLuongChiDinh);
 		txtThuocSoLuongChiDinh.setText("0");
-		txtThuocSoLuongChiDinh.setFont(SWTResourceManager.getFont("Tahoma", 12,
-				SWT.NORMAL));
+		txtThuocSoLuongChiDinh.setFont(SWTResourceManager.getFont("Tahoma", 15, SWT.NORMAL));
 		txtThuocSoLuongChiDinh.setBackground(SWTResourceManager
 				.getColor(SWT.COLOR_GREEN));
 
 		
-		tableViewerCtNhapthuoc = new TableViewer(composite, SWT.BORDER
-				| SWT.FULL_SELECTION);
+		tableViewerCtNhapthuoc = new TableViewer(composite, SWT.BORDER | SWT.FULL_SELECTION);
 		tableCtNhapthuoc = tableViewerCtNhapthuoc.getTable();
+		tableCtNhapthuoc.setFont(SWTResourceManager.getFont("Tahoma", 11, SWT.NORMAL));
 		tableCtNhapthuoc.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -292,7 +339,7 @@ public class FormThuocChitietListDlg extends Dialog {
 		tableColumn.setText("KHO");
 
 		TableColumn tableColumn_1 = new TableColumn(tableCtNhapthuoc, SWT.LEFT);
-		tableColumn_1.setWidth(182);
+		tableColumn_1.setWidth(262);
 		tableColumn_1.setText("TÊN THUỐC");
 
 		TableColumn tableColumn_2 = new TableColumn(tableCtNhapthuoc, SWT.NONE);
@@ -308,11 +355,11 @@ public class FormThuocChitietListDlg extends Dialog {
 		tableColumn_4.setText("HẠN DÙNG");
 
 		TableColumn tableColumn_5 = new TableColumn(tableCtNhapthuoc, SWT.RIGHT);
-		tableColumn_5.setWidth(73);
+		tableColumn_5.setWidth(88);
 		tableColumn_5.setText("ĐƠN GIÁ");
 
 		TableColumn tableColumn_6 = new TableColumn(tableCtNhapthuoc, SWT.RIGHT);
-		tableColumn_6.setWidth(90);
+		tableColumn_6.setWidth(98);
 		tableColumn_6.setToolTipText("Tồn kho, chỉ cấp số lượng < số này");
 		tableColumn_6.setText("TỒN KHO");
 
@@ -341,15 +388,17 @@ public class FormThuocChitietListDlg extends Dialog {
 		tableViewerThuocChitiet = new TableViewer(sashForm, SWT.BORDER
 				| SWT.FULL_SELECTION);
 		tableThuocChitiet = tableViewerThuocChitiet.getTable();
-		tableThuocChitiet.setFont(SWTResourceManager.getFont("Tahoma", 9,
-				SWT.NORMAL));
+		tableThuocChitiet.setFont(SWTResourceManager.getFont("Tahoma", 11, SWT.NORMAL));
 		tableThuocChitiet.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
-				if (e.keyCode == SWT.F5) {
-					reloadTableThuocChitiet();
-				} else if (e.keyCode == SWT.F7) {
-					addNewThuocChitiet();
+//				if (e.keyCode == SWT.F5) {
+//					reloadTableThuocChitiet();
+//				} else if (e.keyCode == SWT.F7) {
+//					addNewThuocChitiet();
+//				} else 
+				if (e.keyCode == SWT.DEL) {
+					deleteThuocChitiet();
 				}
 				else{
 					keyPress(e);
@@ -382,28 +431,28 @@ public class FormThuocChitietListDlg extends Dialog {
 
 		TableColumn tbTableColumnThuocChitietTEN_THUOC = new TableColumn(
 				tableThuocChitiet, SWT.LEFT);
-		tbTableColumnThuocChitietTEN_THUOC.setWidth(162);
+		tbTableColumnThuocChitietTEN_THUOC.setWidth(258);
 		tbTableColumnThuocChitietTEN_THUOC.setText("TEN_THUOC");
 
 		TableColumn tbTableColumnThuocChitietDON_VI_TINH = new TableColumn(
 				tableThuocChitiet, SWT.LEFT);
-		tbTableColumnThuocChitietDON_VI_TINH.setWidth(39);
+		tbTableColumnThuocChitietDON_VI_TINH.setWidth(61);
 		tbTableColumnThuocChitietDON_VI_TINH.setText("DV");
 
 		TableColumn tbTableColumnThuocChitietSOLUONG = new TableColumn(
 				tableThuocChitiet, SWT.RIGHT);
 		tbTableColumnThuocChitietSOLUONG.setWidth(61);
-		tbTableColumnThuocChitietSOLUONG.setText("SOLUONG");
+		tbTableColumnThuocChitietSOLUONG.setText("SL");
 
 		TableColumn tbTableColumnThuocChitietDON_GIA = new TableColumn(
 				tableThuocChitiet, SWT.RIGHT);
 		tbTableColumnThuocChitietDON_GIA.setWidth(71);
-		tbTableColumnThuocChitietDON_GIA.setText("DON_GIA");
+		tbTableColumnThuocChitietDON_GIA.setText("GIA");
 
 		TableColumn tbTableColumnThuocChitietTHANH_TIEN = new TableColumn(
 				tableThuocChitiet, SWT.RIGHT);
 		tbTableColumnThuocChitietTHANH_TIEN.setWidth(85);
-		tbTableColumnThuocChitietTHANH_TIEN.setText("THANH_TIEN");
+		tbTableColumnThuocChitietTHANH_TIEN.setText("TTIEN");
 
 		TableColumn tbTableColumnThuocChitietSTS = new TableColumn(
 				tableThuocChitiet, SWT.RIGHT);
@@ -441,8 +490,7 @@ public class FormThuocChitietListDlg extends Dialog {
 				.setLabelProvider(new TableLabelProviderThuocChitiet());
 		tableViewerThuocChitiet
 				.setContentProvider(new ContentProviderThuocChitiet());
-		tableViewerThuocChitiet.setCellModifier(new CellModifierThuocVienPhi(
-				tableViewerThuocChitiet));
+		//tableViewerThuocChitiet.setCellModifier(new CellModifierThuocVienPhi(tableViewerThuocChitiet));
 		sashForm.setWeights(new int[] { 162, 243 });
 		tableViewerThuocChitiet.setInput(listDataThuocChitiet);
 		//
@@ -450,7 +498,7 @@ public class FormThuocChitietListDlg extends Dialog {
 		compositeButtonGroup.setLayoutData(BorderLayout.SOUTH);
 		compositeButtonGroup.setLayout(new GridLayout(3, false));
 
-		Button btnSavePhieu = new Button(compositeButtonGroup, SWT.NONE);
+		btnSavePhieu = new Button(compositeButtonGroup, SWT.NONE);
 		btnSavePhieu.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -460,7 +508,7 @@ public class FormThuocChitietListDlg extends Dialog {
 		btnSavePhieu.setToolTipText("Lưu phiếu, bấm F2");
 		btnSavePhieu.setText("Lưu Phiếu (F2)");
 		btnSavePhieu.setImage(SWTResourceManager.getImage(
-				FormThuocChitietListDlg.class, "/png/check-3x.png"));
+				FormBanThuocDlg.class, "/png/check-3x.png"));
 		btnSavePhieu.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
 		btnSavePhieu.addKeyListener(new KeyAdapter() {
 			@Override
@@ -468,7 +516,8 @@ public class FormThuocChitietListDlg extends Dialog {
 				keyPress(e);
 			}
 		});		
-		Button btnInPhieu = new Button(compositeButtonGroup, SWT.NONE);
+		btnInPhieu = new Button(compositeButtonGroup, SWT.NONE);
+		btnInPhieu.setEnabled(false);
 		btnInPhieu.setToolTipText("In Phiếu, bấm F9");
 		btnInPhieu.setText("In Phiếu (F9)");
 		btnInPhieu.addSelectionListener(new SelectionAdapter() {
@@ -484,10 +533,10 @@ public class FormThuocChitietListDlg extends Dialog {
 			}
 		});		
 		btnInPhieu.setImage(SWTResourceManager.getImage(
-				FormThuocChitietListDlg.class, "/png/print-3x.png"));
+				FormBanThuocDlg.class, "/png/print-3x.png"));
 		btnInPhieu.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
 		
-		Button btnThanhToan = new Button(compositeButtonGroup, SWT.NONE);
+		btnThanhToan = new Button(compositeButtonGroup, SWT.NONE);
 		btnThanhToan.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -502,10 +551,10 @@ public class FormThuocChitietListDlg extends Dialog {
 		});		
 		btnThanhToan.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
 		GridData gd_button_2 = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-		gd_button_2.widthHint = 149;
+		gd_button_2.widthHint = 201;
 		btnThanhToan.setLayoutData(gd_button_2);
-		btnThanhToan.setText("THANH TOÁN ");
-		btnThanhToan.setImage(SWTResourceManager.getImage(FormThuocChitietListDlg.class, "/png/spreadsheet-3x.png"));
+		btnThanhToan.setText("THANH TOÁN(F5)");
+		btnThanhToan.setImage(SWTResourceManager.getImage(FormBanThuocDlg.class, "/png/spreadsheet-3x.png"));
 		//
 		//
 		reloadTableChitietNhapthuoc();
@@ -513,13 +562,86 @@ public class FormThuocChitietListDlg extends Dialog {
 		startDlg();
 	}
 
+	protected void deleteThuocChitiet() {
+		if (tableThuocChitiet.getSelectionCount() == 0) {
+			return;
+		}
+		TableItem item = tableThuocChitiet.getSelection()[0];
+		ThuocChitiet obj = (ThuocChitiet) item.getData();
+		if(obj!=null){
+//			if(obj.THANHTOAN==1 ){
+//				MessageDialog.openError(shell, "Có lỗi", "Đã thanh toán, không xóa được");
+//				return;
+//			}
+			if(obj.STS==-1){
+				listDataThuocChitiet.remove(obj);
+				tableViewerThuocChitiet.refresh();
+				reloadTableChitietNhapthuoc();
+			}
+			else if(obj.STS>=0){
+				CtNhapthuoc objCtNhapthuoc = CtNhapthuoc.load(obj.CT_ID);
+				if(objCtNhapthuoc!=null){
+					logger.info("==================BEGIN UPDATE KHO THUOC + === ");
+					// Update outstanding
+					logger.info("==================    LOHANG_ID="
+							+ obj.CT_ID + " TON KHO="
+							+ objCtNhapthuoc.SL_TONKHO + " CTID_FROM="
+							+ objCtNhapthuoc.CTID_FROM);
+					// Tru truc tiep
+					objCtNhapthuoc.SL_TONKHO = objCtNhapthuoc.SL_TONKHO + obj.SO_LUONG;
+					//
+					logger.info("==================    LOHANG_ID="
+							+ obj.CT_ID + " TON KHO="
+							+ objCtNhapthuoc.SL_TONKHO + " CTID_FROM="
+							+ objCtNhapthuoc.CTID_FROM);
+					//
+					objCtNhapthuoc.update();
+					//
+					ActionLog log = new ActionLog();
+					log.u_id = DbHelper.getCurrentSessionUserId();
+					log.dbtable = "ct_nhapthuoc";
+					log.fieldid = objCtNhapthuoc.CT_ID;
+					log.actionid = 5;
+					log.u_action = "Undo Bán thuốc "+obj.SO_LUONG+", cộng kho: SL_TONKHO="+(objCtNhapthuoc.SL_TONKHO-obj.SO_LUONG)+" to "+objCtNhapthuoc.SL_TONKHO;
+					//log.u_action = "Bán thuốc SL_TONKHO="+(objCtNhapthuoc.SL_TONKHO-obj.SO_LUONG)+" to "+objCtNhapthuoc.SL_TONKHO;
+					log.insert();
+					//
+					logger.info("==================END UPDATE KHO THUOC + === ");
+					//
+				}
+				listDataThuocChitiet.remove(obj);
+				obj.deleteRow();
+				tableViewerThuocChitiet.refresh();
+				reloadTableChitietNhapthuoc();
+			}
+			else{
+				MessageDialog.openError(shell, "Có lỗi", "Không xóa được");
+			}
+			logger.info(obj.toString());
+		}
+		//
+		
+		//
+
+		
+	}
+
 	private void startDlg() {
 		if(objKhambenh!=null){
 			txtHOTEN.setText(objKhambenh.TEN_BENH_NHAN);
 			txtDIACHI.setText(objKhambenh.DIA_CHI);
+			if(objKhambenh.MA_LK!=null && objKhambenh.MA_LK>0){
+				//txtHOTEN.setText(objKhambenh.TEN_BENH_NHAN+"-"+objKhambenh.MA_LK.intValue());
+				//objKhambenh.MA_LK = null;
+			}
+			if(objKhambenh.NGAY_TTOAN!=null && objKhambenh.NGAY_TTOAN.length()>0){
+//				btnSavePhieu.setEnabled(false);
+//				btnThanhToan.setEnabled(false);
+			}
 		}
 		txtHOTEN.selectAll();
 		txtHOTEN.forceFocus();
+		btnInPhieu.setEnabled(false);
 	}
 
 	protected boolean selectSoluongThuocAndAdd() {
@@ -533,7 +655,7 @@ public class FormThuocChitietListDlg extends Dialog {
 
 		iSoLuongChiDinh = Utils.getInt(txtThuocSoLuongChiDinh.getText());
 		if (iSoLuongChiDinh<=0 
-				|| (iSoLuongChiDinh > 0 && objCtNhapthuoc.SL_TONKHO <= iSoLuongChiDinh)) {
+				|| (iSoLuongChiDinh > 0 && objCtNhapthuoc.SL_TONKHO < iSoLuongChiDinh)) {
 			txtThuocSoLuongChiDinh.setBackground(SWTResourceManager .getColor(SWT.COLOR_RED));
 			txtThuocSoLuongChiDinh.forceFocus();
 			txtThuocSoLuongChiDinh.selectAll();
@@ -580,6 +702,7 @@ public class FormThuocChitietListDlg extends Dialog {
 						objThuocChiTiet.SO_DANG_KY = "";
 					}
 				}
+				objThuocChiTiet.KHO_ID = objCtNhapthuoc.KHO_ID;
 				objThuocChiTiet.KHO_NAME = objCtNhapthuoc.TENKHO;
 				//
 				objThuocChiTiet.TYP = objCtNhapthuoc.TYP;
@@ -616,8 +739,15 @@ public class FormThuocChitietListDlg extends Dialog {
 	}
 
 	protected void keyPress(KeyEvent e) {
-		// TODO Auto-generated method stub
-		
+		if( e.keyCode==SWT.F2){
+			saveDonThuoc();
+		}
+		else if( e.keyCode==SWT.F5){
+			inDonThuoc();
+		}
+		else if( e.keyCode==SWT.F9){
+			thanhtoanDonThuoc();
+		}
 	}
 
 	protected void addNewThuocChitiet() {
@@ -664,14 +794,14 @@ public class FormThuocChitietListDlg extends Dialog {
 			txtDIACHI.setText(objKhambenh.DIA_CHI);
 		}
 		//
-		String sql = "select * from thuoc_chitiet WHERE KHO_NAME='Kho viện phí' and STS<> "
+		//String sql = "select * from thuoc_chitiet WHERE KHO_NAME='Kho viện phí' and STS<> "
+		String sql = "select * from thuoc_chitiet WHERE KHO_ID<>2 and STS<> "
 				+ DbHelper.DELETE_STATUS + " and MA_LK="
 				+ objKhambenh.MA_LK.intValue();
 		try {
 			logger.info(sql);
 			Connection con = DbHelper.getSql2o();
-			listDataThuocChitiet = con.createQuery(sql).executeAndFetch(
-					ThuocChitiet.class);
+			listDataThuocChitiet = con.createQuery(sql).executeAndFetch(ThuocChitiet.class);
 			int i = 1;
 			for (ThuocChitiet obj : listDataThuocChitiet) {
 				obj.STT = i++;
@@ -681,6 +811,8 @@ public class FormThuocChitietListDlg extends Dialog {
 			MessageDialog.openError(shell, "Error", e.getMessage());
 		}
 		//
+		logger.info("listDataThuocChitiet size="+listDataThuocChitiet.size());
+
 		tableViewerThuocChitiet.setInput(listDataThuocChitiet);
 		tableViewerThuocChitiet.refresh();
 		//
@@ -695,8 +827,7 @@ public class FormThuocChitietListDlg extends Dialog {
 	protected void reloadTableChitietNhapthuoc() {
 		// if(listDataCtNhapthuoc==null){
 		// Do search
-		String searchString = txtSearchCtNhapthuoc.getText().toLowerCase()
-				.trim();
+		String searchString = txtSearchCtNhapthuoc.getText().toLowerCase().trim();
 		String sql = "select * from ct_nhapthuoc WHERE STS<> "
 				+ DbHelper.DELETE_STATUS + " and SL_TONKHO>0 ";
 		//
@@ -705,8 +836,7 @@ public class FormThuocChitietListDlg extends Dialog {
 			sql += " LOWER(TENTHUOC) like '" + searchString + "%'";
 		}
 		//
-		sql += " and KHO_ID=3";
-
+		sql += " and KHO_ID="+KHO_ID;
 		//
 		sql += " order by HANDUNG ASC";
 		try {
@@ -771,10 +901,10 @@ public class FormThuocChitietListDlg extends Dialog {
 		reportAll.sumTongCong = new SumReportDAO();
 		reportAll.sumTongCong.TT2 = reportAll.sumThuoc.TT2;
 		reportAll.sumTongCong.TT = reportAll.sumThuoc.TT2;
-		reportAll.sumTongCong.BH = 0;
+		reportAll.sumTongCong.BH = (float)0.0;
 		reportAll.sumTongCong.NB = reportAll.sumThuoc.TT2;
 		reportAll.sumTongCong.NB2 = reportAll.sumThuoc.TT2;
-		reportAll.sumTongCong.KH = 0;
+		reportAll.sumTongCong.KH = (float)0.0;
 		//
 		reportAll.strNguoiLap = DbHelper.currentSessionUserId.TEN_NHANVIEN;
 		//
@@ -830,24 +960,52 @@ public class FormThuocChitietListDlg extends Dialog {
 			txtDIACHI.forceFocus();
 			return;
 		}
-		if(objKhambenh!=null){
-			TONG_TIEN = 0;
-			for (ThuocChitiet obj : listDataThuocChitiet) {
-				obj.MUC_HUONG = (float)0.0;
-				obj.THANH_TIEN = obj.SO_LUONG*obj.DON_GIA;
-				obj.TT_BNTT = obj.THANH_TIEN;
-				TONG_TIEN += obj.THANH_TIEN;
+		if(listDataThuocChitiet.size()==0){
+			MessageDialog.openError(shell, "Có lỗi", "Nhập thuốc để lưu");
+			return;
+		}
+		if(objKhambenh!=null)
+		{
+			TONG_TIEN_THUOC_VP = (float)0.0;
+			TONG_TIEN_THUOC_BH = (float)0.0;
+			for (ThuocChitiet obj : listDataThuocChitiet) 
+			{
+				if( obj.TYP==2 ){
+					obj.MUC_HUONG 			= 0;
+					obj.THANH_TIEN 			= obj.SO_LUONG*obj.DON_GIA;
+					obj.TT_BNTT 			= obj.THANH_TIEN;
+					TONG_TIEN_THUOC_VP 		+= obj.THANH_TIEN;
+				}
+				else{
+					//obj.THANH_TIEN 			= obj.SO_LUONG*obj.DON_GIA;
+					TONG_TIEN_THUOC_BH 		+= obj.THANH_TIEN;
+					//
+				}
 				//
 			}
 			if(objKhambenh.BN_ID==0){
 				// Khach vang lai
 				objKhambenh.TEN_BENH_NHAN = txtHOTEN.getText().trim();
-				objKhambenh.DIA_CHI = txtDIACHI.getText().trim();
-				objKhambenh.KIEU_TT = Utils.THANHTOAN_MUA_THUOC;
-				objKhambenh.T_TONGCHI = TONG_TIEN;
-				objKhambenh.T_THUOC = TONG_TIEN;
-				objKhambenh.T_BNTT = TONG_TIEN;
-				objKhambenh.T_BHTT = 0;
+				objKhambenh.DIA_CHI 		= txtDIACHI.getText().trim();
+				objKhambenh.KIEU_TT 		= Utils.THANHTOAN_MUA_THUOC;
+				objKhambenh.T_TONGCHI 		= TONG_TIEN_THUOC_VP;
+				objKhambenh.T_THUOC 		= TONG_TIEN_THUOC_VP;
+				objKhambenh.T_BNTT 			= TONG_TIEN_THUOC_VP;
+				objKhambenh.T_NGOAIDS 		= TONG_TIEN_THUOC_VP;
+				objKhambenh.T_BHTT 			= 0.0;
+				if(objKhambenh.NV_ID==0){
+					objKhambenh.NV_ID = DbHelper.currentSessionUserId.U_ID;
+					objKhambenh.NV_NAME = DbHelper.currentSessionUserId.U_NAME;
+					objKhambenh.TABLE_ID = Main.TABLE_ID;
+				}
+			}
+			else{
+				//objKhambenh.T_TONGCHI 		= TONG_TIEN_THUOC_VP;
+				//objKhambenh.T_THUOC 		= TONG_TIEN_THUOC_VP;
+				//objKhambenh.T_VTYT 			= TONG_TIEN_THUOC_VP;
+				objKhambenh.T_NGOAIDS 		= TONG_TIEN_THUOC_VP;
+				//objKhambenh.T_BNTT 			= TONG_TIEN_THUOC_VP;
+				//objKhambenh.T_BHTT 			= 0.0;
 				if(objKhambenh.NV_ID==0){
 					objKhambenh.NV_ID = DbHelper.currentSessionUserId.U_ID;
 					objKhambenh.NV_NAME = DbHelper.currentSessionUserId.U_NAME;
@@ -893,6 +1051,15 @@ public class FormThuocChitietListDlg extends Dialog {
 						//
 						objCtNhapthuoc.update();
 						//
+						//
+						ActionLog log = new ActionLog();
+						log.u_id = DbHelper.getCurrentSessionUserId();
+						log.dbtable = "ct_nhapthuoc";
+						log.fieldid = objCtNhapthuoc.CT_ID;
+						log.actionid = 2;
+						log.u_action = "Bán thuốc "+obj.SO_LUONG+", trừ kho: SL_TONKHO="+(objCtNhapthuoc.SL_TONKHO+obj.SO_LUONG)+" to "+objCtNhapthuoc.SL_TONKHO;
+						log.insert();
+						//
 						logger.info("==================END UPDATE KHO THUOC === ");
 						//
 					}
@@ -903,8 +1070,9 @@ public class FormThuocChitietListDlg extends Dialog {
 			tableViewerThuocChitiet.refresh();
 			//
 		}
-		
+		btnInPhieu.setEnabled(true);
 	}
+	
 	protected void thanhtoanDonThuoc() {
 		if( txtHOTEN.getText().trim().length()==0 ){
 			txtHOTEN.forceFocus();
@@ -920,7 +1088,12 @@ public class FormThuocChitietListDlg extends Dialog {
 				objKhambenh.TEN_BENH_NHAN = txtHOTEN.getText().trim();
 				objKhambenh.DIA_CHI = txtDIACHI.getText().trim();
 			}
-			objKhambenh.NGAY_TTOAN = Utils.getDatetime(new Date(), "yyyyMMddHHmm");
+			if(objKhambenh.KIEU_TT==Utils.THANHTOAN_BHYT || objKhambenh.KIEU_TT==Utils.THANHTOAN_BHYT_2){
+			
+			}
+			else{
+				objKhambenh.NGAY_TTOAN = Utils.getDatetime(new Date(), "yyyyMMddHHmm");
+			}
 			objKhambenh.insert();
 		}
 		for (ThuocChitiet obj : listDataThuocChitiet) {
@@ -932,18 +1105,21 @@ public class FormThuocChitietListDlg extends Dialog {
 			}
 
 			//
-			if(obj.THANHTOAN==0){
+			if(obj.THANHTOAN==0 ){
 				obj.THANH_TIEN = obj.SO_LUONG*obj.DON_GIA;
 				obj.TT_BNTT = obj.THANH_TIEN;
 				obj.THANHTOAN = 1;
+				
 				if(obj.NV_ID==0){
 					obj.NV_ID = DbHelper.currentSessionUserId.U_ID;
 					obj.NV_NAME = DbHelper.currentSessionUserId.U_NAME;
 				}
 				// Insert thuoc chi tiet.
+				
 				obj.insert();
 				//
 			}
+			//
 			if( isFirstTimeInsert==true){
 				CtNhapthuoc objCtNhapthuoc = CtNhapthuoc.load(obj.CT_ID);
 				if(objCtNhapthuoc!=null){
@@ -962,6 +1138,15 @@ public class FormThuocChitietListDlg extends Dialog {
 							+ objCtNhapthuoc.CTID_FROM);
 					//
 					objCtNhapthuoc.update();
+					//
+					ActionLog log = new ActionLog();
+					log.u_id = DbHelper.getCurrentSessionUserId();
+					log.dbtable = "ct_nhapthuoc";
+					log.fieldid = objCtNhapthuoc.CT_ID;
+					log.actionid = 2;
+					log.u_action = "Bán thuốc 2 SL_TONKHO="+(objCtNhapthuoc.SL_TONKHO+obj.SO_LUONG)+" to "+objCtNhapthuoc.SL_TONKHO;
+					log.insert();
+					//
 					//
 					logger.info("==================END UPDATE KHO THUOC === ");
 					//

@@ -269,11 +269,13 @@ public class NhapThuocListDlg extends Dialog {
 		tbTableColumnNhapThuocKH_HOA_DON.setWidth(100);
 		tbTableColumnNhapThuocKH_HOA_DON.setText("KH_HOA_DON");
 
-		TableColumn tbTableColumnNhapThuocTONGCONG = new TableColumn(tableNhapThuoc, SWT.RIGHT);
+
+		TableColumn tbTableColumnNhapThuocTONGCONG = new TableColumn(tableNhapThuoc, SWT.NONE);
 		tbTableColumnNhapThuocTONGCONG.setWidth(100);
 		tbTableColumnNhapThuocTONGCONG.setText("TONGCONG");
 
-		TableColumn tbTableColumnNhapThuocTONGCONG_VAT = new TableColumn(tableNhapThuoc, SWT.RIGHT);
+
+		TableColumn tbTableColumnNhapThuocTONGCONG_VAT = new TableColumn(tableNhapThuoc, SWT.NONE);
 		tbTableColumnNhapThuocTONGCONG_VAT.setWidth(100);
 		tbTableColumnNhapThuocTONGCONG_VAT.setText("TONGCONG_VAT");
 

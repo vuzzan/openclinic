@@ -639,7 +639,7 @@ public class FormNhapThuocDlg extends Dialog {
 			txtKH_HOA_DON.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		}
 		
-		if(Utils.getInt( txtTONGCONG.getText() )<=0){
+		if(Utils.getDouble( txtTONGCONG.getText() )<=0){
 			txtTONGCONG.forceFocus();
 			txtTONGCONG.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
 			return;
@@ -647,7 +647,7 @@ public class FormNhapThuocDlg extends Dialog {
 		else{
 			txtTONGCONG.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		}
-		if(Utils.getInt( txtVAT.getText() )<=0){
+		if(Utils.getDouble( txtVAT.getText() )<=0){
 			txtVAT.selectAll();
 			txtVAT.forceFocus();
 			txtVAT.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
@@ -821,16 +821,14 @@ public class FormNhapThuocDlg extends Dialog {
 		if(objNhapThuoc==null){
 			objNhapThuoc = new NhapThuoc();
 		}
-		objNhapThuoc.TONGCONG = 0;
+		objNhapThuoc.TONGCONG = 0.0;
 		int taxVAT = Utils.getInt(txtVAT.getText());
 		objNhapThuoc.VAT = taxVAT;
 		//
 		for (CtNhapthuoc obj2 : listDataCtNhapthuoc) {
 			objNhapThuoc.TONGCONG += obj2.THANHTIEN;
 		}
-		//objNhapThuoc.TONGCONG_VAT =(int) ((float) 1+((float)taxVAT/(float)100)*objNhapThuoc.TONGCONG.intValue());
-		objNhapThuoc.TONGCONG_VAT = (int) ((float)objNhapThuoc.TONGCONG.intValue() * ((float)(1) + (float)taxVAT/(float)100));
-		//objNhapThuoc.TONGCONG_VAT = (int) ((float)Utils.getInt(txtTONGCONG.getText()) * ((float)(1) + (float)taxVAT/(float)100));
+		objNhapThuoc.TONGCONG_VAT = (objNhapThuoc.TONGCONG* (1+ (double)taxVAT/(double)100));
 		//
 		if(txtTONGCONG!=null){
 			txtTONGCONG.setText(objNhapThuoc.TONGCONG.toString());

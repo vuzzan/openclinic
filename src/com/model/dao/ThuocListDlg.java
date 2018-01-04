@@ -3,6 +3,11 @@
 */
 package com.model.dao;
 
+
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +48,8 @@ import org.eclipse.swt.layout.GridData;
 import org.sql2o.Connection;
 
 import com.DbHelper;
+import com.openclinic.utils.Utils;
+
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.wb.swt.SWTResourceManager;
@@ -146,10 +153,10 @@ public class ThuocListDlg extends Dialog {
         
 		Composite compositeHeaderThuoc = new Composite(compositeInShellThuoc, SWT.NONE);
 		compositeHeaderThuoc.setLayoutData(BorderLayout.NORTH);
-		compositeHeaderThuoc.setLayout(new GridLayout(2, false));
+		compositeHeaderThuoc.setLayout(new GridLayout(5, false));
 
 		textSearchThuoc = new Text(compositeHeaderThuoc, SWT.BORDER);
-		textSearchThuoc.setFont(SWTResourceManager.getFont("Tahoma", 11, SWT.NORMAL));
+		textSearchThuoc.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		textSearchThuoc.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -161,7 +168,7 @@ public class ThuocListDlg extends Dialog {
 		
 		Button btnNewButtonSearchThuoc = new Button(compositeHeaderThuoc, SWT.NONE);
 		btnNewButtonSearchThuoc.setImage(SWTResourceManager.getImage(ThuocDlg.class, "/png/media-play-2x.png"));
-		btnNewButtonSearchThuoc.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
+		btnNewButtonSearchThuoc.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 
 		btnNewButtonSearchThuoc.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -169,6 +176,18 @@ public class ThuocListDlg extends Dialog {
 				reloadTableThuoc();
 			}
 		});
+		Button btnNewButtonExportExcelThuoc = new Button(compositeHeaderThuoc, SWT.NONE);
+		btnNewButtonExportExcelThuoc.setText("Export Excel");
+		btnNewButtonExportExcelThuoc.setImage(SWTResourceManager.getImage(KhamBenhListDlg.class, "/png/spreadsheet-2x.png"));
+		btnNewButtonExportExcelThuoc.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		btnNewButtonExportExcelThuoc.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				exportExcelTableThuoc();
+			}
+		});
+		
+		
 		GridData gd_btnNewButtonThuoc = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
 		gd_btnNewButtonThuoc.widthHint = 87;
 		btnNewButtonSearchThuoc.setLayoutData(gd_btnNewButtonThuoc);
@@ -176,7 +195,7 @@ public class ThuocListDlg extends Dialog {
         
 		tableViewerThuoc = new TableViewer(compositeInShellThuoc, SWT.BORDER | SWT.FULL_SELECTION);
 		tableThuoc = tableViewerThuoc.getTable();
-		tableThuoc.setFont(SWTResourceManager.getFont("Tahoma", 11, SWT.NORMAL));
+		tableThuoc.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		tableThuoc.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -272,11 +291,13 @@ public class ThuocListDlg extends Dialog {
 		tbTableColumnThuocDON_VI_TINH.setWidth(100);
 		tbTableColumnThuocDON_VI_TINH.setText("DON_VI_TINH");
 
-		TableColumn tbTableColumnThuocDON_GIA = new TableColumn(tableThuoc, SWT.RIGHT);
+
+		TableColumn tbTableColumnThuocDON_GIA = new TableColumn(tableThuoc, SWT.NONE);
 		tbTableColumnThuocDON_GIA.setWidth(100);
 		tbTableColumnThuocDON_GIA.setText("DON_GIA");
 
-		TableColumn tbTableColumnThuocDON_GIA_TT = new TableColumn(tableThuoc, SWT.RIGHT);
+
+		TableColumn tbTableColumnThuocDON_GIA_TT = new TableColumn(tableThuoc, SWT.NONE);
 		tbTableColumnThuocDON_GIA_TT.setWidth(100);
 		tbTableColumnThuocDON_GIA_TT.setText("DON_GIA_TT");
 
@@ -376,7 +397,17 @@ public class ThuocListDlg extends Dialog {
 			}
 		});
 		mntmDeleteThuoc.setText("Delete");
-
+		
+		MenuItem mntmExportThuoc = new MenuItem(menuThuoc, SWT.NONE);
+		mntmExportThuoc.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				exportExcelTableThuoc();
+			}
+		});
+		mntmExportThuoc.setImage(SWTResourceManager.getImage(ThuocDlg.class, "/png/spreadsheet-2x.png"));
+		mntmExportThuoc.setText("Export Excel");
+		
 		tableViewerThuoc.setLabelProvider(new TableLabelProviderThuoc());
 		tableViewerThuoc.setContentProvider(new ContentProviderThuoc());
 		tableViewerThuoc.setInput(listDataThuoc);
@@ -393,6 +424,123 @@ public class ThuocListDlg extends Dialog {
 		if(textSearchThuocString!=null){
 			textSearchThuoc.setText(textSearchThuocString);
 		}
+	}
+	protected void exportExcelTableThuoc() {
+        if(DbHelper.checkPhanQuyen(DbHelper.READ, "thuoc")==false){
+			logger.info("DON'T HAVE READ RIGHT");
+			return;
+		}
+        if(listDataThuoc!=null){
+            // Export to EXCEL
+    		
+			StringBuffer buff_thuoc = new StringBuffer();
+			String thuoc_filename = "thuoc_"+Utils.getDatetimeCurent().replaceAll(":", "_")+".xls";
+			String delimiter = "</td><td>";
+			// Get header...
+			// Get header...
+			buff_thuoc.append( "<table>");
+			buff_thuoc.append( "<tr class='background-color:#dfdfdf'><td>");
+
+			buff_thuoc.append( "MA_HOAT_CHAT" +delimiter);
+			buff_thuoc.append( "MA_AX" +delimiter);
+			buff_thuoc.append( "HOAT_CHAT" +delimiter);
+			buff_thuoc.append( "HOATCHAT_AX" +delimiter);
+			buff_thuoc.append( "MA_DUONG_DUNG" +delimiter);
+			buff_thuoc.append( "MA_DUONGDUNG_AX" +delimiter);
+			buff_thuoc.append( "DUONG_DUNG" +delimiter);
+			buff_thuoc.append( "DUONGDUNG_AX" +delimiter);
+			buff_thuoc.append( "HAM_LUONG" +delimiter);
+			buff_thuoc.append( "HAMLUONG_AX" +delimiter);
+			buff_thuoc.append( "TEN_THUOC" +delimiter);
+			buff_thuoc.append( "TENTHUOC_AX" +delimiter);
+			buff_thuoc.append( "SO_DANG_KY" +delimiter);
+			buff_thuoc.append( "SODANGKY_AX" +delimiter);
+			buff_thuoc.append( "DONG_GOI" +delimiter);
+			buff_thuoc.append( "DON_VI_TINH" +delimiter);
+			buff_thuoc.append( "DON_GIA" +delimiter);
+			buff_thuoc.append( "DON_GIA_TT" +delimiter);
+			buff_thuoc.append( "SO_LUONG" +delimiter);
+			buff_thuoc.append( "MA_CSKCB" +delimiter);
+			buff_thuoc.append( "HANG_SX" +delimiter);
+			buff_thuoc.append( "NUOC_SX" +delimiter);
+			buff_thuoc.append( "NHA_THAU" +delimiter);
+			buff_thuoc.append( "QUYET_DINH" +delimiter);
+			buff_thuoc.append( "CONG_BO" +delimiter);
+			buff_thuoc.append( "MA_THUOC_BV" +delimiter);
+			buff_thuoc.append( "LOAI_THUOC" +delimiter);
+			buff_thuoc.append( "LOAI_THAU" +delimiter);
+			buff_thuoc.append( "NHOM_THAU" +delimiter);
+			buff_thuoc.append( "MANHOM_9324" +delimiter);
+			buff_thuoc.append( "HIEULUC" +delimiter);
+			buff_thuoc.append( "KETQUA" +delimiter);
+			buff_thuoc.append( "TYP" +delimiter);
+			buff_thuoc.append( "THUOC_RANK" +delimiter);
+			// End of header
+			buff_thuoc.append( "</td></tr>");
+			buff_thuoc.append( "\n");
+			// Get data...
+			for( Thuoc obj:  listDataThuoc){
+				buff_thuoc.append( "<tr><td>");
+				buff_thuoc.append( obj.MA_HOAT_CHAT +delimiter);
+				buff_thuoc.append( obj.MA_AX +delimiter);
+				buff_thuoc.append( obj.HOAT_CHAT +delimiter);
+				buff_thuoc.append( obj.HOATCHAT_AX +delimiter);
+				buff_thuoc.append( obj.MA_DUONG_DUNG +delimiter);
+				buff_thuoc.append( obj.MA_DUONGDUNG_AX +delimiter);
+				buff_thuoc.append( obj.DUONG_DUNG +delimiter);
+				buff_thuoc.append( obj.DUONGDUNG_AX +delimiter);
+				buff_thuoc.append( obj.HAM_LUONG +delimiter);
+				buff_thuoc.append( obj.HAMLUONG_AX +delimiter);
+				buff_thuoc.append( obj.TEN_THUOC +delimiter);
+				buff_thuoc.append( obj.TENTHUOC_AX +delimiter);
+				buff_thuoc.append( obj.SO_DANG_KY +delimiter);
+				buff_thuoc.append( obj.SODANGKY_AX +delimiter);
+				buff_thuoc.append( obj.DONG_GOI +delimiter);
+				buff_thuoc.append( obj.DON_VI_TINH +delimiter);
+				buff_thuoc.append( obj.DON_GIA +delimiter);
+				buff_thuoc.append( obj.DON_GIA_TT +delimiter);
+				buff_thuoc.append( obj.SO_LUONG +delimiter);
+				buff_thuoc.append( obj.MA_CSKCB +delimiter);
+				buff_thuoc.append( obj.HANG_SX +delimiter);
+				buff_thuoc.append( obj.NUOC_SX +delimiter);
+				buff_thuoc.append( obj.NHA_THAU +delimiter);
+				buff_thuoc.append( obj.QUYET_DINH +delimiter);
+				buff_thuoc.append( obj.CONG_BO +delimiter);
+				buff_thuoc.append( obj.MA_THUOC_BV +delimiter);
+				buff_thuoc.append( obj.LOAI_THUOC +delimiter);
+				buff_thuoc.append( obj.LOAI_THAU +delimiter);
+				buff_thuoc.append( obj.NHOM_THAU +delimiter);
+				buff_thuoc.append( obj.MANHOM_9324 +delimiter);
+				buff_thuoc.append( obj.HIEULUC +delimiter);
+				buff_thuoc.append( obj.KETQUA +delimiter);
+				buff_thuoc.append( obj.TYP +delimiter);
+				buff_thuoc.append( obj.THUOC_RANK +delimiter);
+				// End of header
+				buff_thuoc.append( "</td></tr>");
+			}
+			//
+			buff_thuoc.append( "</table>");
+			Writer out = null;
+			try {
+				out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(thuoc_filename), "UTF-8"));
+				out.write('\uFEFF'); // BOM for UTF-*
+			    out.write(buff_thuoc.toString());
+			} 
+			catch(Exception ee){
+				ee.printStackTrace();
+			}
+			finally {
+			    try {
+					out.close();
+				} catch (Exception e) {
+					e.printStackTrace();
+					logger.error(e);
+				}
+			}
+			//
+            return;
+        }
+		// End of export
 	}
 	protected void reloadTableThuoc() {
         if(DbHelper.checkPhanQuyen(DbHelper.READ, "thuoc")==false){

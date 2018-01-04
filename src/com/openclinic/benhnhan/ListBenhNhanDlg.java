@@ -35,6 +35,7 @@ import com.DbHelper;
 import com.model.dao.BenhNhan;
 import com.model.dao.MaCskcb;
 import com.openclinic.khambenh.FormKhamBenhDlg;
+import com.openclinic.utils.Utils;
 
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
@@ -201,12 +202,34 @@ public class ListBenhNhanDlg extends Dialog {
 		label_1.setBounds(10, 3, 90, 19);
 		
 		txtMaThe = new Text(compositeHead, SWT.BORDER);
+		txtMaThe.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if( txtMaThe.getText().length()>0 ){
+					doSearch();
+				}
+				else{
+					keyPress(e);
+				}
+			}
+		});
 		txtMaThe.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
 		txtMaThe.setBounds(106, 0, 187, 25);
 		
 		txtHoTen = new Text(compositeHead, SWT.BORDER);
 		txtHoTen.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
 		txtHoTen.setBounds(106, 32, 187, 25);
+		txtHoTen.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if( txtHoTen.getText().length()>0 ){
+					doSearch();
+				}
+				else{
+					keyPress(e);
+				}
+			}
+		});
 		
 		btnSearch = new Button(compositeHead, SWT.NONE);
 		btnSearch.addSelectionListener(new SelectionAdapter() {
@@ -222,6 +245,11 @@ public class ListBenhNhanDlg extends Dialog {
 
 		shellListBenhNhan.setMaximized(true);
 		loadData();
+	}
+
+	protected void keyPress(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	protected void selectBenhNhan() {
@@ -256,15 +284,21 @@ public class ListBenhNhanDlg extends Dialog {
 			}
 			int firstParam = 0;
 			if( strHoTen.length()>0 ){
-				sql += " LOWER(HO_TEN) like '%"+ strHoTen + "%'";
+				int benhNhanID = Utils.getInt(strHoTen);
+				if(benhNhanID>0){
+					sql += " BN_ID="+benhNhanID;
+				}
+				else{
+					sql += " LOWER(HO_TEN) like '%"+ strHoTen + "%'";
+				}
 				firstParam ++;
 			}
 			
 			if( strMaThe.length()>0){
 				if(firstParam>0){
-					sql += " or ";
+					sql += " and ";
 				}
-				sql += " LOWER(MA_THE) like '%" + strMaThe + "%' ";
+				sql += " (LOWER(MA_THE) like '%" + strMaThe + "%') ";
 			}
 			sql += " order by DATE_ADD DESC";
 			logger.info(sql);

@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class ReadNumber {
     public static void main(String[] args) throws ParseException {
-        double tongtien = 1343432535;
+        double tongtien = 1234.23;
         System.out.print(numberToString(tongtien));
        
     }
@@ -18,9 +18,13 @@ public class ReadNumber {
         String strReturn = "";
         int slen = temp.length();
         for (int i = 0; i < slen; i++) {
-            if (String.valueOf(temp.charAt(i)).equals("."))
+            if (String.valueOf(temp.charAt(i)).equals(".")){
                 break;
+            	//continue;
+            	//strReturn += ".";//String.valueOf(temp.charAt(i));
+            }
             else if (Character.isDigit(temp.charAt(i))) {
+        	//if (Character.isDigit(temp.charAt(i))) {
                 strReturn += String.valueOf(temp.charAt(i));
             }
         }
@@ -88,9 +92,17 @@ public class ReadNumber {
         // Tao mot vong lap de doc so
         for (int i = 0; i < iLen; i++) {
             String sTemp = "" + sNumber.charAt(i);
-            int iTemp = Integer.parseInt(sTemp);
+            int iTemp = 0;
             // Tao mot bien ket qua
             String sRead = "";
+            try{
+            	iTemp =  Integer.parseInt(sTemp);
+            }
+            catch(Exception e){
+            	///
+            	sRead = " đồng, ";
+            	continue;
+            }
             // Kiem tra xem so nhan vao co = 0 hay ko
             if (iTemp == 0) {
                 switch (iRe) {

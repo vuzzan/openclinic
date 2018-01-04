@@ -43,6 +43,7 @@ public class Utils {
 	//public static final int PHIEUKHAM_KHAMXONG_BS_CHOTHUOC 	= 4;
 	public static final int PHIEUKHAM_KHAMXONG_CHO_LAYTHUOC = 4;
 	public static final int PHIEUKHAM_KHAMXONG_RAVE 		= 5;
+	public static final int PHIEUKHAM_XOA_PHIEU_KHAM_0 		= 6;
 	
 	public static final int THUOC_KHAMXONG_CHOTHUOC 		= PHIEUKHAM_KHAMXONG_CHO_LAYTHUOC;
 	public static final int THUOC_KHAMXONG_DALAYTHUOC 		= PHIEUKHAM_KHAMXONG_RAVE;
@@ -104,7 +105,7 @@ public class Utils {
 	}
 	
 	//java.text.NumberFormat.getInstance(java.util.Locale.ITALY).format(
-	public static String getMoneyDefault(int money){
+	public static String getMoneyDefault(Double money){
 		return java.text.NumberFormat.getInstance(java.util.Locale.ITALY).format(money);
 	}
 	public static String getDatetimeDefault(Date now){
@@ -131,8 +132,19 @@ public class Utils {
 //		  long diffSeconds = diff / 1000;
 //		  long diffMinutes = diff / (60 * 1000);
 //		  long diffHours = diff / (60 * 60 * 1000);
-		  long diffDays = diff / (24 * 60 * 60 * 1000);
-	    return diffDays;
+		long diffDays = diff / (24 * 60 * 60 *1000);
+		return diffDays;
+	}
+	public static double differenceInDayDouble(Date startDate, Date endDate) {
+		System.out.println("Start: "+startDate.getTime() + " End: " + endDate.getTime());
+		long diff = endDate.getTime() - startDate.getTime();
+		System.out.println("differenceInHour: "+diff);
+
+//		long diff = milliseconds2 - milliseconds1;
+//		  long diffSeconds = diff / 1000;
+//		  long diffMinutes = diff / (60 * 1000);
+		double diffDays = (double)diff / (double)(24 * 60 * 60 *1000);
+		return diffDays;
 	}
 	public static long differenceInDay(Calendar startDate, Calendar endDate) {
 		System.out.println("Start: "+startDate.getTime() + " End: " + endDate.getTime());
@@ -283,7 +295,16 @@ public class Utils {
 		}
 		return 0;
 	}
-	public static Float getDouble(String db) {
+	public static double getDouble(String db) {
+		try{
+			return Double.parseDouble(db);
+		}
+		catch(Exception e){
+			//
+		}
+		return 0.0;
+	}
+	public static Float getFloat(String db) {
 		try{
 			return Float.parseFloat(db);
 		}

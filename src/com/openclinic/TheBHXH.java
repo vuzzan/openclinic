@@ -5,6 +5,7 @@ import java.util.Hashtable;
 import javax.xml.bind.DatatypeConverter;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CBanner;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.KeyAdapter;
@@ -244,6 +245,7 @@ public class TheBHXH extends Composite {
 		txt1.setText("TE");
 		
 		txt2 = new Text(this, SWT.BORDER);
+		txt2.setToolTipText("Bấm Ctrl+Left, Ctrl+Right để qua lại, Tab để qua tới");
 		GridData gd_txt2 = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
 		gd_txt2.widthHint = 27;
 		txt2.setLayoutData(gd_txt2);
@@ -289,41 +291,57 @@ public class TheBHXH extends Composite {
 		txt7.setLayoutData(gd_lblLbtext);
 		txt7.setText("90");
 		
+		txt1.setToolTipText("Bấm Ctrl+Left, Ctrl+Right để qua lại, Tab để qua tới");
+		txt3.setToolTipText("Bấm Ctrl+Left, Ctrl+Right để qua lại, Tab để qua tới");
+		txt4.setToolTipText("Bấm Ctrl+Left, Ctrl+Right để qua lại, Tab để qua tới");
+		txt5.setToolTipText("Bấm Ctrl+Left, Ctrl+Right để qua lại, Tab để qua tới");
+		txt6.setToolTipText("Bấm Ctrl+Left, Ctrl+Right để qua lại, Tab để qua tới");
 		txt1.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				//System.out.println("e.keyCode="+e.keyCode +" e.character="+e.character);
 				//if (e.keyCode==13 || (e.keyCode == 52 && e.character == '$')) {
-				if (e.keyCode==13 || (e.character == '$')) {
-					extractData(txt1.getText() + "$");
-					e.doit = false;
-					return;
+				if (e.keyCode==13 ) {
+					if(e.character == '$'){
+						extractData(txt1.getText() + "$");
+						e.doit = false;
+						return;
+					}
+					if ((txt1.getText().trim().length()<100)) {
+						extractDataThe(txt1.getText().trim());
+						e.doit = false;
+						return;
+					}
 				}
+				
 				if(Character.isDigit(e.character)==false){
-					if(e.keyCode==SWT.ARROW_RIGHT){
+					if(e.keyCode==SWT.ARROW_RIGHT &&  (((e.stateMask & SWT.CTRL) == SWT.CTRL))){
 						txt2.forceFocus();
 						e.doit = false;
 					}
-					else if(e.keyCode==SWT.ARROW_LEFT){
+					else if(e.keyCode==SWT.ARROW_LEFT &&  (((e.stateMask & SWT.CTRL) == SWT.CTRL))){
 						txt6.forceFocus();
 						e.doit = false;
 					}
 					else{
 					}
 				}
-				else
+				else{
 					controlKey(e);
+				}
 			}
 		});
 		txt1.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusLost(FocusEvent e) {
+				txt1.setText(txt1.getText().toUpperCase());
 				int idx = txt1.getSelectionIndex();
 				if(idx<0){
-					System.out.println("ERROR ");
+					//System.out.println("ERROR ");
+					//txt1.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
 				}
 				else{
-					
+					//txt1.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
 				}
 			}
 		});
@@ -331,14 +349,14 @@ public class TheBHXH extends Composite {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if(Character.isDigit(e.character)==false){
-					if(e.keyCode==SWT.ARROW_RIGHT){
+					if(e.keyCode==SWT.ARROW_RIGHT &&  (((e.stateMask & SWT.CTRL) == SWT.CTRL))){
 						txt3.forceFocus();
 					}
-					else if(e.keyCode==SWT.ARROW_LEFT){
+					else if(e.keyCode==SWT.ARROW_LEFT &&  (((e.stateMask & SWT.CTRL) == SWT.CTRL))){
 						txt1.forceFocus();
 					}
 					else{
-						e.doit = false;
+						//e.doit = false;
 					}
 					controlKey(e);
 				}
@@ -360,14 +378,14 @@ public class TheBHXH extends Composite {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if(Character.isDigit(e.character)==false){
-					if(e.keyCode==SWT.ARROW_RIGHT){
+					if(e.keyCode==SWT.ARROW_RIGHT &&  (((e.stateMask & SWT.CTRL) == SWT.CTRL))){
 						txt4.forceFocus();
 					}
-					else if(e.keyCode==SWT.ARROW_LEFT){
+					else if(e.keyCode==SWT.ARROW_LEFT &&  (((e.stateMask & SWT.CTRL) == SWT.CTRL))){
 						txt2.forceFocus();
 					}
 					else{
-						e.doit = false;
+						//e.doit = false;
 					}
 					controlKey(e);
 				}
@@ -389,10 +407,10 @@ public class TheBHXH extends Composite {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if(Character.isDigit(e.character)==false){
-					if(e.keyCode==SWT.ARROW_RIGHT){
+					if(e.keyCode==SWT.ARROW_RIGHT &&  (((e.stateMask & SWT.CTRL) == SWT.CTRL))){
 						txt5.forceFocus();
 					}
-					else if(e.keyCode==SWT.ARROW_LEFT){
+					else if(e.keyCode==SWT.ARROW_LEFT &&  (((e.stateMask & SWT.CTRL) == SWT.CTRL))){
 						txt3.forceFocus();
 					}
 					else{
@@ -419,14 +437,14 @@ public class TheBHXH extends Composite {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if(Character.isDigit(e.character)==false){
-					if(e.keyCode==SWT.ARROW_RIGHT){
+					if(e.keyCode==SWT.ARROW_RIGHT &&  (((e.stateMask & SWT.CTRL) == SWT.CTRL))){
 						txt6.forceFocus();
 					}
-					else if(e.keyCode==SWT.ARROW_LEFT){
+					else if(e.keyCode==SWT.ARROW_LEFT &&  (((e.stateMask & SWT.CTRL) == SWT.CTRL))){
 						txt4.forceFocus();
 					}
 					else{
-						e.doit = false;
+						//e.doit = false;
 					}
 					controlKey(e);
 
@@ -449,14 +467,14 @@ public class TheBHXH extends Composite {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if(Character.isDigit(e.character)==false){
-					if(e.keyCode==SWT.ARROW_RIGHT){
+					if(e.keyCode==SWT.ARROW_RIGHT &&  (((e.stateMask & SWT.CTRL) == SWT.CTRL))){
 						txt1.forceFocus();
 					}
-					else if(e.keyCode==SWT.ARROW_LEFT){
+					else if(e.keyCode==SWT.ARROW_LEFT &&  (((e.stateMask & SWT.CTRL) == SWT.CTRL))){
 						txt5.forceFocus();
 					}
 					else{
-						e.doit = false;
+						//e.doit = false;
 					}
 				}
 				else{
@@ -476,14 +494,24 @@ public class TheBHXH extends Composite {
 		txt2.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent e) {
-				txt2.selectAll();
+				//txt2.selectAll();
 				updateValue();
+			}
+			@Override
+			public void focusLost(FocusEvent e) {
+				if(txt2.getText().trim().length()!=1){
+					txt2.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
+				}
+				else{
+					txt2.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
+					updateValue();
+				}
 			}
 		});
 		txt3.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent e) {
-				txt3.selectAll();
+				//txt3.selectAll();
 				updateValue();
 			}
 			@Override
@@ -501,7 +529,7 @@ public class TheBHXH extends Composite {
 		txt4.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent e) {
-				txt4.selectAll();
+				//txt4.selectAll();
 				updateValue();
 			}
 			@Override
@@ -519,7 +547,7 @@ public class TheBHXH extends Composite {
 		txt5.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent e) {
-				txt5.selectAll();
+				//txt5.selectAll();
 				updateValue();
 			}
 			@Override
@@ -536,7 +564,7 @@ public class TheBHXH extends Composite {
 		txt6.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent e) {
-				txt6.selectAll();
+				//txt6.selectAll();
 				updateValue();
 			}
 			@Override
@@ -552,6 +580,28 @@ public class TheBHXH extends Composite {
 		});
 
 	}
+	protected void extractDataThe(String hexData) {
+		hexData = hexData.replaceAll(" ", "");
+		System.out.println("--------------ExtractThe "+ hexData);
+		if (hexData.length() == 15) {
+			//String hexData = "GD1234567890123";
+			System.out.println(hexData.substring(0,2));
+			System.out.println(hexData.substring(2,3));
+			System.out.println(hexData.substring(3,5));
+			System.out.println(hexData.substring(5,7));
+			System.out.println(hexData.substring(7,10));
+			System.out.println(hexData.substring(10,15));
+			//
+			txt1.setText(hexData.substring(0,2));
+			txt2.setText(hexData.substring(2,3));
+			txt3.setText(hexData.substring(3,5));
+			txt4.setText(hexData.substring(5,7));
+			txt5.setText(hexData.substring(7,10));
+			txt6.setText(hexData.substring(10,15));
+			//
+		}
+	}
+
 	protected void controlKey(KeyEvent e) {
 		if (((e.stateMask & SWT.CTRL) == SWT.CTRL)) {
 			Event ev = new Event();

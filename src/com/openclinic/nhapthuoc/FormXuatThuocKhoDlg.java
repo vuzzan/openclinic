@@ -56,6 +56,7 @@ import org.sql2o.Connection;
 import swing2swt.layout.BorderLayout;
 
 import com.DbHelper;
+import com.model.dao.ActionLog;
 import com.model.dao.BenhNhan;
 import com.model.dao.CtNhapthuoc;
 import com.model.dao.KhamBenh;
@@ -67,7 +68,7 @@ import com.openclinic.Main;
 import com.openclinic.khambenh.CellModifierThuocVienPhi;
 import com.openclinic.khambenh.ContentProviderCtNhapthuoc;
 import com.openclinic.khambenh.ContentProviderThuocChitiet;
-import com.openclinic.khambenh.FormThuocChitietListDlg;
+import com.openclinic.khambenh.FormBanThuocDlg;
 import com.openclinic.khambenh.ReportDAO;
 import com.openclinic.khambenh.SumReportDAO;
 import com.openclinic.khambenh.TableLabelProviderCtNhapthuoc;
@@ -78,7 +79,7 @@ import org.eclipse.swt.widgets.Combo;
 
 public class FormXuatThuocKhoDlg extends Dialog {
 
-	static Logger logger = LogManager.getLogger(FormThuocChitietListDlg.class
+	static Logger logger = LogManager.getLogger(FormBanThuocDlg.class
 			.getName());
 	protected Object result;
 	protected Shell shell;
@@ -100,7 +101,7 @@ public class FormXuatThuocKhoDlg extends Dialog {
 	private List<CtNhapthuoc> listDataCtNhapthuoc;
 	private Hashtable<Integer, CtNhapthuoc> hashDataCtNhapthuoc = new Hashtable<Integer, CtNhapthuoc>();
 	private CtNhapthuoc objCtNhapthuoc;
-	private int TONG_TIEN;
+	private double TONG_TIEN;
 	private Combo cbToKho;
 	private Combo cbFromKho;
 	public Khohang objKhoHangFrom;
@@ -155,7 +156,7 @@ public class FormXuatThuocKhoDlg extends Dialog {
 		shell = new Shell(getParent(), SWT.SHELL_TRIM | SWT.BORDER
 				| SWT.PRIMARY_MODAL);
 		shell.setImage(SWTResourceManager.getImage(
-				FormThuocChitietListDlg.class, "/png/list-2x.png"));
+				FormBanThuocDlg.class, "/png/list-2x.png"));
 		shell.setSize(1289, 498);
 		shell.setText("Xuat thuoc qua kho");
 		shell.setLayout(new BorderLayout(0, 0));
@@ -482,7 +483,7 @@ public class FormXuatThuocKhoDlg extends Dialog {
 		btnSavePhieu.setToolTipText("Lưu phiếu, bấm F2");
 		btnSavePhieu.setText("Lưu Phiếu (F2)");
 		btnSavePhieu.setImage(SWTResourceManager.getImage(
-				FormThuocChitietListDlg.class, "/png/check-3x.png"));
+				FormBanThuocDlg.class, "/png/check-3x.png"));
 		btnSavePhieu.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
 		btnSavePhieu.addKeyListener(new KeyAdapter() {
 			@Override
@@ -506,7 +507,7 @@ public class FormXuatThuocKhoDlg extends Dialog {
 			}
 		});		
 		btnInPhieu.setImage(SWTResourceManager.getImage(
-				FormThuocChitietListDlg.class, "/png/print-3x.png"));
+				FormBanThuocDlg.class, "/png/print-3x.png"));
 		btnInPhieu.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
 		//
 		//
@@ -765,11 +766,11 @@ public class FormXuatThuocKhoDlg extends Dialog {
 			return;
 		}
 		if(objNhapThuoc!=null){
-			TONG_TIEN = 0;
-			int TONG_TIEN_VAT = 0;
+			TONG_TIEN = 0.0;
+			double TONG_TIEN_VAT = (float)0.0;
 			for (CtNhapthuoc obj : listDataCtNhapThuocChuyenKho) {
 				TONG_TIEN += obj.THANHTIEN;
-				TONG_TIEN_VAT += (int)((float)obj.THANHTIEN * (float)(((float)100+(float)obj.VAT)/(float)100));
+				TONG_TIEN_VAT += (obj.THANHTIEN * (((double)100+(double)obj.VAT)/(double)100));
 			}			
 			//
 			objNhapThuoc.FROM_KHOID = objKhoHangFrom.KHO_ID;
@@ -819,6 +820,13 @@ public class FormXuatThuocKhoDlg extends Dialog {
 								+ objCtNhapthuoc.CTID_FROM);
 						//
 						objCtNhapthuoc.update();
+						ActionLog log = new ActionLog();
+						log.u_id = DbHelper.getCurrentSessionUserId();
+						log.dbtable = "ct_nhapthuoc";
+						log.fieldid = objCtNhapthuoc.CT_ID;
+						log.actionid = 2;
+						log.u_action = "Chuyển kho SL_TONKHO="+(objCtNhapthuoc.SL_TONKHO+obj.SOLUONG)+" to "+objCtNhapthuoc.SL_TONKHO;
+						log.insert();
 						//
 						logger.info("==================END UPDATE KHO THUOC === ");
 						//

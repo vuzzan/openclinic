@@ -28,6 +28,7 @@ public class ReportDAO {
 	public String tuNgay;
 	public String denNgay;
 	
+	int totalDate = 1;
 	
 	public BenhNhan getBN(){
 		return bn;

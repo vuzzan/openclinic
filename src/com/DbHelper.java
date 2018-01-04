@@ -60,6 +60,7 @@ public class DbHelper {
 	public static List<Khohang> listDataKhohang = null;
 	//
 	public static Hashtable<String, MstLieudung> hashDataMstLieuDung = new Hashtable<>();
+	public static Hashtable<Integer, MstLieudung> hashDataMstLieuDungbyID = new Hashtable<>();
 	public static List<MstLieudung> listDataMstLieuDung = null;
 	//
 	public static Hashtable<String, String> hashLoaiDichVu = new Hashtable<String, String>();

@@ -35,7 +35,7 @@ public class TableLabelProviderThuocChitiet extends LabelProvider
 				return "" + obj.THANH_TIEN;
 			} else if (columnIndex == 8) {
 				if(obj.THANHTOAN==1){
-					return "TToan";
+					return "T.Toán";
 				}
 				return ""+(obj.STS==null?"1":Utils.getTinhTrangThuoc(obj.STS))+obj.STS;
 				//return "" + obj.STS;

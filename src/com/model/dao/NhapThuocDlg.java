@@ -359,10 +359,10 @@ public class NhapThuocDlg extends Dialog {
             objNhapThuoc.SO_HOA_DON = txtSO_HOA_DON.getText();
             // String     = false
             objNhapThuoc.KH_HOA_DON = txtKH_HOA_DON.getText();
-            // Integer    = true
-            objNhapThuoc.TONGCONG = Utils.getInt( txtTONGCONG.getText() );
-            // Integer    = true
-            objNhapThuoc.TONGCONG_VAT = Utils.getInt( txtTONGCONG_VAT.getText() );
+            // Double     = false
+            // objNhapThuoc.TONGCONG = txtTONGCONG.getText();
+            // Double     = false
+            // objNhapThuoc.TONGCONG_VAT = txtTONGCONG_VAT.getText();
             // Integer    = true
             objNhapThuoc.VAT = Utils.getInt( txtVAT.getText() );
             // Integer    = true

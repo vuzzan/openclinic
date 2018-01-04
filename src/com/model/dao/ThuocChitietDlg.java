@@ -59,6 +59,7 @@ public class ThuocChitietDlg extends Dialog {
     private Text txtNT_ID;
     private Text txtTT_BHTT;
     private Text txtTT_BNTT;
+    private Text txtKHO_ID;
     private Text txtKHO_NAME;
     private Text txtCUR_DATE;
     private Text txtTYP;
@@ -561,6 +562,21 @@ public class ThuocChitietDlg extends Dialog {
 				keyPressThuocChitietDlg(e);
 			}
 		});
+		Label lbltxtKHO_ID = new Label(shell, SWT.NONE);
+        lbltxtKHO_ID.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		lbltxtKHO_ID.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		lbltxtKHO_ID.setText("KHO_ID :");
+		
+		txtKHO_ID = new Text(shell, SWT.BORDER);
+        txtKHO_ID.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
+		txtKHO_ID.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtKHO_ID.setText("KHO_ID");
+        txtKHO_ID.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPressThuocChitietDlg(e);
+			}
+		});
 		Label lbltxtKHO_NAME = new Label(shell, SWT.NONE);
         lbltxtKHO_NAME.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
 		lbltxtKHO_NAME.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
@@ -719,10 +735,10 @@ public class ThuocChitietDlg extends Dialog {
             objThuocChitiet.PHAM_VI = Utils.getInt( txtPHAM_VI.getText() );
             // Integer    = true
             objThuocChitiet.SO_LUONG = Utils.getInt( txtSO_LUONG.getText() );
-            // Integer    = true
-            objThuocChitiet.DON_GIA = Utils.getInt( txtDON_GIA.getText() );
-            // Integer    = true
-            objThuocChitiet.THANH_TIEN = Utils.getInt( txtTHANH_TIEN.getText() );
+            // Double     = false
+            // objThuocChitiet.DON_GIA = txtDON_GIA.getText();
+            // Double     = false
+            // objThuocChitiet.THANH_TIEN = txtTHANH_TIEN.getText();
             // String     = false
             objThuocChitiet.MA_KHOA = txtMA_KHOA.getText();
             // String     = false
@@ -736,19 +752,21 @@ public class ThuocChitietDlg extends Dialog {
             // Integer    = true
             objThuocChitiet.CT_ID = Utils.getInt( txtCT_ID.getText() );
             // Integer    = true
-            objThuocChitiet.TYLE_TT = Utils.getInt( txtMUC_HUONG.getText() );
-            // Integer    = true
-            objThuocChitiet.T_NGUON_KHAC = Utils.getInt( txtT_NGUON_KHAC.getText() );
-            // Integer    = true
-            objThuocChitiet.T_BNCCT = Utils.getInt( txtT_BNCCT.getText() );
-            // Integer    = true
-            objThuocChitiet.T_NGOAIDS = Utils.getInt( txtT_NGOAIDS.getText() );
+            objThuocChitiet.MUC_HUONG = Utils.getInt( txtMUC_HUONG.getText() );
+            // Double     = false
+            // objThuocChitiet.T_NGUON_KHAC = txtT_NGUON_KHAC.getText();
+            // Double     = false
+            // objThuocChitiet.T_BNCCT = txtT_BNCCT.getText();
+            // Double     = false
+            // objThuocChitiet.T_NGOAIDS = txtT_NGOAIDS.getText();
             // Integer    = true
             objThuocChitiet.NT_ID = Utils.getInt( txtNT_ID.getText() );
+            // Double     = false
+            // objThuocChitiet.TT_BHTT = txtTT_BHTT.getText();
+            // Double     = false
+            // objThuocChitiet.TT_BNTT = txtTT_BNTT.getText();
             // Integer    = true
-            objThuocChitiet.TT_BHTT = Utils.getInt( txtTT_BHTT.getText() );
-            // Integer    = true
-            objThuocChitiet.TT_BNTT = Utils.getInt( txtTT_BNTT.getText() );
+            objThuocChitiet.KHO_ID = Utils.getInt( txtKHO_ID.getText() );
             // String     = false
             objThuocChitiet.KHO_NAME = txtKHO_NAME.getText();
             // Date       = false
@@ -873,18 +891,18 @@ public class ThuocChitietDlg extends Dialog {
                 txtMA_PTTT.setText("");
             else
                 txtMA_PTTT.setText(""+objThuocChitiet.MA_PTTT.toString());
-            if(objThuocChitiet.MUC_HUONG==null)
+            if(objThuocChitiet.TYLE_TT==null)
                 txtTYLE_TT.setText("");
             else
-                txtTYLE_TT.setText(""+objThuocChitiet.MUC_HUONG.toString());
+                txtTYLE_TT.setText(""+objThuocChitiet.TYLE_TT.toString());
             if(objThuocChitiet.CT_ID==null)
                 txtCT_ID.setText("");
             else
                 txtCT_ID.setText(""+objThuocChitiet.CT_ID.toString());
-            if(objThuocChitiet.TYLE_TT==null)
+            if(objThuocChitiet.MUC_HUONG==null)
                 txtMUC_HUONG.setText("");
             else
-                txtMUC_HUONG.setText(""+objThuocChitiet.TYLE_TT.toString());
+                txtMUC_HUONG.setText(""+objThuocChitiet.MUC_HUONG.toString());
             if(objThuocChitiet.T_NGUON_KHAC==null)
                 txtT_NGUON_KHAC.setText("");
             else
@@ -909,6 +927,10 @@ public class ThuocChitietDlg extends Dialog {
                 txtTT_BNTT.setText("");
             else
                 txtTT_BNTT.setText(""+objThuocChitiet.TT_BNTT.toString());
+            if(objThuocChitiet.KHO_ID==null)
+                txtKHO_ID.setText("");
+            else
+                txtKHO_ID.setText(""+objThuocChitiet.KHO_ID.toString());
             if(objThuocChitiet.KHO_NAME==null)
                 txtKHO_NAME.setText("");
             else

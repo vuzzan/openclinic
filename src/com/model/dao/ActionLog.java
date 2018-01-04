@@ -276,7 +276,7 @@ this.fieldid = 0;                         // data type = Integer
 
             logger.info("Insert [action_log] BEGIN: "+ this.toString());
 
-            String sql = "insert into action_log (u_id, u_time, u_action, dbtable, actionid, fieldid STS) values(:u_id, :u_time, :u_action, :dbtable, :actionid, :fieldid 0)";
+            String sql = "insert into action_log (u_id, u_time, u_action, dbtable, actionid, fieldid) values(:u_id, :u_time, :u_action, :dbtable, :actionid, :fieldid)";
                             			int createdId = connection
                             					.createQuery(
 							sql,
@@ -294,17 +294,6 @@ this.fieldid = 0;                         // data type = Integer
             logger.info("Add OK [action_log] debug: "+toString());
             // Set KEYID log_id = newID
                             log_id = createdId;
-                            			// Save log
-            connection
-					.createQuery(
-							"insert into action_log(u_id,u_action,dbtable,actionid,fieldid) values(:u_id,:u_action,:dbtable,:actionid,:fieldid)",
-							true)
-					.addParameter("u_id", DbHelper.getCurrentSessionUserId())
-					.addParameter("u_action", "New action_log. ID="+log_id)
-                    .addParameter("dbtable", "action_log")
-                    .addParameter("fieldid", log_id)
-					.addParameter("actionid", 1)
-					.executeUpdate();
             logger.info("Add [action_log] OK: NewID="+createdId);
             logger.info("Add [action_log] OK: Data="+this.toString());
 		} catch (Exception t) {
@@ -349,16 +338,6 @@ this.fieldid = 0;                         // data type = Integer
 					.executeUpdate();
             logger.info("Update [action_log] OK: ID="+log_id);
             logger.info("End   Update [action_log]: "+toString());
-            connection
-					.createQuery(
-							"insert into action_log(u_id,u_action,dbtable,actionid,fieldid) values(:u_id,:u_action,:dbtable,:actionid,:fieldid)",
-							true)
-					.addParameter("u_id", DbHelper.getCurrentSessionUserId())
-					.addParameter("u_action", "Update action_log. ID="+log_id)
-                    .addParameter("dbtable", "action_log")
-                    .addParameter("fieldid", log_id)
-					.addParameter("actionid", 2)
-					.executeUpdate();
 		} catch (Exception t) {
 			logger.error("Update [action_log] Error: ID=["+log_id +"]."+"\nException=\n"+ t);
 			throw new RuntimeException("Update [action_log]. ERROR: "+t.getMessage(), t);
@@ -390,16 +369,6 @@ this.fieldid = 0;                         // data type = Integer
 					.addParameter("log_id", this.log_id)
 					.executeUpdate();
 			logger.error("Delete [action_log] OK: ID=["+log_id +"].");
-            connection
-					.createQuery(
-							"insert into action_log(u_id,u_action,dbtable,actionid,fieldid) values(:u_id,:u_action,:dbtable,:actionid,:fieldid)",
-							true)
-					.addParameter("u_id", DbHelper.getCurrentSessionUserId())
-					.addParameter("u_action", "Update action_log. ID="+log_id)
-                    .addParameter("dbtable", "action_log")
-                    .addParameter("fieldid", log_id)
-					.addParameter("actionid", 3)
-					.executeUpdate();
 		} catch (Exception t) {
 			logger.error("Delete [action_log] Error: ID=["+log_id +"]."+"\nException=\n"+ t);
 			throw new RuntimeException("Delete [action_log]. ID=["+log_id + " ERROR: "+t.getMessage(), t);

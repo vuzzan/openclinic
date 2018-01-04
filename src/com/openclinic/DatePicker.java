@@ -86,6 +86,7 @@ public class DatePicker extends org.eclipse.swt.widgets.Composite {
 		setSize(new Point(136, 28));
 		//
 		dayText = new Text(this, SWT.BORDER);
+		dayText.setToolTipText("Ngày <= 31");
 		dayText.setLayoutData(gridData1);
 		dayText.setText(""+day);
 		dayText.setTextLimit(2);
@@ -94,7 +95,7 @@ public class DatePicker extends org.eclipse.swt.widgets.Composite {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if(Character.isDigit(e.character)==false){
-					if(e.keyCode==SWT.ARROW_RIGHT){
+					if(e.keyCode==SWT.ARROW_RIGHT ){
 						monthText.forceFocus();
 					}
 					else if(e.keyCode==SWT.ARROW_UP){
@@ -114,7 +115,7 @@ public class DatePicker extends org.eclipse.swt.widgets.Composite {
 						e.doit = false;
 					}
 					else{
-						e.doit = false;
+						//e.doit = false;
 					}
 				}
 				controlKey(e);
@@ -147,6 +148,7 @@ public class DatePicker extends org.eclipse.swt.widgets.Composite {
 		});
 		//
 		monthText = new Text(this, SWT.BORDER);
+		monthText.setToolTipText("Tháng, <=12");
 		monthText.setLayoutData(gridData);
 		monthText.setText(""+month);
 		monthText.setTextLimit(2);
@@ -178,7 +180,7 @@ public class DatePicker extends org.eclipse.swt.widgets.Composite {
 						e.doit = false;
 					}
 					else{
-						e.doit = false;
+						//e.doit = false;
 					}
 				}
 				controlKey(e);
@@ -208,6 +210,7 @@ public class DatePicker extends org.eclipse.swt.widgets.Composite {
 		});
 		
 		yearText = new Text(this, SWT.BORDER);
+		yearText.setToolTipText("Bấm lên xuống để chỉnh năm, bấm số <100 tức là tuổi, gõ 35t là trẻ con 35 tháng tuổi");
 		yearText.setLayoutData(gridData100);
 		yearText.setText(""+year);
 		yearText.setTextLimit(4);
@@ -293,7 +296,7 @@ public class DatePicker extends org.eclipse.swt.widgets.Composite {
 						yearText.selectAll();
 					}
 					else{
-						e.doit = false;
+						//e.doit = false;
 					}
 				}
 				else{

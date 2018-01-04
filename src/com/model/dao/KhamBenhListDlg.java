@@ -291,35 +291,43 @@ public class KhamBenhListDlg extends Dialog {
 		tbTableColumnKhamBenhMUC_HUONG.setWidth(100);
 		tbTableColumnKhamBenhMUC_HUONG.setText("MUC_HUONG");
 
-		TableColumn tbTableColumnKhamBenhT_THUOC = new TableColumn(tableKhamBenh, SWT.RIGHT);
+
+		TableColumn tbTableColumnKhamBenhT_THUOC = new TableColumn(tableKhamBenh, SWT.NONE);
 		tbTableColumnKhamBenhT_THUOC.setWidth(100);
 		tbTableColumnKhamBenhT_THUOC.setText("T_THUOC");
 
-		TableColumn tbTableColumnKhamBenhT_VTYT = new TableColumn(tableKhamBenh, SWT.RIGHT);
+
+		TableColumn tbTableColumnKhamBenhT_VTYT = new TableColumn(tableKhamBenh, SWT.NONE);
 		tbTableColumnKhamBenhT_VTYT.setWidth(100);
 		tbTableColumnKhamBenhT_VTYT.setText("T_VTYT");
 
-		TableColumn tbTableColumnKhamBenhT_TONGCHI = new TableColumn(tableKhamBenh, SWT.RIGHT);
+
+		TableColumn tbTableColumnKhamBenhT_TONGCHI = new TableColumn(tableKhamBenh, SWT.NONE);
 		tbTableColumnKhamBenhT_TONGCHI.setWidth(100);
 		tbTableColumnKhamBenhT_TONGCHI.setText("T_TONGCHI");
 
-		TableColumn tbTableColumnKhamBenhT_BNTT = new TableColumn(tableKhamBenh, SWT.RIGHT);
+
+		TableColumn tbTableColumnKhamBenhT_BNTT = new TableColumn(tableKhamBenh, SWT.NONE);
 		tbTableColumnKhamBenhT_BNTT.setWidth(100);
 		tbTableColumnKhamBenhT_BNTT.setText("T_BNTT");
 
-		TableColumn tbTableColumnKhamBenhT_BNCCT = new TableColumn(tableKhamBenh, SWT.RIGHT);
+
+		TableColumn tbTableColumnKhamBenhT_BNCCT = new TableColumn(tableKhamBenh, SWT.NONE);
 		tbTableColumnKhamBenhT_BNCCT.setWidth(100);
 		tbTableColumnKhamBenhT_BNCCT.setText("T_BNCCT");
 
-		TableColumn tbTableColumnKhamBenhT_BHTT = new TableColumn(tableKhamBenh, SWT.RIGHT);
+
+		TableColumn tbTableColumnKhamBenhT_BHTT = new TableColumn(tableKhamBenh, SWT.NONE);
 		tbTableColumnKhamBenhT_BHTT.setWidth(100);
 		tbTableColumnKhamBenhT_BHTT.setText("T_BHTT");
 
-		TableColumn tbTableColumnKhamBenhT_NGUONKHAC = new TableColumn(tableKhamBenh, SWT.RIGHT);
+
+		TableColumn tbTableColumnKhamBenhT_NGUONKHAC = new TableColumn(tableKhamBenh, SWT.NONE);
 		tbTableColumnKhamBenhT_NGUONKHAC.setWidth(100);
 		tbTableColumnKhamBenhT_NGUONKHAC.setText("T_NGUONKHAC");
 
-		TableColumn tbTableColumnKhamBenhT_NGOAIDS = new TableColumn(tableKhamBenh, SWT.RIGHT);
+
+		TableColumn tbTableColumnKhamBenhT_NGOAIDS = new TableColumn(tableKhamBenh, SWT.NONE);
 		tbTableColumnKhamBenhT_NGOAIDS.setWidth(100);
 		tbTableColumnKhamBenhT_NGOAIDS.setText("T_NGOAIDS");
 

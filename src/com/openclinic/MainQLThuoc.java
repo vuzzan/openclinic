@@ -51,13 +51,15 @@ import com.model.dao.KhamBenhDlg;
 import com.model.dao.Khohang;
 import com.model.dao.NhapThuoc;
 import com.model.dao.NhapThuocDlg;
-import com.openclinic.khambenh.FormThuocChitietListDlg;
+import com.openclinic.khambenh.FormBanThuocDlg;
 import com.openclinic.nhapthuoc.FormNhapThuocDlg;
 import com.openclinic.nhapthuoc.FormXuatThuocKhoDlg;
 import com.openclinic.utils.Utils;
 
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
 
 
 public class MainQLThuoc extends Dialog{
@@ -75,7 +77,7 @@ public class MainQLThuoc extends Dialog{
 					return ""+obj.STT;
 				}
 				else if(columnIndex==1){
-					return ""+obj.MA_LK;
+					return ""+obj.MA_LK+"|"+obj.BN_ID;
 				}
 				else if(columnIndex==2){
 					return ""+obj.TEN_BENH_NHAN;
@@ -103,10 +105,10 @@ public class MainQLThuoc extends Dialog{
 		}
 		@Override
 		public Color getBackground(Object element) {
-			if(element instanceof KhamBenh){
-				KhamBenh obj = (KhamBenh)element;
-				return Utils.getTinhTrangPhieuKhamColor(obj.STS);
-			}
+//			if(element instanceof KhamBenh){
+//				KhamBenh obj = (KhamBenh)element;
+//				return Utils.getTinhTrangPhieuKhamColor(obj.STS);
+//			}
 			return null;
 		}
 	}
@@ -264,6 +266,12 @@ public class MainQLThuoc extends Dialog{
 		compositeHeaderKhamBenh.setLayout(new GridLayout(2, false));
 
 		textSearchKhamBenh = new Text(compositeHeaderKhamBenh, SWT.BORDER);
+		textSearchKhamBenh.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusGained(FocusEvent e) {
+				textSearchKhamBenh.selectAll();
+			}
+		});
 		GridData gd_textSearchKhamBenh = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
 		gd_textSearchKhamBenh.widthHint = 328;
 		textSearchKhamBenh.setLayoutData(gd_textSearchKhamBenh);
@@ -841,8 +849,16 @@ public class MainQLThuoc extends Dialog{
 	protected void reloadTableKhamBenh() {
 		// Do search
 		String sql = "select * from kham_benh WHERE STS<>"+DbHelper.DELETE_STATUS+" and T_THUOC>=0 and DATE(KB_DATE) = CURDATE()";//="+Utils.PHIEUKHAM_KHAMXONG_CHO_LAYTHUOC;
-		if(textSearchKhamBenh.getText().length()>0){
-	        sql += " and TEN_BENH_NHAN like '%"+textSearchKhamBenh.getText().trim()+"%'";
+		int mabn=Utils.getInt(textSearchKhamBenh.getText());
+		if(mabn>0){
+	        sql += " and (BN_ID="+mabn+" or MA_LK="+mabn+") ";
+		}
+		else{
+			if(textSearchKhamBenh.getText().length()>0){
+		        //sql += " and TEN_BENH_NHAN like '%"+textSearchKhamBenh.getText().trim()+"%'";
+				sql += " and LOWER(TEN_BENH_NHAN) like '%"+textSearchKhamBenh.getText().trim().toLowerCase()+"%' ";
+
+			}
 		}
         sql += " order by STS ASC, MA_LK";
 		try  {
@@ -875,11 +891,13 @@ public class MainQLThuoc extends Dialog{
 		KhamBenh obj = (KhamBenh)item.getData();
         logger.info(obj.toString());
         //
-		FormThuocChitietListDlg dlg = new FormThuocChitietListDlg(shell, 0);
+		FormBanThuocDlg dlg = new FormBanThuocDlg(shell, 0);
 		dlg.setKhamBenhDlgData(obj);
 		dlg.open();
         //
 		reloadTableKhamBenh();
+		//
+		textSearchKhamBenh.forceFocus();
 	}
     
     protected void deleteTableKhamBenh() {
@@ -909,7 +927,7 @@ public class MainQLThuoc extends Dialog{
 		obj.TEN_BENH_NHAN = "Khách Lẻ";
 		obj.DIA_CHI = "TT Nam Phước";
         //
-		FormThuocChitietListDlg dlg = new FormThuocChitietListDlg(shell, 0);
+		FormBanThuocDlg dlg = new FormBanThuocDlg(shell, 0);
 		dlg.setKhamBenhDlgData(obj);
 		dlg.open();
 		//
@@ -917,6 +935,8 @@ public class MainQLThuoc extends Dialog{
         //
 		reloadTableKhamBenh();
 		//
+		textSearchKhamBenh.forceFocus();
+		
 	}
 	
 	private void loadDataCtNhapthuoc() {

@@ -38,20 +38,26 @@ public class TableLabelProviderBenhNhan extends LabelProvider implements ITableL
 			}
 			else if(columnIndex==5){
 				return ""+ java.text.NumberFormat.getInstance(java.util.Locale.ITALY)
-						.format(obj.getInteger("T_BNTT").intValue())   +"|"+ 
-						java.text.NumberFormat.getInstance(java.util.Locale.ITALY)
-						.format(obj.getInteger("T_TONGCHI").intValue()) ;
+						.format(obj.getInteger("T_BNTT").intValue()) ;
 			}
 			else if(columnIndex==6){
+				return ""+ java.text.NumberFormat.getInstance(java.util.Locale.ITALY)
+						.format(obj.getInteger("T_TONGCHI").intValue()) ;
+			}
+			else if(columnIndex==7){
+				return ""+ java.text.NumberFormat.getInstance(java.util.Locale.ITALY)
+						.format(obj.getInteger("T_NGOAIDS").intValue()) ;
+			}
+			else if(columnIndex==8){
 				if( obj.getString("NGAY_TTOAN").toString().length()> 10 ){
 					return "Xong";
 				}
 				return "";
 			}
-			else if(columnIndex==7){
+			else if(columnIndex==9){
 				return obj.getString("NV_NAME").toString();
 			}
-			else if(columnIndex==8){
+			else if(columnIndex==10){
 				String MAKHOA =obj.getString("MA_KHOA").toString();
 				KhoaPhong objKhoa = DbHelper.hashKhoaPhongMAKHOA.get(MAKHOA);
 				if(objKhoa==null){
@@ -61,7 +67,7 @@ public class TableLabelProviderBenhNhan extends LabelProvider implements ITableL
 					return objKhoa.KP_NAME;
 				}
 			}
-			else if(columnIndex==9){
+			else if(columnIndex==11){
 				String MALK ="["+obj.getString("MA_LK").toString()+"] "+"("+obj.getString("BN_ID").toString()+")";
 				//String tenKhoa = LoginDlg.hashKhoaPhong.get(MAKHOA);
 				return MALK;

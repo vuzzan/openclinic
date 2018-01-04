@@ -283,11 +283,13 @@ public class ThuocChitietListDlg extends Dialog {
 		tbTableColumnThuocChitietSO_LUONG.setWidth(100);
 		tbTableColumnThuocChitietSO_LUONG.setText("SO_LUONG");
 
-		TableColumn tbTableColumnThuocChitietDON_GIA = new TableColumn(tableThuocChitiet, SWT.RIGHT);
+
+		TableColumn tbTableColumnThuocChitietDON_GIA = new TableColumn(tableThuocChitiet, SWT.NONE);
 		tbTableColumnThuocChitietDON_GIA.setWidth(100);
 		tbTableColumnThuocChitietDON_GIA.setText("DON_GIA");
 
-		TableColumn tbTableColumnThuocChitietTHANH_TIEN = new TableColumn(tableThuocChitiet, SWT.RIGHT);
+
+		TableColumn tbTableColumnThuocChitietTHANH_TIEN = new TableColumn(tableThuocChitiet, SWT.NONE);
 		tbTableColumnThuocChitietTHANH_TIEN.setWidth(100);
 		tbTableColumnThuocChitietTHANH_TIEN.setText("THANH_TIEN");
 
@@ -320,15 +322,18 @@ public class ThuocChitietListDlg extends Dialog {
 		tbTableColumnThuocChitietMUC_HUONG.setWidth(100);
 		tbTableColumnThuocChitietMUC_HUONG.setText("MUC_HUONG");
 
-		TableColumn tbTableColumnThuocChitietT_NGUON_KHAC = new TableColumn(tableThuocChitiet, SWT.RIGHT);
+
+		TableColumn tbTableColumnThuocChitietT_NGUON_KHAC = new TableColumn(tableThuocChitiet, SWT.NONE);
 		tbTableColumnThuocChitietT_NGUON_KHAC.setWidth(100);
 		tbTableColumnThuocChitietT_NGUON_KHAC.setText("T_NGUON_KHAC");
 
-		TableColumn tbTableColumnThuocChitietT_BNCCT = new TableColumn(tableThuocChitiet, SWT.RIGHT);
+
+		TableColumn tbTableColumnThuocChitietT_BNCCT = new TableColumn(tableThuocChitiet, SWT.NONE);
 		tbTableColumnThuocChitietT_BNCCT.setWidth(100);
 		tbTableColumnThuocChitietT_BNCCT.setText("T_BNCCT");
 
-		TableColumn tbTableColumnThuocChitietT_NGOAIDS = new TableColumn(tableThuocChitiet, SWT.RIGHT);
+
+		TableColumn tbTableColumnThuocChitietT_NGOAIDS = new TableColumn(tableThuocChitiet, SWT.NONE);
 		tbTableColumnThuocChitietT_NGOAIDS.setWidth(100);
 		tbTableColumnThuocChitietT_NGOAIDS.setText("T_NGOAIDS");
 
@@ -336,13 +341,19 @@ public class ThuocChitietListDlg extends Dialog {
 		tbTableColumnThuocChitietNT_ID.setWidth(100);
 		tbTableColumnThuocChitietNT_ID.setText("NT_ID");
 
-		TableColumn tbTableColumnThuocChitietTT_BHTT = new TableColumn(tableThuocChitiet, SWT.RIGHT);
+
+		TableColumn tbTableColumnThuocChitietTT_BHTT = new TableColumn(tableThuocChitiet, SWT.NONE);
 		tbTableColumnThuocChitietTT_BHTT.setWidth(100);
 		tbTableColumnThuocChitietTT_BHTT.setText("TT_BHTT");
 
-		TableColumn tbTableColumnThuocChitietTT_BNTT = new TableColumn(tableThuocChitiet, SWT.RIGHT);
+
+		TableColumn tbTableColumnThuocChitietTT_BNTT = new TableColumn(tableThuocChitiet, SWT.NONE);
 		tbTableColumnThuocChitietTT_BNTT.setWidth(100);
 		tbTableColumnThuocChitietTT_BNTT.setText("TT_BNTT");
+
+		TableColumn tbTableColumnThuocChitietKHO_ID = new TableColumn(tableThuocChitiet, SWT.RIGHT);
+		tbTableColumnThuocChitietKHO_ID.setWidth(100);
+		tbTableColumnThuocChitietKHO_ID.setText("KHO_ID");
 
 		TableColumn tbTableColumnThuocChitietKHO_NAME = new TableColumn(tableThuocChitiet, SWT.LEFT);
 		tbTableColumnThuocChitietKHO_NAME.setWidth(100);
@@ -478,6 +489,7 @@ public class ThuocChitietListDlg extends Dialog {
 			buff_thuoc_chitiet.append( "NT_ID" +delimiter);
 			buff_thuoc_chitiet.append( "TT_BHTT" +delimiter);
 			buff_thuoc_chitiet.append( "TT_BNTT" +delimiter);
+			buff_thuoc_chitiet.append( "KHO_ID" +delimiter);
 			buff_thuoc_chitiet.append( "KHO_NAME" +delimiter);
 			buff_thuoc_chitiet.append( "CUR_DATE" +delimiter);
 			buff_thuoc_chitiet.append( "TYP" +delimiter);
@@ -511,15 +523,16 @@ public class ThuocChitietListDlg extends Dialog {
 				buff_thuoc_chitiet.append( obj.MA_BAC_SI +delimiter);
 				buff_thuoc_chitiet.append( obj.MA_BENH +delimiter);
 				buff_thuoc_chitiet.append( obj.MA_PTTT +delimiter);
-				buff_thuoc_chitiet.append( obj.MUC_HUONG +delimiter);
-				buff_thuoc_chitiet.append( obj.CT_ID +delimiter);
 				buff_thuoc_chitiet.append( obj.TYLE_TT +delimiter);
+				buff_thuoc_chitiet.append( obj.CT_ID +delimiter);
+				buff_thuoc_chitiet.append( obj.MUC_HUONG +delimiter);
 				buff_thuoc_chitiet.append( obj.T_NGUON_KHAC +delimiter);
 				buff_thuoc_chitiet.append( obj.T_BNCCT +delimiter);
 				buff_thuoc_chitiet.append( obj.T_NGOAIDS +delimiter);
 				buff_thuoc_chitiet.append( obj.NT_ID +delimiter);
 				buff_thuoc_chitiet.append( obj.TT_BHTT +delimiter);
 				buff_thuoc_chitiet.append( obj.TT_BNTT +delimiter);
+				buff_thuoc_chitiet.append( obj.KHO_ID +delimiter);
 				buff_thuoc_chitiet.append( obj.KHO_NAME +delimiter);
 				buff_thuoc_chitiet.append( obj.CUR_DATE +delimiter);
 				buff_thuoc_chitiet.append( obj.TYP +delimiter);

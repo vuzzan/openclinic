@@ -204,7 +204,7 @@ public class FormCtNhapThuocDlg extends Dialog {
 		txtDONGIA.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusLost(FocusEvent e) {
-				if(Utils.getInt( txtDONGIA_BAN.getText() )==0 ){
+				if(Utils.getDouble( txtDONGIA_BAN.getText() )==0 ){
 					txtDONGIA_BAN.setText(txtDON_GIA.getText());
 					txtDONGIA_BAN.selectAll();
 					txtDONGIA_BAN.forceFocus();
@@ -838,7 +838,7 @@ public class FormCtNhapThuocDlg extends Dialog {
     	else{
     		txtSOLUONG.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
     	}
-    	if( Utils.getInt( txtDONGIA.getText() ) <= 0){
+    	if( Utils.getDouble( txtDONGIA.getText() ) <= 0){
     		txtDONGIA.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
     		txtDONGIA.forceFocus();
     		isError = true;
@@ -892,11 +892,11 @@ public class FormCtNhapThuocDlg extends Dialog {
             // Integer    = true
             objCtNhapthuoc.SL_TONKHO = objCtNhapthuoc.SOLUONG;
             // Integer    = true
-            objCtNhapthuoc.DONGIA = Utils.getInt( txtDONGIA.getText() );
+            objCtNhapthuoc.DONGIA = Utils.getDouble( txtDONGIA.getText() );
             //
             if(objCtNhapthuoc.TYP==2){
-            	objCtNhapthuoc.DONGIA_BAN = Utils.getInt( txtDONGIA_BAN.getText() );
-            	if(objCtNhapthuoc.DONGIA_BAN==0){
+            	objCtNhapthuoc.DONGIA_BAN = Utils.getDouble( txtDONGIA_BAN.getText() );
+            	if(objCtNhapthuoc.DONGIA_BAN==0.0){
             		objCtNhapthuoc.DONGIA_BAN = objCtNhapthuoc.DONGIA;
             	}
             }

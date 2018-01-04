@@ -304,15 +304,18 @@ public class CtNhapthuocListDlg extends Dialog {
 		tbTableColumnCtNhapthuocSL_DADUNG.setWidth(100);
 		tbTableColumnCtNhapthuocSL_DADUNG.setText("SL_DADUNG");
 
-		TableColumn tbTableColumnCtNhapthuocDONGIA = new TableColumn(tableCtNhapthuoc, SWT.RIGHT);
+
+		TableColumn tbTableColumnCtNhapthuocDONGIA = new TableColumn(tableCtNhapthuoc, SWT.NONE);
 		tbTableColumnCtNhapthuocDONGIA.setWidth(100);
 		tbTableColumnCtNhapthuocDONGIA.setText("DONGIA");
 
-		TableColumn tbTableColumnCtNhapthuocDONGIA_BAN = new TableColumn(tableCtNhapthuoc, SWT.RIGHT);
+
+		TableColumn tbTableColumnCtNhapthuocDONGIA_BAN = new TableColumn(tableCtNhapthuoc, SWT.NONE);
 		tbTableColumnCtNhapthuocDONGIA_BAN.setWidth(100);
 		tbTableColumnCtNhapthuocDONGIA_BAN.setText("DONGIA_BAN");
 
-		TableColumn tbTableColumnCtNhapthuocTHANHTIEN = new TableColumn(tableCtNhapthuoc, SWT.RIGHT);
+
+		TableColumn tbTableColumnCtNhapthuocTHANHTIEN = new TableColumn(tableCtNhapthuoc, SWT.NONE);
 		tbTableColumnCtNhapthuocTHANHTIEN.setWidth(100);
 		tbTableColumnCtNhapthuocTHANHTIEN.setText("THANHTIEN");
 

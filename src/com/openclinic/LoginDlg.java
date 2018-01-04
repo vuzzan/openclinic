@@ -1,6 +1,8 @@
 package com.openclinic;
 
 import java.io.File;
+import java.io.RandomAccessFile;
+import java.nio.channels.FileLock;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -9,8 +11,11 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
@@ -26,6 +31,7 @@ import org.sql2o.Sql2oException;
 
 import swing2swt.layout.BorderLayout;
 
+import com.CheckTheObj;
 import com.DbHelper;
 import com.model.cache.MaCskcbCache;
 import com.model.dao.Dichvu;
@@ -37,8 +43,13 @@ import com.model.dao.MstLieudung;
 import com.model.dao.Phanquyen;
 import com.model.dao.Users;
 import com.model.dao.Vendor;
+import com.openclinic.khambenh.CheckTheDlg;
 import com.openclinic.khambenh.FormKhamBenhDlg;
 import com.openclinic.utils.Utils;
+
+import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 
 public class LoginDlg {
 	static Logger logger = LogManager.getLogger(LoginDlg.class.getName());
@@ -54,7 +65,39 @@ public class LoginDlg {
 	private static Display display;
 
 	private static String CHECKURL;
-	
+	private static Text textCode;
+	protected static Image imageCodeISN;
+
+	private static Canvas canvas;
+
+
+
+	private static boolean isFileshipAlreadyRunning() {
+	    // socket concept is shown at http://www.rbgrn.net/content/43-java-single-application-instance
+	    // but this one is really great
+	    try {
+	        final File file = new File("openclinic_lock.txt");
+	        final RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw");
+	        final FileLock fileLock = randomAccessFile.getChannel().tryLock();
+	        if (fileLock != null) {
+	            Runtime.getRuntime().addShutdownHook(new Thread() {
+	                public void run() {
+	                    try {
+	                        fileLock.release();
+	                        randomAccessFile.close();
+	                        file.delete();
+	                    } catch (Exception e) {
+	                        //log.error("Unable to remove lock file: " + lockFile, e);
+	                    }
+	                }
+	            });
+	            return true;
+	        }
+	    } catch (Exception e) {
+	       // log.error("Unable to create and/or lock file: " + lockFile, e);
+	    }
+	    return false;
+	}
 	static {
 		
 	}
@@ -68,8 +111,12 @@ public class LoginDlg {
 		
 		//
 		Display display = Display.getDefault();
+		if(!isFileshipAlreadyRunning()){
+	        MessageDialog.openError(display.getActiveShell(), "Có lỗi. Co loi", "Lạy mấy má, con đã chạy rồi :D -- ");
+	        //System.exit(1);
+	    } 
 		shellLogin = new Shell();
-		shellLogin.setSize(436, 246);
+		shellLogin.setSize(452, 257);
 		shellLogin.setText(Main.TITLE + ": Login");
 		shellLogin.setLayout(new BorderLayout(0, 0));
 		
@@ -130,10 +177,42 @@ public class LoginDlg {
 		button.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
 		button.setBounds(152, 80, 50, 19);
 		
+		canvas = new Canvas(composite_1, SWT.NONE);
+		canvas.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseDoubleClick(MouseEvent e) {
+				refreshCapcha();
+			}
+		});
+		canvas.setBounds(80, 105, 64, 40);
+		canvas.addPaintListener(new PaintListener() {
+			public void paintControl(PaintEvent e) {
+				if (imageCodeISN != null){
+					canvas.setBackgroundImage(imageCodeISN);
+				}
+			}
+		});
+		
+		textCode = new Text(composite_1, SWT.BORDER);
+		textCode.setTextLimit(4);
+		textCode.setFont(SWTResourceManager.getFont("Tahoma", 23, SWT.NORMAL));
+		textCode.setBounds(153, 105, 102, 41);
+		textCode.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				keyPress(e);
+			}
+		});
+		
+		Label lblCode = new Label(composite_1, SWT.NONE);
+		lblCode.setText("Code");
+		lblCode.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
+		lblCode.setBounds(24, 105, 50, 27);
+
 		Button btnCancel = new Button(composite_1, SWT.NONE);
 		btnCancel.setText("Bỏ qua ");
 		btnCancel.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
-		btnCancel.setBounds(48, 120, 121, 34);
+		btnCancel.setBounds(48, 151, 121, 34);
 		btnCancel.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -146,15 +225,32 @@ public class LoginDlg {
 		btnLogin.setText("Đăng nhập ");
 		btnLogin.setImage(SWTResourceManager.getImage(LoginDlg.class, "/png/account-login-3x.png"));
 		btnLogin.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
-		btnLogin.setBounds(184, 120, 171, 34);
+		btnLogin.setBounds(184, 151, 171, 34);
 		
-		TheBHXH theBHXH = new TheBHXH(composite_1, SWT.NONE);
-		theBHXH.setBounds(25, 190, 369, 36);
 		btnLogin.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				login();
 			}
 		});
+		
+		DatePicker datePicker = new DatePicker(composite_1, SWT.NONE);
+		datePicker.setText("1/1/2017");
+		datePicker.setBounds(48, 233, 136, 28);
+		
+		Button btnNewButton = new Button(composite_1, SWT.NONE);
+		btnNewButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				CheckTheDlg obj = new CheckTheDlg(shellLogin, 0);
+				obj.open();
+			}
+		});
+		btnNewButton.setBounds(204, 238, 68, 23);
+		btnNewButton.setText("New Button");
+		
+		TheBHXH theBHXH = new TheBHXH(composite_1, SWT.NONE);
+		theBHXH.setBounds(48, 191, 369, 36);
+		
 		
 		Monitor primary = display.getPrimaryMonitor();
 		Rectangle bounds = primary.getBounds();
@@ -173,6 +269,22 @@ public class LoginDlg {
 				display.sleep();
 			}
 		}
+	}
+	protected static void refreshCapcha() {
+		String fileName = CheckTheDlg.objBHYTThread2.getCapcha();
+		System.out.println("FILE NAME=" + fileName);
+		if (fileName != null && fileName.length() > 0) {
+			//
+			imageCodeISN = new Image(Display.getCurrent(), fileName);
+			canvas.redraw();
+			try {
+				File file = new File(fileName);
+				file.delete();
+			} catch (Exception ee) {
+				//
+			}
+			//
+		}		
 	}
 	protected static void rememberLogin(boolean isRemember) {
 		INIFile ini = new INIFile("openclinic.ini");
@@ -284,6 +396,7 @@ public class LoginDlg {
 		Utils.mstArrayTinhTrangPhieuKhamBenh.add(Utils.PHIEUKHAM_CO_KQ_CLS_QUAYLAI_BS, "Quay lại BS");
 		Utils.mstArrayTinhTrangPhieuKhamBenh.add(Utils.PHIEUKHAM_KHAMXONG_CHO_LAYTHUOC, "Chờ lấy thuốc");
 		Utils.mstArrayTinhTrangPhieuKhamBenh.add(Utils.PHIEUKHAM_KHAMXONG_RAVE, "Xong, về");
+		Utils.mstArrayTinhTrangPhieuKhamBenh.add(Utils.PHIEUKHAM_XOA_PHIEU_KHAM_0, "Xóa");
 		//
 		Utils.mstArrayTinhTrangCanLamSan.add(0, "Chờ gọi");
 		Utils.mstArrayTinhTrangCanLamSan.add(1, "Xóa");
@@ -313,14 +426,31 @@ public class LoginDlg {
 		DbHelper.startConnection();
 		loadCacheDB(DbHelper.getSql2o());
 		//
-		
+		if (CheckTheDlg.objBHYTThread2.httpclient == null) {
+			String fileName = CheckTheDlg.objBHYTThread2.getCapcha();
+			logger.info("CANVAS=" + fileName);
+			if (fileName != null && fileName.length() > 0) {
+				//
+				imageCodeISN = new Image(Display.getCurrent(), fileName);
+				canvas.redraw();
+				try {
+					File file = new File(fileName);
+					file.delete();
+				} catch (Exception ee) {
+					//
+				}
+				//
+			}
+		} 
 	}
+	
 	protected static void keyPress(KeyEvent e) {
 		if (e.keyCode == 13) {
 			login();
 		}
 		
 	}
+	
 	protected static void login() {
 		try {
 			Object result = doLogin();
@@ -336,6 +466,13 @@ public class LoginDlg {
 				for (Phanquyen objPhanquyen : listPhanquyen) {
 					DbHelper.hashDataPhanquyen.put(objPhanquyen.TABLE_NAME, objPhanquyen);
 				}
+				// Do login checking system
+				if( textCode.getText().trim().length()==4 ){
+					//
+					CheckTheDlg.objBHYTThread2.login2(Main.USER_GATE_ID, Main.USER_GATE_PASSWORD, textCode.getText().trim());
+					//
+				}
+				//
 //				shlLogin.setMinimized(true);
 //				//
 				display = shellLogin.getDisplay();
@@ -657,6 +794,7 @@ public class LoginDlg {
 		try{
 			Connection con = DbHelper.getSql2o();
 			logger.info("Start login");
+			//
 			String sql = "SELECT * FROM users where u_name=:u_name and u_pass=:u_pass";
 			List<Users> list = con.createQuery(sql)
 					.addParameter("u_name", txtId.getText())
@@ -668,7 +806,7 @@ public class LoginDlg {
 				DbHelper.setCurrentSessionUserId(list.get(0));
 				//
 				//loadCacheDB(con);
-				DbHelper.logDB("" + txtId.getText() + " login successful");
+				DbHelper.logDB("" + txtId.getText() + " login successful. " + Main.TITLE);
 				return list.get(0);
 				//
 			}
@@ -681,6 +819,31 @@ public class LoginDlg {
 			// MessageDialog.openError(shlLogin, "Có lỗi", e.getMessage());
 			// return null;
 			throw e;
+		}
+	}
+	
+	public static void checkVersion() {
+		if(Main.isCheckVersion==true){
+			long fileSize = DbHelper.objBHYTThread.getFileSize(CHECKURL);
+			System.out.println("fileSizeRemote ="+fileSize);
+			long fileSize2 = 0; 
+			try {
+	            File file = new File("openclinic.jar");
+	            fileSize2 = file.length();
+	            System.out.println("openclinic.jar="+fileSize2);
+	        } 
+			catch (Exception e) {
+				//e.printStackTrace();
+	        }
+			if(fileSize!=-1 && fileSize!=fileSize2){
+				//
+				logger.info("UPDATE NEW SOFTWARE " + fileSize +"@"+fileSize2);
+				MessageDialog.openInformation(shellLogin, "Có phiên bản mới", "Phiên bản "+Main.TITLE+" đã cũ!.\nCó phiên bản mới, phần mềm tự cập nhật...");
+				Program.launch("update.exe");
+				System.exit(1);
+				//
+			}
+			//
 		}
 	}
 	
@@ -730,11 +893,12 @@ public class LoginDlg {
 			MaCskcbCache.putMaCskcb(obj);
 		}
 		
-		sql = "SELECT * FROM mst_lieudung ORDER BY RANK DESC";
+		sql = "SELECT * FROM mst_lieudung ORDER BY LIEUDUNG_ID ASC";
 		logger.info("Get LIEU DUNG " + sql);
 		DbHelper.listDataMstLieuDung = con.createQuery(sql).executeAndFetch(MstLieudung.class);
 		for (MstLieudung obj : DbHelper.listDataMstLieuDung) {
 			DbHelper.hashDataMstLieuDung.put(obj.LIEUDUNG_NAME, obj);
+			DbHelper.hashDataMstLieuDungbyID.put(obj.LIEUDUNG_ID, obj);
 		}
 		
 		sql = "SELECT * FROM vendor ORDER BY V_NAME and STS=0";
@@ -814,7 +978,7 @@ public class LoginDlg {
 		DbHelper.hashcheckThe.put(3,"Hết hạn thẻ khi chưa ra viện");
 		DbHelper.hashcheckThe.put(4,"Thẻ có giá trị khi đang nằm viện");
 		DbHelper.hashcheckThe.put(401,"Thử lại lần nữa...");
-		DbHelper.hashcheckThe.put(5,"Khong thay thong tin the bhyt");
+		DbHelper.hashcheckThe.put(5,"KHÔNG THẤY THÔNG TIN THẺ BHYT..");
 		DbHelper.hashcheckThe.put(6,"Thẻ sai họ tên");
 		DbHelper.hashcheckThe.put(60,"Thẻ sai họ tên");
 		DbHelper.hashcheckThe.put(61,"Thẻ sai họ tên(đúng kí tự đầu)");
@@ -847,6 +1011,4 @@ public class LoginDlg {
 		// LOAD ALL MABENH
 		//
 	}
-	
-	
 }
