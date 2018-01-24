@@ -1,5 +1,6 @@
 package com;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.events.KeyAdapter;
@@ -126,8 +127,15 @@ public class ShowCheckTheDlg extends Dialog {
 		btnTheQuocPhong.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				isUpdate = 2;
-				shlKiemTraThe.close();
+				if( DbHelper.currentSessionUserId.U_NAME.equals("viet")==true ){
+					isUpdate = 2;
+					shlKiemTraThe.close();
+				}
+				else{
+					MessageDialog.openInformation(shlKiemTraThe, "Thông tin", "Đây là thẻ đặc biệt, hoặc sai, hoặc có vấn đề. Gọi bộ phận kể toán bảo hiểm để xử lý");
+					isUpdate = 0;
+					shlKiemTraThe.close();
+				}
 			}
 		});
 		btnTheCoLoiTuChoi = new Button(composite, SWT.NONE);
@@ -195,14 +203,16 @@ public class ShowCheckTheDlg extends Dialog {
 	private void startApp() {
 		if(objCheckTheObj!=null){
 			if( browser!=null ){
-				String html ="<h1>CHECK THẺ TỪ CỔNG BẢO HIỂM</h1><br/>"+ 
+				String html ="<h3>CHECK THẺ TỪ CỔNG BẢO HIỂM</h3>"+ 
 						"<b>Họ tên: "+objCheckTheObj.strHoTen+"</b><br/>"+
 						"<b>Mã Thẻ: "+objCheckTheObj.strMathe+"</b><br/>"+
 						"<b>Ngày Sinh: "+objCheckTheObj.strNgaySinh+"</b><br/>"+
-						"<b>Kết quả từ cổng:</b><br/><br/>"+
-						objCheckTheObj.strMessage;
+						"<b>Kết quả từ cổng:</b><br/>"+
+						"<h2>" + 
+						objCheckTheObj.strMessage
+						+"</h2>";
 				System.out.println(objCheckTheObj.strMessage);
-				browser.setText(objCheckTheObj.strMessage);
+				browser.setText(html);
 			}
 			//
 			txtHoTen.setText("");
@@ -216,30 +226,74 @@ public class ShowCheckTheDlg extends Dialog {
 			txtGioitinh.setText("");
 			if(objCheckTheObj.strHoTen.length()>3 ){
 				txtHoTen.setText(objCheckTheObj.strHoTen);
+				txtHoTen.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 			}
-			if(objCheckTheObj.strHoTen.length()>3 )
+			else{
+				txtHoTen.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
+			}
+			if(objCheckTheObj.strHoTen.length()>3 ){
 				txtMaThe.setText(objCheckTheObj.strMathe);
-			if(objCheckTheObj.strNgaySinh.length()>3 )
+				txtMaThe.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+			}
+			else{
+				txtMaThe.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
+			}
+
+			if(objCheckTheObj.strNgaySinh.length()>3 ){
 				txtNgaysinh.setText(objCheckTheObj.strNgaySinh);
+				txtNgaysinh.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+			}
+			else{
+				txtNgaysinh.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
+			}
+
 			if(objCheckTheObj.strDiaChi.length()>3 ){
 				txtDiaChi.setText(objCheckTheObj.strDiaChi);
+				txtDiaChi.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 			}
 			else{
 				btnTheDung.setEnabled(false);
-				btnTheQuocPhong.setEnabled(false);
+				btnTheQuocPhong.setEnabled(true);
 				isUpdate = 1;
+				txtDiaChi.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
 			}
-			if(objCheckTheObj.strTuNgay.length()>3 )
+			if(objCheckTheObj.strTuNgay.length()>3 ){
 				txtTuNgay.setText(objCheckTheObj.strTuNgay);
-			if(objCheckTheObj.strDenNgay.length()>3 )
+				txtTuNgay.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+			}
+			else{
+				txtTuNgay.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
+			}
+			
+			if(objCheckTheObj.strDenNgay.length()>3 ){
 				txtDenNgay.setText(objCheckTheObj.strDenNgay);
-			if(objCheckTheObj.strThoidiem5Nam.length()>5 )
+				txtDenNgay.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+			}
+			else{
+				txtDenNgay.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
+			}
+			
+			if(objCheckTheObj.strThoidiem5Nam.length()>5 ){
 				txtThoiDiem5Nam.setText(objCheckTheObj.strThoidiem5Nam);
+				txtThoiDiem5Nam.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+			}
+			else{
+				txtThoiDiem5Nam.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
+			}
 			if(objCheckTheObj.strDKKCB.length()==5 ){
 				txtNoiDKKCB.setText(objCheckTheObj.strDKKCB);
+				txtNoiDKKCB.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 			}
-			if(objCheckTheObj.gioitinh>0)
+			else{
+				txtNoiDKKCB.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
+			}
+			if(objCheckTheObj.gioitinh>0){
 				txtGioitinh.setText(""+objCheckTheObj.gioitinh);
+				txtGioitinh.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+			}
+			else{
+				txtGioitinh.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
+			}
 			//
 		}
 		//

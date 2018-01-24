@@ -171,6 +171,9 @@ public class BHYTThread extends Thread {
 	}
 
 	public String getCapcha() {
+		return "";
+	}
+	public String getCapcha_del() {
 		txtDomain = "https://gdbhyt.baohiemxahoi.gov.vn";
 		if(httpclient==null){
 			prepareConnection();
@@ -267,6 +270,12 @@ public class BHYTThread extends Thread {
         return Base64.decodeBase64(imageDataString);
     }
 	public void login2(String username, String password, String code) {
+		if(httpclient==null){
+			prepareConnection();
+		}
+		isLogin = true;
+	}
+	public void login2_del(String username, String password, String code) {
 		if(httpclient==null){
 			prepareConnection();
 		}
@@ -933,6 +942,7 @@ public class BHYTThread extends Thread {
 			HttpEntity entity = mainPageRes.getEntity();
 			String strHtml = EntityUtils.toString(entity);
 			logger.info("checkMaThe\n" + strHtml);
+			ret.strFullMessage = strHtml;
 			JSONObject obj = new JSONObject(strHtml);
 			ret.checkCode = (Integer)obj.get("code");
 			ret.checkText = (String)obj.get("erro");
@@ -947,6 +957,7 @@ public class BHYTThread extends Thread {
 			//
 			mainPageRes.close();
 			//
+			logger.info("\t" + ret.strMessage);
 			//
 			//{"code":3,"message":"Họ tên không đúng! (Tên CSDL thẻ: Nguyễn Ngọc Phương Thanh)"}
 			//try parse
@@ -965,14 +976,14 @@ public class BHYTThread extends Thread {
 				//System.out.println(i + " " +tmp1[i].trim());
 				String tmp[] = tmp1[i].trim().split(":");
 				if(tmp.length==2){
-					System.out.println(tmp[1]);
+					logger.info(tmp[1]);
 					if( i== 0){
 						ret.strHoTen = tmp[1].trim();
-						System.out.println("\t strHoTen: " + ret.strHoTen);
+						logger.info("\t strHoTen: " + ret.strHoTen);
 					}
 					else if( i== 1){
 						ret.strNgaySinh= tmp[1].trim();
-						System.out.println("\t strNgaySinh: " + ret.strNgaySinh);
+						logger.info("\t strNgaySinh: " + ret.strNgaySinh);
 					}
 					else if( i== 2){
 						String gioitinh = tmp[1].trim();
@@ -989,55 +1000,56 @@ public class BHYTThread extends Thread {
 				}
 			}
 			for(int i=1; i<tmp0.length; i++){
-				//System.out.println(i + " " +tmp0[i].trim());
+				//logger.info(i + " " +tmp0[i].trim());
 				String tmp[] = tmp0[i].trim().split(":");
 				if(tmp.length==2){
-					System.out.println(tmp[1]);
+					logger.info(tmp[1]);
 					if( i==3 ){
-						if( tmp[1].indexOf("Hạn thẻ")>-1){
+						//if( tmp[1].indexOf("Hạn thẻ")>-1){
+						if(html.indexOf("Chủ thẻ đã được cấp mã thẻ mới")==-1){
 							String tmp3[] = tmp[1].split("-");
 							if(tmp3.length==2){
-								System.out.println("\tTừ ngày: " + tmp3[0] +" đến ngày:" + tmp3[1]);
+								logger.info("\tTừ ngày: " + tmp3[0] +" đến ngày:" + tmp3[1]);
 								ret.strTuNgay = tmp3[0].trim();
 								ret.strDenNgay = tmp3[1].trim();
-								System.out.println("\t strTuNgay: " + ret.strTuNgay);
-								System.out.println("\t strDenNgay: " + ret.strDenNgay);
+								logger.info("\t strTuNgay: " + ret.strTuNgay);
+								logger.info("\t strDenNgay: " + ret.strDenNgay);
 							}
 						}
 					}
 					//
 					if( i== 1){
 						ret.strDiaChi = tmp[1].trim();
-						System.out.println("\t strDiaChi: " + ret.strDiaChi);
+						logger.info("\t strDiaChi: " + ret.strDiaChi);
 					}
 					else if( i== 2){
 						ret.strDKKCB= tmp[1].trim();
-						System.out.println("\t strDKKCB: " + ret.strDKKCB);
+						logger.info("\t strDKKCB: " + ret.strDKKCB);
 					}
 					else if( i== 3){
 					}
 					else if( i== 4){
-						if( tmp[1].trim().indexOf("Chủ thẻ đã được cấp mã thẻ mới")>-1 ){
+						if( html.indexOf("Chủ thẻ đã được cấp mã thẻ mới")==-1 ){
 							ret.strThoidiem5Nam= tmp[1].trim();
 							ret.strThoidiem5Nam = ret.strThoidiem5Nam.replaceAll("\\.", "").trim();
-							System.out.println("\t strThoidiem5Nam: " + ret.strThoidiem5Nam);
+							logger.info("\t strThoidiem5Nam: " + ret.strThoidiem5Nam);
 						}
 						else{
 							String strMathe= tmp[1].trim();
 							strMathe = strMathe.replaceAll("\\.", "").trim();
 							ret.strMathe = strMathe;
-							System.out.println("\t ret.strMathe: " + strMathe);
+							logger.info("\t Chủ thẻ đã được cấp mã thẻ mới ret.strMathe: " + strMathe);
 							ret.checkText = "Chủ thẻ đã được cấp mã thẻ mới: "+ret.strMathe;
 						}
 					}
 					else if( i== 5){
 						String tmp3[] = tmp[1].split("-");
 						if(tmp3.length==2){
-							System.out.println("\tTừ ngày: " + tmp3[0] +" đến ngày:" + tmp3[1]);
+							logger.info("\tTừ ngày: " + tmp3[0] +" đến ngày:" + tmp3[1]);
 							ret.strTuNgay = tmp3[0].trim();
 							ret.strDenNgay = tmp3[1].trim();
-							System.out.println("\t strTuNgay: " + ret.strTuNgay);
-							System.out.println("\t strDenNgay: " + ret.strDenNgay);
+							logger.info("\t strTuNgay: " + ret.strTuNgay);
+							logger.info("\t strDenNgay: " + ret.strDenNgay);
 						}
 					}
 				}

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.3.1.final using JasperReports Library version 6.3.1  -->
-<!-- 2017-12-27T09:06:16 -->
+<!-- 2018-01-18T10:48:34 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="PhieuBenhNhan" pageWidth="421" pageHeight="595" whenNoDataType="NoPages" columnWidth="381" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3807cd06-b690-491a-afdb-4d5ce8b0f998">
 	<property name="com.jaspersoft.studio.unit." value="pixel"/>
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
@@ -624,7 +624,7 @@
 				<text><![CDATA[Lý do VV:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" x="302" y="28" width="25" height="14" uuid="10681902-4d8e-4411-b7f7-ac8bf0f2bf78"/>
+				<reportElement positionType="Float" x="309" y="28" width="25" height="14" uuid="10681902-4d8e-4411-b7f7-ac8bf0f2bf78"/>
 				<box>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -650,7 +650,7 @@
 				<text><![CDATA[Nhịp thở :]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" x="209" y="28" width="30" height="14" uuid="38060392-890b-4606-93e9-1b744bfa8e9e"/>
+				<reportElement positionType="Float" x="224" y="28" width="30" height="14" uuid="38060392-890b-4606-93e9-1b744bfa8e9e"/>
 				<box>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -663,7 +663,7 @@
 				<text><![CDATA[Tuổi:]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="69" y="28" width="132" height="14" uuid="15932b3b-7210-4513-9a98-ef208acef4bf"/>
+				<reportElement x="52" y="28" width="172" height="14" uuid="15932b3b-7210-4513-9a98-ef208acef4bf"/>
 				<textElement>
 					<font fontName="Times New Roman" isBold="true"/>
 				</textElement>
@@ -683,7 +683,7 @@
 				<text><![CDATA[Tình trạng BN:]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="239" y="28" width="62" height="14" uuid="35c8963a-68b5-443a-95c9-efa504c1fec4"/>
+				<reportElement x="254" y="28" width="51" height="14" uuid="35c8963a-68b5-443a-95c9-efa504c1fec4"/>
 				<textElement>
 					<font fontName="Times New Roman" size="10" isBold="true"/>
 				</textElement>
@@ -703,7 +703,7 @@
 				<text><![CDATA[Huyết Áp:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" x="-1" y="28" width="70" height="14" uuid="bd84dadd-99e7-49ef-82d2-24b1094d7aa9"/>
+				<reportElement positionType="Float" x="-1" y="28" width="53" height="14" uuid="bd84dadd-99e7-49ef-82d2-24b1094d7aa9"/>
 				<box>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -713,10 +713,10 @@
 				<textElement>
 					<font fontName="Times New Roman" isBold="false"/>
 				</textElement>
-				<text><![CDATA[(1) Họ Tên BN:]]></text>
+				<text><![CDATA[(1) Họ Tên:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement positionType="Float" x="-1" y="42" width="70" height="14" uuid="008b6121-b255-45ea-afc1-94a9dd46b8bf"/>
+				<reportElement positionType="Float" x="-1" y="42" width="50" height="14" uuid="008b6121-b255-45ea-afc1-94a9dd46b8bf"/>
 				<box>
 					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -729,7 +729,7 @@
 				<text><![CDATA[(2) Địa chỉ]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="69" y="42" width="307" height="14" uuid="6213fb37-3156-44b8-83d3-fdd5ff9c2b43"/>
+				<reportElement x="49" y="42" width="327" height="14" uuid="6213fb37-3156-44b8-83d3-fdd5ff9c2b43"/>
 				<textElement>
 					<font fontName="Times New Roman" size="10" isBold="true"/>
 				</textElement>

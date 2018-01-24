@@ -1334,24 +1334,24 @@ this.STS = 0;                         // data type = Integer
     	}
     }
     
-    public static List<KhamBenh> loadLatest(int BN_ID) {
+    public static List<KhamBenh> loadLatest(String MA_THE) {
     	Connection connection = null;
 
 		try {
 			connection = DbHelper.getSql2o();
-			String sql = "select * from kham_benh where BN_ID=:BN_ID order by MA_LK desc limit 10";
+			String sql = "select * from kham_benh where MA_THE=:MA_THE order by KB_DATE DESC limit 100";
 			logger.debug(sql);
 			List<KhamBenh> obj = connection
 					.createQuery(
 							sql,
 							true)
-					.addParameter("BN_ID", BN_ID)
+					.addParameter("MA_THE", MA_THE)
 					.executeAndFetch( KhamBenh.class);
             //logger.info(obj);
-            logger.debug("loadLatest BN_ID "+(obj==null?0:obj.size()));
+            logger.debug("loadLatest MA_THE "+(obj==null?0:obj.size()));
             return obj;
 		} catch (Exception t) {
-            logger.error("loadLatest Error: ID="+BN_ID +"\nException=\n"+ t);
+            logger.error("loadLatest Error: ID="+MA_THE +"\nException=\n"+ t);
 			throw new RuntimeException("LOAD [KhamBenh]. ERROR: "+t.getMessage(), t);
 		}
     }

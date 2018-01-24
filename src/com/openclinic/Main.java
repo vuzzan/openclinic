@@ -53,7 +53,7 @@ public class Main extends Dialog{
 	static Logger logger = LogManager.getLogger(Main.class.getName());
 	private static Shell shlOpenclinic;
 	static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-	public static final String TITLE = "Openclinic 2.30";
+	public static final String TITLE = "Openclinic 2.40";
 	public static boolean isCheckVersion = true;
 	
 	public static final int DELETE_STATUS = 1;
@@ -71,6 +71,8 @@ public class Main extends Dialog{
 	public static int TABLE_ID = 1;
 	public static String USER_GATE_ID;
 	public static String USER_GATE_PASSWORD;
+	public static String serverIP = "localhost";
+	public static String MESSAGE = "";
 	
 	public Main(Shell parent, int style) {
 		super(parent, style);

@@ -162,7 +162,6 @@ public class DbHelper {
 		//KhoaPhong obj = DbHelper.hashKhoaPhongKP_MABH.get(MA_DVKT);
 		KhoaPhong obj = DbHelper.hashKhoaPhongKP_MABH.get(comboBoxText);
 		if(obj!=null){
-			
 			return obj.KP_MAKHOA;
 		}
 		else{

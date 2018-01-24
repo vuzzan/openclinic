@@ -32,6 +32,9 @@ import com.openclinic.utils.Utils;
 public class PingIP {
 
 	public static void main(String[] args) {
+		
+		int day1 = Calendar.getInstance().getTime().getDay();
+		System.out.println(day1);
 //		String mathe = "GD1234567890123";
 //		System.out.println(mathe.substring(0,2));
 //		System.out.println(mathe.substring(2,3));
@@ -41,101 +44,104 @@ public class PingIP {
 //		System.out.println(mathe.substring(10,15));
 		
 //		String html = "<b>Thẻ sai họ tên</b>! Họ tên đúng: <b>Nguyễn Thị Ban</b>, Ngày sinh: <b>09/02/1937</b>, Giới tính : <b>Nữ</b>! (ĐC: <b>Thôn Phú Mỹ, Quế Xuân 2, Quế Sơn, Xã Quế Xuân 2, Huyện Quế Sơn, Tỉnh Quảng Nam</b>; Nơi KCBBĐ: <b>49475</b>; Hạn thẻ: <b>01/03/2017 - 30/06/2018; Thời điểm đủ 5 năm liên tục: 01/03/2022</b>).";
-		String html = "<b>Thẻ hợp lệ</b>! Họ tên: <b>Đoàn Thanh Nam</b>, Ngày sinh: <b>20/09/1978</b>, Giới tính : <b>Nam</b>! (ĐC: <b>Thôn Thượng Vĩnh, Quế Xuân 2, Quế Sơn</b>; Nơi KCBBĐ: <b>49172</b>; Hạn thẻ: <b>04/01/2017 - 03/01/2018).<b style='color: red'>Chủ thẻ đã được cấp mã thẻ mới : GD4494921563015.Hạn thẻ từ 04/01/2018 đến 03/01/2019</b></b>";
-		CheckTheObj ret = new CheckTheObj();
-
-		html = html.replaceAll("<b>", "");
-		html = html.replaceAll("</b>", "");
-		html = html.replace(')', ' ');
-		html = html.replace('(', ';');
-		html = html.replaceAll("<b style='color: red'>", ";");
-		html = html.replaceAll("Hạn thẻ từ", "; Hạn thẻ từ: ");
-		html = html.replaceAll(" đến ", "-");
-		
-		String tmp0[] = html.split(";");
-		String tmp1[] = tmp0[0].split(",");
-		for(int i=0; i<tmp1.length; i++){
-			//System.out.println(i + " " +tmp1[i].trim());
-			String tmp[] = tmp1[i].trim().split(":");
-			if(tmp.length==2){
-				System.out.println(tmp[1]);
-				if( i== 0){
-					ret.strHoTen = tmp[1].trim();
-					System.out.println("\t strHoTen: " + ret.strHoTen);
-				}
-				else if( i== 1){
-					ret.strNgaySinh= tmp[1].trim();
-					System.out.println("\t strNgaySinh: " + ret.strNgaySinh);
-				}
-				else if( i== 2){
-					String gioitinh = tmp[1].trim();
-					if(gioitinh.indexOf("Nữ")>-1){
-						ret.gioitinh = 2;
-					}
-					else if(gioitinh.indexOf("Nam")>-1){
-						ret.gioitinh = 1;
-					}
-					else{
-						ret.gioitinh = 0;
-					}
-				}
-			}
-		}
-		for(int i=1; i<tmp0.length; i++){
-			//System.out.println(i + " " +tmp0[i].trim());
-			String tmp[] = tmp0[i].trim().split(":");
-			if(tmp.length==2){
-				System.out.println(tmp[1]);
-				if( i==3 ){
-					if( tmp[1].indexOf("Hạn thẻ")>-1){
-						String tmp3[] = tmp[1].split("-");
-						if(tmp3.length==2){
-							System.out.println("\tTừ ngày: " + tmp3[0] +" đến ngày:" + tmp3[1]);
-							ret.strTuNgay = tmp3[0].trim();
-							ret.strDenNgay = tmp3[1].trim();
-							System.out.println("\t strTuNgay: " + ret.strTuNgay);
-							System.out.println("\t strDenNgay: " + ret.strDenNgay);
-						}
-					}
-				}
-				//
-				if( i== 1){
-					ret.strDiaChi = tmp[1].trim();
-					System.out.println("\t strDiaChi: " + ret.strDiaChi);
-				}
-				else if( i== 2){
-					ret.strDKKCB= tmp[1].trim();
-					System.out.println("\t strDKKCB: " + ret.strDKKCB);
-				}
-				else if( i== 3){
-				}
-				else if( i== 4){
-					if( tmp[1].trim().indexOf("Chủ thẻ đã được cấp mã thẻ mới")>-1 ){
-						ret.strThoidiem5Nam= tmp[1].trim();
-						ret.strThoidiem5Nam = ret.strThoidiem5Nam.replaceAll("\\.", "").trim();
-						System.out.println("\t strThoidiem5Nam: " + ret.strThoidiem5Nam);
-					}
-					else{
-						String strMathe= tmp[1].trim();
-						strMathe = strMathe.replaceAll("\\.", "").trim();
-						ret.strMathe = strMathe;
-						System.out.println("\t ret.strMathe: " + strMathe);
-						ret.checkText = "Chủ thẻ đã được cấp mã thẻ mới: "+ret.strMathe;
-					}
-				}
-				else if( i== 5){
-					String tmp3[] = tmp[1].split("-");
-					if(tmp3.length==2){
-						System.out.println("\tTừ ngày: " + tmp3[0] +" đến ngày:" + tmp3[1]);
-						ret.strTuNgay = tmp3[0].trim();
-						ret.strDenNgay = tmp3[1].trim();
-						System.out.println("\t strTuNgay: " + ret.strTuNgay);
-						System.out.println("\t strDenNgay: " + ret.strDenNgay);
-					}
-				}
-			}
-		}
-		System.out.println(ret.checkText);
+//		String html = "<b>Thẻ hợp lệ</b>! Họ tên: <b>Đoàn Thanh Nam</b>, Ngày sinh: <b>20/09/1978</b>, Giới tính : <b>Nam</b>! (ĐC: <b>Thôn Thượng Vĩnh, Quế Xuân 2, Quế Sơn</b>; Nơi KCBBĐ: <b>49172</b>; Hạn thẻ: <b>04/01/2017 - 03/01/2018).<b style='color: red'>Chủ thẻ đã được cấp mã thẻ mới : GD4494921563015.Hạn thẻ từ 04/01/2018 đến 03/01/2019</b></b>";
+//		//String html = "<b>Thẻ hợp lệ</b>! Họ tên: <b>Lê Đức Hiếu</b>, Ngày sinh: <b>27/10/2008</b>, Giới tính : <b>Nam</b>! (ĐC: <b>Lớp4E_BD21,, Xã Điện Phương, Thị xã Điện Bàn, Tỉnh Quảng Nam</b>; Nơi KCBBĐ: <b>49169</b>; Hạn thẻ: <b>01/10/2017 - 30/09/2018; Thời điểm đủ 5 năm liên tục: 01/10/2021</b>).";
+//		CheckTheObj ret = new CheckTheObj();
+//
+//		html = html.replaceAll("<b>", "");
+//		html = html.replaceAll("</b>", "");
+//		html = html.replace(')', ' ');
+//		html = html.replace('(', ';');
+//		html = html.replaceAll("<b style='color: red'>", ";");
+//		html = html.replaceAll("Hạn thẻ từ", "; Hạn thẻ từ: ");
+//		html = html.replaceAll(" đến ", "-");
+//		
+//		String tmp0[] = html.split(";");
+//		String tmp1[] = tmp0[0].split(",");
+//		for(int i=0; i<tmp1.length; i++){
+//			//System.out.println(i + " " +tmp1[i].trim());
+//			String tmp[] = tmp1[i].trim().split(":");
+//			if(tmp.length==2){
+//				System.out.println(tmp[1]);
+//				if( i== 0){
+//					ret.strHoTen = tmp[1].trim();
+//					System.out.println("\t strHoTen: " + ret.strHoTen);
+//				}
+//				else if( i== 1){
+//					ret.strNgaySinh= tmp[1].trim();
+//					System.out.println("\t strNgaySinh: " + ret.strNgaySinh);
+//				}
+//				else if( i== 2){
+//					String gioitinh = tmp[1].trim();
+//					if(gioitinh.indexOf("Nữ")>-1){
+//						ret.gioitinh = 2;
+//					}
+//					else if(gioitinh.indexOf("Nam")>-1){
+//						ret.gioitinh = 1;
+//					}
+//					else{
+//						ret.gioitinh = 0;
+//					}
+//				}
+//			}
+//		}
+//		for(int i=1; i<tmp0.length; i++){
+//			//System.out.println(i + " " +tmp0[i].trim());
+//			String tmp[] = tmp0[i].trim().split(":");
+//			if(tmp.length==2){
+//				System.out.println(tmp[1]);
+//				if( i==3 ){
+//					//if( tmp[1].indexOf("Hạn thẻ")>-1)
+//					if(html.indexOf("Chủ thẻ đã được cấp mã thẻ mới")==-1)
+//					{
+//						String tmp3[] = tmp[1].split("-");
+//						if(tmp3.length==2){
+//							System.out.println("\tTừ ngày: " + tmp3[0] +" đến ngày:" + tmp3[1]);
+//							ret.strTuNgay = tmp3[0].trim();
+//							ret.strDenNgay = tmp3[1].trim();
+//							System.out.println("\t strTuNgay: " + ret.strTuNgay);
+//							System.out.println("\t strDenNgay: " + ret.strDenNgay);
+//						}
+//					}
+//				}
+//				//
+//				if( i== 1){
+//					ret.strDiaChi = tmp[1].trim();
+//					System.out.println("\t strDiaChi: " + ret.strDiaChi);
+//				}
+//				else if( i== 2){
+//					ret.strDKKCB= tmp[1].trim();
+//					System.out.println("\t strDKKCB: " + ret.strDKKCB);
+//				}
+//				else if( i== 3){
+//				}
+//				else if( i== 4){
+//					if( html.indexOf("Chủ thẻ đã được cấp mã thẻ mới")==-1 ){
+//						ret.strThoidiem5Nam= tmp[1].trim();
+//						ret.strThoidiem5Nam = ret.strThoidiem5Nam.replaceAll("\\.", "").trim();
+//						System.out.println("\t strThoidiem5Nam: " + ret.strThoidiem5Nam);
+//					}
+//					else{
+//						String strMathe= tmp[1].trim();
+//						strMathe = strMathe.replaceAll("\\.", "").trim();
+//						ret.strMathe = strMathe;
+//						System.out.println("\t ret.strMathe: " + strMathe);
+//						ret.checkText = "Chủ thẻ đã được cấp mã thẻ mới: "+ret.strMathe;
+//					}
+//				}
+//				else if( i== 5){
+//					String tmp3[] = tmp[1].split("-");
+//					if(tmp3.length==2){
+//						System.out.println("\tTừ ngày: " + tmp3[0] +" đến ngày:" + tmp3[1]);
+//						ret.strTuNgay = tmp3[0].trim();
+//						ret.strDenNgay = tmp3[1].trim();
+//						System.out.println("\t strTuNgay: " + ret.strTuNgay);
+//						System.out.println("\t strDenNgay: " + ret.strDenNgay);
+//					}
+//				}
+//			}
+//		}
+//		System.out.println(ret.checkText);
 		//html = html.replaceAll("(", "");
 		//System.out.println(html);
 //		String NGAY_VAO2 = "201801040910";

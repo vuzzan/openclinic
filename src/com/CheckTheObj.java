@@ -18,4 +18,6 @@ public class CheckTheObj {
 	public String strDenNgay  = "";
 	public String strDKKCB = "";
 	public String strThoidiem5Nam = "";
+	
+	public String strFullMessage = "";
 }

@@ -12,8 +12,9 @@ public class TimerThread extends Thread {
 		
 		while(isStop == false){
 			//System.out.println("TIMER START............");
-			if(isStop == false && counter%10==0){
+			if(isStop == false && counter%10==0 && Main.isCheckVersion==true){
 				LoginDlg.checkVersion();
+				FormKhamBenhDlg.checkMessage();
 				//FormKhamBenhDlg.doSearchBenhNhan();
 			}
 			counter++;

@@ -1254,10 +1254,10 @@ this.STS = 0;                         // data type = Integer
 							"insert into action_log(u_id,u_action,dbtable,actionid,fieldid) values(:u_id,:u_action,:dbtable,:actionid,:fieldid)",
 							true)
 					.addParameter("u_id", DbHelper.getCurrentSessionUserId())
-					.addParameter("u_action", "Update thuoc_chitiet. ID="+TCT_ID)
+					.addParameter("u_action", "Delete thuoc_chitiet. ID="+TCT_ID)
                     .addParameter("dbtable", "thuoc_chitiet")
                     .addParameter("fieldid", TCT_ID)
-					.addParameter("actionid", 4)
+					.addParameter("actionid", 7)
 					.executeUpdate();
 		} catch (Exception t) {
 			logger.error("Delete [thuoc_chitiet] Error: ID=["+TCT_ID +"]."+"\nException=\n"+ t);

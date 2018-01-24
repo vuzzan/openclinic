@@ -564,10 +564,10 @@ public class FormXuatThuocKhoDlg extends Dialog {
 		}
 		TableItem item = tableCtNhapthuoc.getSelection()[0];
 		objCtNhapthuoc = (CtNhapthuoc) item.getData();
-
+		//
 		iSoLuongChiDinh = Utils.getInt(txtThuocSoLuongChiDinh.getText());
 		if (iSoLuongChiDinh<=0 
-				|| (iSoLuongChiDinh > 0 && objCtNhapthuoc.SL_TONKHO <= iSoLuongChiDinh)) {
+				|| (iSoLuongChiDinh > 0 && objCtNhapthuoc.SL_TONKHO < iSoLuongChiDinh)) {
 			txtThuocSoLuongChiDinh.setBackground(SWTResourceManager .getColor(SWT.COLOR_RED));
 			txtThuocSoLuongChiDinh.forceFocus();
 			txtThuocSoLuongChiDinh.selectAll();

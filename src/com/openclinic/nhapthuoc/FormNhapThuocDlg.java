@@ -312,7 +312,7 @@ public class FormNhapThuocDlg extends Dialog {
 		txtVAT.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				int vat = Utils.getInt(txtVAT.getText());
-				if(vat<=0){
+				if(vat<0){
 					txtVAT.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
 				}
 				else{
@@ -647,7 +647,7 @@ public class FormNhapThuocDlg extends Dialog {
 		else{
 			txtTONGCONG.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		}
-		if(Utils.getDouble( txtVAT.getText() )<=0){
+		if(Utils.getDouble( txtVAT.getText() )<0){
 			txtVAT.selectAll();
 			txtVAT.forceFocus();
 			txtVAT.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));

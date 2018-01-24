@@ -21,7 +21,6 @@ import net.sf.jasperreports.view.JasperViewer;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.eclipse.jface.bindings.ISchemeListener;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.viewers.TableViewer;
@@ -84,6 +83,8 @@ import com.model.cache.MaCskcbCache;
 import com.model.cache.MstXahuyenCache;
 import com.model.dao.ActionLog;
 import com.model.dao.BenhNhan;
+import com.model.dao.CheckThe;
+import com.model.dao.Configuration;
 import com.model.dao.CtNhapthuoc;
 import com.model.dao.Dichvu;
 import com.model.dao.DvChitiet;
@@ -97,7 +98,6 @@ import com.model.dao.MstXahuyen;
 import com.model.dao.Thuoc;
 import com.model.dao.ThuocChitiet;
 import com.model.dao.Users;
-import com.mysql.jdbc.Util;
 import com.openclinic.DatePicker;
 import com.openclinic.DeletePhieuConfirmDlg;
 import com.openclinic.Main;
@@ -118,7 +118,7 @@ public class FormKhamBenhDlg extends Dialog {
 			.getLogger(FormKhamBenhDlg.class.getName());
 
 	protected Object result;
-	protected Shell shellKhamBenh;
+	static public Shell shellKhamBenh;
 	private TheBHXH txtMathe;
 	private Text txtHoten;
 	private Combo cbNoiDKKB;
@@ -384,7 +384,6 @@ public class FormKhamBenhDlg extends Dialog {
 		if (txtHoten.getText().trim().length() == 0) {
 			tabFolder.setSelection(0);
 			txtHoten.forceFocus();
-			txtHoten.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
 			errorText = "- Nhập họ tên: \n";
 			isError = true;
 		} else {
@@ -401,7 +400,6 @@ public class FormKhamBenhDlg extends Dialog {
 			txtDiachi.setBackground(SWTResourceManager
 					.getColor(SWT.COLOR_YELLOW));
 		}
-
 		if (listCLSData == null || listCLSData.size() == 0) {
 			objPhieuKhamBenh = new KhamBenh();
 			objPhieuKhamBenh.BN_ID = objBenhNhan.BN_ID;
@@ -429,6 +427,12 @@ public class FormKhamBenhDlg extends Dialog {
 		if (objCongKham != null) {
 			//
 			if (MessageDialog.openConfirm(shellKhamBenh, "Lưu ý", "Phiếu đã lưu dưới dạng Viện Phí, có chắc chắn muốn chuyển thành MuaCLS??") == true) {
+				if( isCapCuu==true ){
+					MessageDialog.openError(shellKhamBenh, "Lưu ý", "Phiếu đang là dạng Cấp Cứu, có tiền giường. Không thể chuyển qua Mua CLS Viện Phí");
+					logger.info("CAP CUU, CAPCUU Phiếu đang là dạng Cấp Cứu, có tiền giường. Không thể chuyển qua Mua CLS Viện Phí");
+					return;
+				}
+				//
 				// remove cong kham
 				objCongKham.deleteRow();
 				objCongKham = null;
@@ -450,7 +454,7 @@ public class FormKhamBenhDlg extends Dialog {
 	}
 
 	protected void doSaveFormKhamBenh() {
-
+		//
 		if (objPhieuKhamBenh == null) {
 			setCHI_XET_NGHIEM(0);
 		}
@@ -986,17 +990,28 @@ public class FormKhamBenhDlg extends Dialog {
 				txtMathe.setColor(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
 			}
 			
-			if (cbNoiDKKB.getText().trim().length() == 0) {
+			if (cbNoiDKKB.getText().trim().length() != 5) {
 				tabFolder.setSelection(0);
 				cbNoiDKKB.forceFocus();
-				cbNoiDKKB.setBackground(SWTResourceManager
-						.getColor(SWT.COLOR_RED));
-				errorText += "- Nơi đăng ký khám chữa bệnh\n";
+				cbNoiDKKB.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
+				errorText += "- Nơi đăng ký khám chữa bệnh phải 5 ký tự\n";
 				isError = true;
 			} else {
-				cbNoiDKKB.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
+				MaCskcb obj = MaCskcbCache.getMaCskcb(cbNoiDKKB.getText().trim());
+				if (obj != null) {
+					cbNoiDKKB.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
+				} 
+				else 
+				{
+					tabFolder.setSelection(0);
+					cbNoiDKKB.forceFocus();
+					cbNoiDKKB.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
+					errorText += "- Nơi đăng ký khám chữa bệnh không hợp lệ. Tìm không thấy..\n";
+					isError = true;
+				}
 			}
 
+			
 			if (Utils.differenceInDay(txtTuNgay.getDate2(), txtDenNgay.getDate2()) <= 0) {
 				tabFolder.setSelection(0);
 				txtTuNgay.setColor(SWTResourceManager.getColor(SWT.COLOR_RED));
@@ -1011,11 +1026,19 @@ public class FormKhamBenhDlg extends Dialog {
 						.getColor(SWT.COLOR_YELLOW));
 			}
 
-			if (Utils.differenceInDay(Calendar.getInstance(),
-					txtDenNgay.getDate2()) < 0) {
+			if (Utils.differenceInDay(txtTuNgay.getDate2(), Calendar.getInstance()) < 0) {
+				tabFolder.setSelection(0);
+				txtTuNgay.setColor(SWTResourceManager.getColor(SWT.COLOR_RED));
+				errorText += "- Giá trị [Từ Ngày] trên thẻ không đúng\n";
+				isError = true;
+			} else {
+				txtTuNgay.setColor(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
+			}
+
+			if (Utils.differenceInDay(Calendar.getInstance(), txtDenNgay.getDate2()) < 0) {
 				tabFolder.setSelection(0);
 				txtDenNgay.setColor(SWTResourceManager.getColor(SWT.COLOR_RED));
-				errorText += "- Ngày trên thẻ không đúng\n";
+				errorText += "- Giá trị [Đến Ngày] trên thẻ không đúng\n";
 				isError = true;
 			} else {
 				txtDenNgay.setColor(SWTResourceManager
@@ -1053,26 +1076,29 @@ public class FormKhamBenhDlg extends Dialog {
 				}
 			}
 			// Check ICD 
-			if(listThuocData.size()>0){
-				if(cbMaBenh.getText().trim().length()==0){
+			if(listThuocData.size()>0 || listCLSData.size()>0 ){
+				if(cbMaBenh.getText().trim().length()==0)
+				{
 					errorText += "- Phải có Mã bệnh chính\n";
 					cbMaBenh.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
 					tabFolder.setSelection(0);
 					cbMaBenh.forceFocus();
 					isError = true;
 				}
-				else{
+				else
+				{
 					cbMaBenh.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
-				}
-				if(txtTenBenh.getText().trim().length()==0){
-					errorText += "- Phải có Tên Bệnh\n";
-					txtTenBenh.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
-					tabFolder.setSelection(0);
-					txtTenBenh.forceFocus();
-					isError = true;
-				}
-				else{
-					txtTenBenh.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+					//
+					if(txtTenBenh.getText().trim().length()==0){
+						errorText += "- Phải có Tên Bệnh\n";
+						txtTenBenh.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
+						tabFolder.setSelection(0);
+						txtTenBenh.forceFocus();
+						isError = true;
+					}
+					else{
+						txtTenBenh.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+					}
 				}
 			}
 			// Check ICD 
@@ -1093,30 +1119,51 @@ public class FormKhamBenhDlg extends Dialog {
 			if(txtMathe.strMathe!=null || txtMathe.strMathe.length()>10){
 				if (objPhieuKhamBenh == null || objPhieuKhamBenh.MA_LK==null
 						|| (objPhieuKhamBenh != null && objPhieuKhamBenh.MA_LK == 0)) {
-					BenhNhan objTemp = BenhNhan.load(txtMathe.strMathe);
-					if (objTemp != null) {
+					String MA_THE = txtMathe.strMathe;
+					//if (objTemp != null) 
+					{
 						// Load latest khambenh of this
-						List<KhamBenh> listTempKhamBenh = KhamBenh.loadLatest(objTemp.BN_ID);
+						List<KhamBenh> listTempKhamBenh = KhamBenh.loadLatest(MA_THE);
 						if (listTempKhamBenh != null && listTempKhamBenh.size() > 0) {
-							KhamBenh tmpKhamBenh = listTempKhamBenh.get(0);
-							if (tmpKhamBenh.NGAY_VAO != null) {
-								Date NGAY_VAO = Utils.getDateTimeByDate(tmpKhamBenh.NGAY_VAO, "yyyyMMddHHmm");
-								double songay = Utils.differenceInDayDouble(NGAY_VAO, Calendar.getInstance().getTime()); 
-								//System.out.println("SO NGAY = "+songay+" tmpKhamBenh.NGAY_VAO="+tmpKhamBenh.NGAY_VAO+" "+Calendar.getInstance().getTime().toString()+" NGAY_VAO="+NGAY_VAO.toString());
-								if ( songay <= 1.0) {
-									txtMathe.setColor(SWTResourceManager
-											.getColor(SWT.COLOR_RED));
-									errorText += "- Bệnh nhân với mã thẻ "
-													+ objTemp.MA_THE
-													+ " đã khám trong ngày rồi..MA KHAM BENH="+tmpKhamBenh.MA_LK+"\n";
-									isError = true;
+							// Find kham benh bao hiem
+							KhamBenh tmpKhamBenh = null;
+							for(KhamBenh tempKhamBenh: listTempKhamBenh)
+							{
+								if( tempKhamBenh.KIEU_TT==Utils.THANHTOAN_BHYT || tempKhamBenh.KIEU_TT==Utils.THANHTOAN_BHYT_2){
+									tmpKhamBenh = tempKhamBenh;
+									break;
+								}
+							}
+							if( tmpKhamBenh==null){
+								System.out.println("NOT FOUND ==== OK PASS");
+								// OK
+							}
+							else{
+								//
+								if (tmpKhamBenh.NGAY_VAO != null) {
+									Date NGAY_VAO = Utils.getDateTimeByDate(tmpKhamBenh.NGAY_VAO, "yyyyMMddHHmm");
+									int day = NGAY_VAO.getDate();
+									int month = NGAY_VAO.getMonth();
+									int year = NGAY_VAO.getYear();
+									int day1 = Calendar.getInstance().getTime().getDate();
+									int month1 = Calendar.getInstance().getTime().getMonth();
+									int year1 = Calendar.getInstance().getTime().getYear();
+									//double songay = Utils.differenceInDayDouble(NGAY_VAO, Calendar.getInstance().getTime()); 
+									//System.out.println("SO NGAY = "+songay+" tmpKhamBenh.NGAY_VAO="+tmpKhamBenh.NGAY_VAO+" "+Calendar.getInstance().getTime().toString()+" NGAY_VAO="+NGAY_VAO.toString());
+									//if ( songay <= 1.0 )
+									if( day==day1 && month==month1 && year==year1) 
+									{
+										txtMathe.setColor(SWTResourceManager.getColor(SWT.COLOR_RED));
+										errorText += "- Bệnh nhân với mã thẻ " + MA_THE + " đã khám trong ngày rồi..MA KHAM BENH="+tmpKhamBenh.MA_LK+"\n";
+										isError = true;
+									} else {
+										txtMathe.setColor(SWTResourceManager
+												.getColor(SWT.COLOR_YELLOW));
+									}
 								} else {
 									txtMathe.setColor(SWTResourceManager
 											.getColor(SWT.COLOR_YELLOW));
 								}
-							} else {
-								txtMathe.setColor(SWTResourceManager
-										.getColor(SWT.COLOR_YELLOW));
 							}
 						} else {
 							txtMathe.setColor(SWTResourceManager
@@ -1127,8 +1174,7 @@ public class FormKhamBenhDlg extends Dialog {
 				//
 			} else {
 				txtMathe.setColor(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
-				cbNoiDKKB.setBackground(SWTResourceManager
-						.getColor(SWT.COLOR_YELLOW));
+				cbNoiDKKB.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
 				txtDenNgay.setColor(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
 			}
 		}
@@ -1186,13 +1232,21 @@ public class FormKhamBenhDlg extends Dialog {
 						isError = true;
 					}
 					else {
-						cbKhoa.setBackground(SWTResourceManager
-								.getColor(SWT.COLOR_YELLOW));
+						cbKhoa.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
 					}
 				} 
 				else {
-					cbKhoa.setBackground(SWTResourceManager
-							.getColor(SWT.COLOR_YELLOW));
+					String MaKhoa = DbHelper.getMAKHOA(cbKhoa.getText().trim());
+					if(MaKhoa==null || MaKhoa.length()==0){
+						tabFolder.setSelection(0);
+						cbKhoa.forceFocus();
+						cbKhoa.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
+						errorText += "- Nhập khoa phòng không đúng."+cbKhoa.getText().trim()+"...\n";
+						isError = true;
+					}
+					else{
+						cbKhoa.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
+					}
 				}
 			}
 			//
@@ -1302,7 +1356,8 @@ public class FormKhamBenhDlg extends Dialog {
 						//
 						//MessageDialog.openInformation(shellKhamBenh, "", "Không save cong kham");
 					}
-					else{
+					//else
+					{
 						if(KIEU_THANH_TOAN==Utils.THANHTOAN_TAI_KHAM){
 							// Khong sav cong kham
 							logger.info("=============KHONG - CONG KHAM BENH - THANHTOAN_TAI_KHAM === ");
@@ -1369,7 +1424,7 @@ public class FormKhamBenhDlg extends Dialog {
 								+ objCtNhapthuoc.CTID_FROM);
 
 						// Tru truc tiep
-						objCtNhapthuoc.SL_TONKHO = objCtNhapthuoc.SOLUONG - obj.SO_LUONG;
+						objCtNhapthuoc.SL_TONKHO = objCtNhapthuoc.SL_TONKHO - obj.SO_LUONG;
 						//
 						logger.info("==================    LOHANG_ID="
 								+ obj.CT_ID + " TON KHO="
@@ -1570,8 +1625,7 @@ public class FormKhamBenhDlg extends Dialog {
 		if (obj != null) {
 			txtTenCSKCB.setText(obj.MA_NAME + " - " + obj.MA_TUYEN);
 		} else {
-			txtTenCSKCB.setText("không tìm thấy mã [" + cbNoiDKKB.getText()
-					+ "]");
+			txtTenCSKCB.setText("không tìm thấy mã [" + cbNoiDKKB.getText()+ "]");
 		}
 	}
 
@@ -2299,11 +2353,17 @@ public class FormKhamBenhDlg extends Dialog {
 		cbCapCuu.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				loadCongKhamData();
 				int index = cbCapCuu.getSelectionIndex();
 				if(index>0){
-					updateCongKham();
 					isCapCuu = true;
+				}
+				else{
+					isCapCuu = false;
+				}
+				loadCongKhamData();
+				if(index>0){
+					isCapCuu = true;
+					updateCongKham();
 				}
 				else{
 					isCapCuu = false;
@@ -2407,6 +2467,12 @@ public class FormKhamBenhDlg extends Dialog {
 		cbMaHuyen.setVisible(false);
 
 		Label lblHngDvcao = new Label(grpBhyt, SWT.NONE);
+		lblHngDvcao.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseDown(MouseEvent e) {
+				Main.isCheckVersion = !Main.isCheckVersion; 
+			}
+		});
 		lblHngDvcao.setBounds(10, 239, 97, 23);
 		lblHngDvcao.setText("DVCao");
 		lblHngDvcao.setFont(SWTResourceManager
@@ -3363,6 +3429,26 @@ public class FormKhamBenhDlg extends Dialog {
 		lblBcSCh.setBounds(10, 76, 82, 13);
 
 		cbListBacsiThuoc = new Combo(grpMBnhTn, SWT.NONE);
+		cbListBacsiThuoc.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.keyCode == 13) {
+					if (((e.stateMask & SWT.CTRL) == SWT.CTRL)) {
+						// Update BS cho THUOC. UPDATE ALL
+						for (ThuocChitiet obj : listThuocData) {
+							if (DbHelper.hashDataUsers.get(cbListBacsiThuoc.getText()) != null) {
+								if(obj.TYP==1 ){
+									if( obj.MA_BAC_SI==null || (obj.MA_BAC_SI.length()==0)){
+										obj.MA_BAC_SI = DbHelper.hashDataUsers.get(cbListBacsiThuoc.getText()).MACCHN;
+									}
+								}
+							}
+						}
+						tableViewerTHUOC.refresh();
+					}
+				}
+			}
+		});
 		cbListBacsiThuoc.setBounds(130, 76, 161, 21);
 		cbListBacsiThuoc.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
@@ -3692,7 +3778,9 @@ public class FormKhamBenhDlg extends Dialog {
 		btnCheckMTh.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				chechTheKieu2();
+				if( doCheckNgayGioThe() == true){
+					chechTheKieu2();
+				}
 			}
 		});
 		btnCheckMTh.setToolTipText("Lưu phiếu, bấm F2");
@@ -3791,21 +3879,85 @@ public class FormKhamBenhDlg extends Dialog {
 				buttonBanVatTu.setToolTipText("In Phiếu, bấm F9");
 				buttonBanVatTu.setText("Bán VT");
 				buttonBanVatTu.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
+				new Label(compositeGroupButtonEnd, SWT.NONE);
 				
-				Button btnNewButton = new Button(compositeGroupButtonEnd, SWT.NONE);
-				btnNewButton.addSelectionListener(new SelectionAdapter() {
-					@Override
-					public void widgetSelected(SelectionEvent e) {
-						doCheckTheVersion2();
-					}
-				});
-				btnNewButton.setText("Check2");
+//				Button btnNewButton = new Button(compositeGroupButtonEnd, SWT.NONE);
+//				btnNewButton.addSelectionListener(new SelectionAdapter() {
+//					@Override
+//					public void widgetSelected(SelectionEvent e) {
+//						if( doCheckNgayGioThe() == true ){
+//							doCheckTheVersion2();
+//						}
+//					}
+//				});
+//				btnNewButton.setText("Check2");
 
 	}
 
+	protected boolean doCheckNgayGioThe() {
+		boolean ret = true;
+		if( objPhieuKhamBenh!=null && objPhieuKhamBenh.MA_LK!=null ){
+			return ret;
+		}
+		
+		// Load latest kham của mã thẻ đó
+		if(txtMathe.strMathe!=null || txtMathe.strMathe.length()>10){
+			String MA_THE = txtMathe.strMathe;
+			// Load latest khambenh of this
+			List<KhamBenh> listTempKhamBenh = KhamBenh.loadLatest(MA_THE);
+			if (listTempKhamBenh != null && listTempKhamBenh.size() > 0) {
+				// Find kham benh bao hiem
+				KhamBenh tmpKhamBenh = null;
+				for(KhamBenh tempKhamBenh: listTempKhamBenh)
+				{
+					if( tempKhamBenh.KIEU_TT==Utils.THANHTOAN_BHYT || tempKhamBenh.KIEU_TT==Utils.THANHTOAN_BHYT_2){
+						tmpKhamBenh = tempKhamBenh;
+						break;
+					}
+				}
+				if( tmpKhamBenh==null){
+					System.out.println("NOT FOUND ==== OK PASS");
+					// OK
+				}
+				else{
+					//
+					if (tmpKhamBenh.NGAY_VAO != null) {
+						Date NGAY_VAO = Utils.getDateTimeByDate(tmpKhamBenh.NGAY_VAO, "yyyyMMddHHmm");
+						int day = NGAY_VAO.getDate();
+						int month = NGAY_VAO.getMonth();
+						int year = NGAY_VAO.getYear();
+						int day1 = Calendar.getInstance().getTime().getDate();
+						int month1 = Calendar.getInstance().getTime().getMonth();
+						int year1 = Calendar.getInstance().getTime().getYear();
+						//double songay = Utils.differenceInDayDouble(NGAY_VAO, Calendar.getInstance().getTime()); 
+						logger.info("CHECKNGAY "+day+"/"+month+"/"+year+" -- "+day1+"/"+month1+"/"+year1+" NGAY_VAO="+NGAY_VAO.toString()+" TODAY="+ Calendar.getInstance().getTime());
+						//System.out.println("SO NGAY = "+songay+" tmpKhamBenh.NGAY_VAO="+tmpKhamBenh.NGAY_VAO+" "+Calendar.getInstance().getTime().toString()+" NGAY_VAO="+NGAY_VAO.toString());
+						//if ( songay <= 1.0 )
+						if( day==day1 && month==month1 && year==year1) 
+						{
+							txtMathe.setColor(SWTResourceManager.getColor(SWT.COLOR_RED));
+							MessageDialog.openError(shellKhamBenh, "Có lỗi", "- Bệnh nhân với mã thẻ " + MA_THE + " đã khám trong ngày rồi..MA KHAM BENH="+tmpKhamBenh.MA_LK+"\n");
+							ret = false;
+						} else {
+							txtMathe.setColor(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
+							//MessageDialog.openError(shellKhamBenh, "Có lỗi", "Check OK Ngay\n");
+						}
+					} else {
+						txtMathe.setColor(SWTResourceManager
+								.getColor(SWT.COLOR_YELLOW));
+					}
+				}
+			} else {
+				txtMathe.setColor(SWTResourceManager
+						.getColor(SWT.COLOR_YELLOW));
+			}
+		}
+		//
+		return ret;
+	}
+
 	protected void chechTheKieu2() {
-		if( CheckTheDlg.objBHYTThread2.httpclient==null || 
-				(CheckTheDlg.objBHYTThread2.isLogin==false ) ){
+		if( CheckTheDlg.objBHYTThread2.httpclient==null || (CheckTheDlg.objBHYTThread2.isLogin==false ) ){
 			CheckTheDlg dlg = new CheckTheDlg(shellKhamBenh, 0);
 			dlg.isCloseLoginOK = true;
 			dlg.open();
@@ -3818,12 +3970,27 @@ public class FormKhamBenhDlg extends Dialog {
 					return;
 				}
 				objCheck = CheckTheDlg.objBHYTThread2.checkMaTheJSON(txtMathe.strMathe, txtHoten.getText(), txtNgaySinh.getDate());
+				if(objCheck!=null){
+					if(objCheck.strFullMessage.length()>0){
+						CheckThe objCheckThe = new CheckThe();
+						objCheckThe.hoten 		= txtHoten.getText();
+						objCheckThe.ngaysinh 	= objCheck.strNgaySinh;
+						objCheckThe.mathe 		= txtMathe.strMathe;
+						objCheckThe.result_text = objCheck.checkCode+","+objCheck.checkText+","+(objCheck.strMessage==null?objCheck.strFullMessage:objCheck.strMessage);
+						objCheckThe.insert();
+					}
+				}
 				//
 				ShowCheckTheDlg showDlg = new ShowCheckTheDlg(shellKhamBenh, 0);
 				showDlg.objCheckTheObj = objCheck;
 				showDlg.open();
 				if( showDlg.isUpdate==1 ){
 					// Do update value of the
+					if(objCheck.strMathe.equals(txtMathe.strMathe)==false && objCheck.strMathe.length()==15){
+						if( MessageDialog.openConfirm(shellKhamBenh, "Thay doi", "Đổi mã thẻ từ " + txtMathe.strMathe +" sang "+objCheck.strMathe)==true ){
+							txtMathe.setText(objCheck.strMathe);
+						}
+					}
 					if(objCheck.strHoTen.length()>5 ){
 						txtHoten.setText(objCheck.strHoTen.trim());
 					}
@@ -3837,7 +4004,7 @@ public class FormKhamBenhDlg extends Dialog {
 						txtTuNgay.setText(objCheck.strTuNgay.trim());
 					}
 					if(objCheck.strThoidiem5Nam.length()>5 ){
-						System.out.println("THOI DIEM 5 NAM: " + objCheck.strThoidiem5Nam.trim());
+						//System.out.println("THOI DIEM 5 NAM: " + objCheck.strThoidiem5Nam.trim());
 						txtThoiDiem5Nam.setText(objCheck.strThoidiem5Nam.trim());
 					}
 					if(objCheck.strDKKCB.trim().length()==5 ){
@@ -3933,19 +4100,6 @@ public class FormKhamBenhDlg extends Dialog {
 		
 	}
 
-	protected void doCheckTheVersion2() {
-//		CheckTheDlg dlg = new CheckTheDlg(shellKhamBenh, 0);
-//		dlg.strHoTen = txtHoten.getText();
-//		dlg.strMathe = txtMathe.getMaThe();
-//		dlg.strNgaySinh = txtNgaySinh.getDate();
-//		dlg.open();
-//		if(dlg.strDiaChi.length()>0){
-//			txtDiachi.setText(dlg.strDiaChi);
-//			txtTuNgay.setText(dlg.strTuNgay);
-//			txtDenNgay.setText(dlg.strDenNgay);
-//		}
-	}
-
 	protected void danhDauXoaPhieuKham() {
 		if (tablePhieuKham.getSelectionCount() == 0) {
 			return;
@@ -4036,6 +4190,32 @@ public class FormKhamBenhDlg extends Dialog {
 				MessageDialog.openError(shellKhamBenh, "Có lỗi", "ICD phải có");
 				return;
 			}
+			
+			//
+			boolean checkMABSI = true;
+			String errorText = "";
+			for (DvChitiet obj : listCLSData) {
+				//
+				if(obj.TYLE_TT>0 && obj.TYP==1){
+					if(obj.MA_BAC_SI==null || obj.MA_BAC_SI.length()==0){
+						checkMABSI = false;
+						errorText += "- CLS: " + obj.TEN_DICH_VU +"\n";
+					}
+				}
+			}
+			for (ThuocChitiet obj : listThuocData) {
+				if(obj.TYLE_TT>0 && obj.TYP==1){
+					if(obj.MA_BAC_SI==null || obj.MA_BAC_SI.length()==0){
+						checkMABSI = false;
+						errorText += "- THUOC BH: " + obj.TEN_THUOC +"\n";
+					}
+				}
+			}
+			if( checkMABSI==false ){
+				MessageDialog.openError(shellKhamBenh, "Có lỗi", "Thuốc hoặc Dịch vụ phải chỉ định Bác Sỹ. Chi tiết lỗi: \n" + errorText);
+				return;
+			}
+			//
 		}
 		//
 		if(objPhieuKhamBenh==null || objPhieuKhamBenh.MA_LK==null){
@@ -4049,7 +4229,8 @@ public class FormKhamBenhDlg extends Dialog {
 				//
 				MessageDialog.openInformation(shellKhamBenh, "", "Không save cong kham");
 			}
-			else{
+			//else
+			{
 				// Nghia: Da thanh toan roi, nhung van update lai CONG KHAM  
 				Users bacsy = DbHelper.hashDataUsers.get(cbListBacSiForm.getText());
 				if(bacsy!=null && bacsy.MACCHN!=objCongKham.MA_BAC_SI){
@@ -4104,6 +4285,12 @@ public class FormKhamBenhDlg extends Dialog {
 		//
 		if(objPhieuKhamBenh!=null){
 			objPhieuKhamBenh.NGAY_TTOAN = Utils.getDatetime(new Date(), "yyyyMMddHHmm");
+			if( objPhieuKhamBenh.MA_KHOA.equals("K31")==true ){
+				// PHIEU PHUC HOI CHUC NANG
+				logger.info("PHIEU PHUC HOI CHUC NANG, UPDATE LAI NGAY GIO." + objPhieuKhamBenh.KB_DATE.toString() + " to " + Calendar.getInstance().getTime());
+				objPhieuKhamBenh.KB_DATE = Calendar.getInstance().getTime();
+				// END UPDATE NGAY 
+			}
 			objPhieuKhamBenh.update();
 		}
 		//
@@ -4124,47 +4311,50 @@ public class FormKhamBenhDlg extends Dialog {
 
 	protected void updateCongKham() {
 		//
-			Dichvu congkham = DbHelper.hashCongKham.get(cbKhoa.getText());
-			//
-			if (congkham != null) {
-				if (objCongKham == null) {
-					objCongKham = new DvChitiet();
-				}
-				objCongKham.DON_GIA = congkham.DON_GIA;
-				objCongKham.DON_GIA2 = congkham.DON_GIA2;
-				objCongKham.DV_ID = 1;
-				objCongKham.SO_LUONG = 1;
-				objCongKham.MA_DICH_VU = congkham.MA_DVKT;
-				objCongKham.TEN_DICH_VU = congkham.TEN_DVKT;
-				objCongKham.MA_BAC_SI = "";
-				objCongKham.MA_BENH = "";
-				objCongKham.MA_KHOA = DbHelper.getMAKHOA(congkham.MA_DVKT);
-				objCongKham.MA_NHOM = Utils.getInt(congkham.MANHOM_9324);
-				objCongKham.MA_PTTT = 1;
-				objCongKham.MA_VAT_TU = "";
-				// format = "yyyy-MM-dd HH:mm:ss";
-				objCongKham.NGAY_KQ = Utils.getDatetime(new Date(), "yyyyMMddHHmm");
-				objCongKham.NGAY_YL = Utils.getDatetime(new Date(), "yyyyMMddHHmm");
-				objCongKham.THANH_TIEN = objCongKham.DON_GIA2 * objCongKham.SO_LUONG;
-				objCongKham.TT_BHTT = 0;
-				objCongKham.TT_BNTT = 0;
-				objCongKham.MUC_HUONG = 100;
-				//System.out.println("NGHIA LUONG " + objCongKham.toString());
-				//
-				cbListBacSiForm.removeAll();
-				cbListBacSiCLS.removeAll();
-				cbListBacsiThuoc.removeAll();
-				for (Users obj : DbHelper.listUsers) {
-					//if (obj.MA_KHOA.equals(congkham.MA_DVKT) == true) {
-						cbListBacSiForm.add(obj.U_ID+"-"+obj.TEN_NHANVIEN);
-						cbListBacSiCLS.add(obj.U_ID+"-"+obj.TEN_NHANVIEN);
-						cbListBacsiThuoc.add(obj.U_ID+"-"+obj.TEN_NHANVIEN);
-					//}
-				}
-				cbListBacSiForm.select(0);
-				cbListBacSiCLS.select(0);
-				cbListBacsiThuoc.select(0);
+		System.out.println("updateCongKham = cbKhoa.getText()="+cbKhoa.getText());
+		Dichvu congkham = DbHelper.hashCongKham.get(cbKhoa.getText());
+		//
+		if (congkham != null) {
+			if (objCongKham == null) {
+				objCongKham = new DvChitiet();
 			}
+			objCongKham.DON_GIA = congkham.DON_GIA;
+			objCongKham.DON_GIA2 = congkham.DON_GIA2;
+			objCongKham.DV_ID = 1;
+			objCongKham.SO_LUONG = 1;
+			objCongKham.MA_DICH_VU = congkham.MA_DVKT;
+			objCongKham.TEN_DICH_VU = congkham.TEN_DVKT;
+			objCongKham.MA_BAC_SI = "";
+			objCongKham.MA_BENH = "";
+			objCongKham.MA_KHOA = DbHelper.getMAKHOA(congkham.MA_DVKT);
+			objCongKham.MA_NHOM = Utils.getInt(congkham.MANHOM_9324);
+			objCongKham.MA_PTTT = 1;
+			objCongKham.MA_VAT_TU = "";
+			// format = "yyyy-MM-dd HH:mm:ss";
+			objCongKham.NGAY_KQ = Utils.getDatetime(new Date(), "yyyyMMddHHmm");
+			objCongKham.NGAY_YL = Utils.getDatetime(new Date(), "yyyyMMddHHmm");
+			objCongKham.THANH_TIEN = objCongKham.DON_GIA2 * objCongKham.SO_LUONG;
+			objCongKham.TT_BHTT = 0;
+			objCongKham.TT_BNTT = 0;
+			objCongKham.MUC_HUONG = 100;
+			objCongKham.NHOM_DV = congkham.NHOM_DV;
+			//System.out.println("NGHIA LUONG " + objCongKham.toString());
+			//
+			cbListBacSiForm.removeAll();
+			cbListBacSiCLS.removeAll();
+			cbListBacsiThuoc.removeAll();
+			for (Users obj : DbHelper.listUsers) 
+			{
+				//if (obj.MA_KHOA.equals(congkham.MA_DVKT) == true) {
+					cbListBacSiForm.add(obj.U_ID+"-"+obj.TEN_NHANVIEN);
+					cbListBacSiCLS.add(obj.U_ID+"-"+obj.TEN_NHANVIEN);
+					cbListBacsiThuoc.add(obj.U_ID+"-"+obj.TEN_NHANVIEN);
+				//}
+			}
+			cbListBacSiForm.select(0);
+			cbListBacSiCLS.select(0);
+			cbListBacsiThuoc.select(0);
+		}
 	}
 
 	protected void doLoadThuocLastest(String MA_BENH) {
@@ -4499,6 +4689,7 @@ public class FormKhamBenhDlg extends Dialog {
 
 	protected void resetFormKhamBenh() {
 		// Reset form kham
+		isCapCuu = false;
 		objBenhNhan = new BenhNhan();
 		objPhieuKhamBenh = null;
 		objDVChiTiet = null;
@@ -4676,7 +4867,13 @@ public class FormKhamBenhDlg extends Dialog {
 				}
 			}
 
-			sql += " order by KB_DATE desc";
+			if( DbHelper.currentSessionUserId.U_ID.intValue()==17 ){
+				sql += " order by KB_DATE desc";
+			}
+			else{
+				sql += " and NV_ID<>17 order by KB_DATE desc";
+			}
+			
 			logger.info("SQL PHIEUKHAM=" + sql);
 			listData = con.createQuery(sql).executeAndFetchTable().rows();
 			//
@@ -4804,6 +5001,7 @@ public class FormKhamBenhDlg extends Dialog {
 	}
 
 	private void loadCongKhamData() {
+		System.out.println("-------------------------------------------loadCongKhamData");
 		String name = cbKhoa.getText();
 		String names[] = name.split("-");
 		if (objCongKham != null) {
@@ -4822,16 +5020,30 @@ public class FormKhamBenhDlg extends Dialog {
 		int idx0 = -1;
 		for (String key : DbHelper.hashCongKham.keySet()) {
 			Dichvu obj = DbHelper.hashCongKham.get(key);
-			if(cbCapCuu.getSelectionIndex()==0){
-				if(Utils.getInt(obj.MANHOM_9324)==14){
-					continue;
+			if( objPhieuKhamBenh==null ){
+				if( isCapCuu==true ){
+					if( Utils.getInt(obj.MANHOM_9324)==13){
+						continue;
+					}
+				}
+				else{
+					if( Utils.getInt(obj.MANHOM_9324)==14){
+						continue;
+					}
 				}
 			}
 			else{
-				if(Utils.getInt(obj.MANHOM_9324)==13){
-					continue;
+				if( isCapCuu==true || objPhieuKhamBenh.MA_LYDO_VVIEN==2 ){
+					// Cap cuu, bo may cai kham thuong ra
+					if(Utils.getInt(obj.MANHOM_9324)==13){
+						continue;
+					}
 				}
-				
+				else{
+					if(Utils.getInt(obj.MANHOM_9324)==14){
+						continue;
+					}
+				}
 			}
 			// System.out.println(obj.DON_GIA2);
 			if (KIEU_THANH_TOAN == Utils.THANHTOAN_BHYT) {
@@ -4865,11 +5077,12 @@ public class FormKhamBenhDlg extends Dialog {
 				// +"-"+obj.TEN_DVKT+"("+obj.DON_GIA2+")");
 				if (obj.DON_GIA2 > 29000) {
 					idx0++;
-					cbKhoa.add(obj.DV_ID +"-"+ obj.MA_DVKT + "-" + obj.TEN_DVKT + "("+ obj.DON_GIA2 + ")");
+					String addDichvu =obj.DV_ID +"-"+ obj.MA_DVKT + "-" + obj.TEN_DVKT + "("+ obj.DON_GIA2 + ")"; 
+					System.out.println(addDichvu);
+					cbKhoa.add(addDichvu);
 					if (obj.MA_DVKT.indexOf(names[0]) > -1) {
 						idxFound = idx0;
-						System.out.println("FOUND IDX=" + idxFound + " "
-								+ obj.MA_DVKT + " " + names[0]);
+						System.out.println("FOUND IDX=" + idxFound + " " + obj.MA_DVKT + " " + names[0]);
 					}
 				}
 			}
@@ -5992,7 +6205,9 @@ public class FormKhamBenhDlg extends Dialog {
 	
 	protected void printPhieuBHYT(boolean isPrintAll) throws Exception {
 		//
-		updateTinhTien(isPrintAll);
+		//updateTinhTien(isPrintAll);
+		updateTinhTien(true);
+		//
 		if(isPrintAll==true){
 			// REPORT BHYT ALL DICH VU
 			ReportDAO reportAll = new ReportDAO();
@@ -6369,7 +6584,6 @@ public class FormKhamBenhDlg extends Dialog {
 					reportAll.sumDv.NB += objDvChitiet.TT_BNTT;
 					reportAll.sumDv.NB2 += objDvChitiet.THANH_TIEN2 - objDvChitiet.THANH_TIEN + objDvChitiet.TT_BNTT;
 					reportAll.sumDv.KH += (objDvChitiet.THANH_TIEN - objDvChitiet.TT_BHTT - objDvChitiet.TT_BNTT);
-					
 					//
 				} else {
 					reportAll.sumDv.TT2 += objDvChitiet.THANH_TIEN2;
@@ -6792,6 +7006,7 @@ public class FormKhamBenhDlg extends Dialog {
 					//
 					objCongKham.TT_BHTT = (int) ((float) obj.DON_GIA * tyleHuongBH);
 					objCongKham.TT_BNTT = objCongKham.THANH_TIEN - objCongKham.TT_BHTT;
+					objCongKham.NHOM_DV = obj.NHOM_DV;
 					//
 					TONGCONG += objCongKham.THANH_TIEN2;
 					TONGCONG_BHYT += objCongKham.THANH_TIEN;
@@ -6831,6 +7046,7 @@ public class FormKhamBenhDlg extends Dialog {
 					objCongKham.MA_NHOM = Utils.getInt(obj.MANHOM_9324);
 					objCongKham.DV_ID = obj.DV_ID;
 					objCongKham.DV_ID = obj.DV_ID;
+					objCongKham.NHOM_DV = obj.NHOM_DV;
 
 					objCongKham.SO_LUONG = 1;// GIA BH
 					objCongKham.DON_GIA = obj.DON_GIA;// GIA BH
@@ -6862,7 +7078,8 @@ public class FormKhamBenhDlg extends Dialog {
 						//
 						//MessageDialog.openInformation(shellKhamBenh, "", "Không save cong kham");
 					}
-					else{
+					//else
+					{
 						objCongKham.BN_ID = objBenhNhan.BN_ID;
 						if (objPhieuKhamBenh != null)
 							objCongKham.MA_LK = objPhieuKhamBenh.MA_LK;
@@ -6886,6 +7103,7 @@ public class FormKhamBenhDlg extends Dialog {
 							objCongKham.THANH_TIEN2 = objCongKham.DON_GIA2 * 1;
 							objCongKham.TT_BHTT = 0;
 							objCongKham.TT_BNTT = objCongKham.THANH_TIEN2 - objCongKham.TT_BHTT;
+							objCongKham.NHOM_DV = obj.NHOM_DV;
 							//
 							TONGCONG += objCongKham.THANH_TIEN2;
 							TONGCONG_BHYT += objCongKham.TT_BHTT;
@@ -7179,6 +7397,9 @@ public class FormKhamBenhDlg extends Dialog {
 					updateGiaTien(1, isAll);
 					tableViewerSelectedCLS.refresh();
 				}
+				else{
+					//
+				}
 			}
 			//
 		}
@@ -7388,14 +7609,13 @@ public class FormKhamBenhDlg extends Dialog {
 		objCtNhapthuoc = (CtNhapthuoc) item.getData();
 
 		iSoLuongChiDinh = Utils.getInt(txtThuocSoLuongChiDinh.getText().trim());
-		if (iSoLuongChiDinh<=0  || (iSoLuongChiDinh > 0 && objCtNhapthuoc.SL_TONKHO <= iSoLuongChiDinh)) {
+		if (iSoLuongChiDinh <= 0  || (iSoLuongChiDinh > 0 && objCtNhapthuoc.SL_TONKHO < iSoLuongChiDinh)) {
 			txtThuocSoLuongChiDinh.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
 			txtThuocSoLuongChiDinh.forceFocus();
 			txtThuocSoLuongChiDinh.selectAll();
 			return false;
 		} else {
-			txtThuocSoLuongChiDinh.setBackground(SWTResourceManager
-					.getColor(SWT.COLOR_YELLOW));
+			txtThuocSoLuongChiDinh.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
 		}
 		if(KIEU_THANH_TOAN==Utils.THANHTOAN_BHYT || KIEU_THANH_TOAN==Utils.THANHTOAN_BHYT_2){
 			if (cbLieuDung.getText().length()==0) {
@@ -7412,6 +7632,7 @@ public class FormKhamBenhDlg extends Dialog {
 		ThuocChitiet objThuocChiTiet = new ThuocChitiet();
 		objThuocChiTiet.THUOC_ID = objCtNhapthuoc.THUOC_ID;
 		objThuocChiTiet.MA_BENH = cbMaBenh.getText();
+		objThuocChiTiet.MUC_HUONG = 80;
 		objThuocChiTiet.MUC_HUONG = 100;
 		if (objPhieuKhamBenh != null) {
 			objThuocChiTiet.MA_LK = objPhieuKhamBenh.MA_LK;
@@ -7630,5 +7851,25 @@ public class FormKhamBenhDlg extends Dialog {
 
 	public void updateSearchText() {
 		tableViewerPhieuKham.refresh();
+	}
+	
+	public static void checkMessage() {
+		if(shellKhamBenh==null){
+			return;
+		}
+		String MESSAGE = Configuration.load(10).CONF_VALUE;
+		if(MESSAGE.length()>0){
+			if( Main.MESSAGE.equals(MESSAGE)==true){
+				// Not show
+			}
+			else{
+				Main.MESSAGE = MESSAGE;
+				Display.getDefault().syncExec(new Runnable() {
+				    public void run() {
+						MessageDialog.openInformation(shellKhamBenh, "Thông báo mới", Main.MESSAGE );
+				    }
+				});
+			}
+		}
 	}
 }

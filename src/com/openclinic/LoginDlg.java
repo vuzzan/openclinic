@@ -22,6 +22,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Monitor;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -34,6 +35,7 @@ import swing2swt.layout.BorderLayout;
 import com.CheckTheObj;
 import com.DbHelper;
 import com.model.cache.MaCskcbCache;
+import com.model.dao.Configuration;
 import com.model.dao.Dichvu;
 import com.model.dao.KhoaPhong;
 import com.model.dao.Khohang;
@@ -65,6 +67,9 @@ public class LoginDlg {
 	private static Display display;
 
 	private static String CHECKURL;
+	private static String URL;
+	private static String CHECKURL_OUTSIDE;
+	private static String URL_OUTSIDE;
 	private static Text textCode;
 	protected static Image imageCodeISN;
 
@@ -194,6 +199,7 @@ public class LoginDlg {
 		});
 		
 		textCode = new Text(composite_1, SWT.BORDER);
+		textCode.setEnabled(false);
 		textCode.setTextLimit(4);
 		textCode.setFont(SWTResourceManager.getFont("Tahoma", 23, SWT.NORMAL));
 		textCode.setBounds(153, 105, 102, 41);
@@ -313,9 +319,9 @@ public class LoginDlg {
 	private static void startApp() {
 		System.out.println("LOAD INI FILE");
 		INIFile ini = new INIFile("openclinic.ini");
-		CHECKURL = ini.getStringProperty("DOWNLOAD", "CHECKURL");
-		System.out.println("CHECK URL="+CHECKURL);
-		String serverIP = ini.getStringProperty("CONF", "SERVER");
+		//
+		//System.out.println("CHECK URL="+CHECKURL);
+		Main.serverIP = ini.getStringProperty("CONF", "SERVER");
 		Integer tempInteger = ini.getIntegerProperty("CONF", "MUCLUONGCOSO");
 		if(tempInteger==null){
 			Main.MAX_MUCLUONGCOSO = 1150000;
@@ -349,7 +355,7 @@ public class LoginDlg {
 		Main.DB_PASS = ini.getStringProperty("CONF", "PASSWORD");
 		String DB_NAME = ini.getStringProperty("CONF", "DBNAME");
 		//	public static final String DB_URL = "jdbc:mysql://pkap.ddns.net/openclinic?useUnicode=yes&characterEncoding=UTF-8";
-		Main.DB_URL = "jdbc:mysql://"+serverIP+"/"+DB_NAME+"?useUnicode=yes&characterEncoding=UTF-8";
+		Main.DB_URL = "jdbc:mysql://"+Main.serverIP+"/"+DB_NAME+"?useUnicode=yes&characterEncoding=UTF-8";
 		//
 		Integer rem = ini.getIntegerProperty("CONF", "REMEMBER");
 		String sId = ini.getStringProperty("CONF", "LOGIN_ID");
@@ -424,6 +430,7 @@ public class LoginDlg {
 
 		//
 		DbHelper.startConnection();
+		//
 		loadCacheDB(DbHelper.getSql2o());
 		//
 		if (CheckTheDlg.objBHYTThread2.httpclient == null) {
@@ -469,8 +476,11 @@ public class LoginDlg {
 				// Do login checking system
 				if( textCode.getText().trim().length()==4 ){
 					//
-					CheckTheDlg.objBHYTThread2.login2(Main.USER_GATE_ID, Main.USER_GATE_PASSWORD, textCode.getText().trim());
+					CheckTheDlg.objBHYTThread2.login2_del(Main.USER_GATE_ID, Main.USER_GATE_PASSWORD, textCode.getText().trim());
 					//
+				}
+				else{
+					CheckTheDlg.objBHYTThread2.login2(Main.USER_GATE_ID, Main.USER_GATE_PASSWORD, textCode.getText().trim());
 				}
 				//
 //				shlLogin.setMinimized(true);
@@ -823,8 +833,34 @@ public class LoginDlg {
 	}
 	
 	public static void checkVersion() {
+//		String MESSAGE = Configuration.load(10).CONF_VALUE;
+//		if(MESSAGE.length()>0){
+//			if( Main.MESSAGE.equals(MESSAGE)==true){
+//				// Not show
+//			}
+//			else{
+//				MessageDialog.openInformation(shellLogin, "Thông báo mới", MESSAGE );
+//				Main.MESSAGE = MESSAGE;
+//			}
+//		}
+		//
 		if(Main.isCheckVersion==true){
-			long fileSize = DbHelper.objBHYTThread.getFileSize(CHECKURL);
+			//
+			CHECKURL = Configuration.load(1).CONF_VALUE;
+			URL = Configuration.load(2).CONF_VALUE;
+			CHECKURL_OUTSIDE = Configuration.load(3).CONF_VALUE;
+			URL_OUTSIDE = Configuration.load(4).CONF_VALUE;
+			//System.out.println("CHECK URL="+CHECKURL);
+			String strCHECKURL = CHECKURL;
+			if( CHECKURL.indexOf(Main.serverIP)>-1 ){
+				// Found in 
+				strCHECKURL = CHECKURL;
+			}
+			else{
+				strCHECKURL = CHECKURL_OUTSIDE;
+			}
+			System.out.println("strCHECKURL ="+strCHECKURL);
+			long fileSize = DbHelper.objBHYTThread.getFileSize(strCHECKURL);
 			System.out.println("fileSizeRemote ="+fileSize);
 			long fileSize2 = 0; 
 			try {
@@ -849,32 +885,9 @@ public class LoginDlg {
 	
 	private static void loadCacheDB(Connection con) {
 		logger.info("START Connection");
-		if(Main.isCheckVersion==true){
-			long fileSize = DbHelper.objBHYTThread.getFileSize(CHECKURL);
-			System.out.println("fileSizeRemote ="+fileSize);
-			long fileSize2 = 0; 
-			try {
-	            File file = new File("openclinic.jar");
-	            fileSize2 = file.length();
-	            System.out.println("openclinic.jar="+fileSize2);
-	        } 
-			catch (Exception e) {
-				e.printStackTrace();
-	        }
-			if(fileSize!=-1 && fileSize!=fileSize2){
-				//
-				logger.info("UPDATE NEW SOFTWARE " + fileSize +"@"+fileSize2);
-				MessageDialog.openInformation(shellLogin, "Có phiên bản mới", "Phiên bản "+Main.TITLE+" đã cũ!.\nCó phiên bản mới, phần mềm tự cập nhật...");
-				Program.launch("update.exe");
-				System.exit(1);
-				//
-			}
-			//
-			DbHelper.objBHYTThread.login(Main.USER_GATE_ID, Main.USER_GATE_PASSWORD);
-		}
-		//
-		//
 		// LOAD ALL MABENH
+		checkVersion();
+		//
 		String sql = "SELECT * FROM mabenh ORDER BY MABENH_RANK DESC";
 //		logger.info("Get cache" + sql);
 		java.util.List<Mabenh> list = con.createQuery(sql).executeAndFetch(Mabenh.class);
